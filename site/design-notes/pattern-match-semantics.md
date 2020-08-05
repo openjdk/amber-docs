@@ -10,7 +10,7 @@ reference other features under exploration; this is purely for
 illustrative purposes, and does not constitute any sort of plan or
 committment to deliver any of these features.
 
-In [a companion document][pattern-match-motivation], we outline the
+In [a companion document](pattern-matching-for-java.html), we outline the
 motivation for adding pattern matching to Java, the sorts of patterns
 that might be supported (constant patterns, type patterns,
 deconstruction patterns, etc) and the constructs that could support
@@ -705,4 +705,3 @@ document.
    guards (and more). 
 
 
-[pattern-match-motivation]: pattern-match.html

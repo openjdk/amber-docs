@@ -1,5 +1,7 @@
 ---
 
+head_: <title>Test</title>
+
 <style>
 
 .control {
@@ -36,7 +38,7 @@ document.addEventListener("DOMContentLoaded", (event) => highlightControls());
 # Programmer's Guide to Text Blocks
 
 #### Jim Laskey and Stuart Marks\
-August 2020
+Version 11 (August 2020)
 
 [JEP 378](http://openjdk.java.net/jeps/378) introduces _text blocks_
 into Java SE 15 as a Standard feature. While the JEP explains the feature
