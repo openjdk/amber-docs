@@ -1,7 +1,7 @@
-% Local Variable Type Inference: Style Guidelines
+# Local Variable Type Inference: Style Guidelines
 
-Stuart W. Marks\
-2018-03-22
+#### Stuart W. Marks\
+March 2018
 
 ## Introduction
 
