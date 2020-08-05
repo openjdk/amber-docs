@@ -1,11 +1,13 @@
 
-Welcome to the JDK!
-===================
+Welcome to amber-docs!
+======================
 
-For build instructions, please see either of these files:
+This repository is for design notes, presentations, guides, FAQs, and
+other collateral surrounding [OpenJDK Project Amber](http://openjdk.java.net/projects/amber).
 
-  * doc/building.html   (html version)
-  * doc/building.md     (markdown version)
+Most documents here are written in (pandoc) Markdown, and changes made
+to Markdown sources are automatically formatted and pushed to the
+[OpenJDK website](http://openjdk.java.net/projects/amber).  
 
 See https://openjdk.java.net/ for more information about
 the OpenJDK Community and the JDK.

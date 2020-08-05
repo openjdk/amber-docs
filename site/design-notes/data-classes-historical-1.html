@@ -1,0 +1,822 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: http://cr.openjdk.java.net/~briangoetz/amber/datum_1.html
+Subject: 
+Date: Wed, 5 Aug 2020 17:31:24 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--jiLwVqYekGDIUiF4larjHK4zCL8rSBJV7q2jwUQbvt----"
+
+
+------MultipartBoundary--jiLwVqYekGDIUiF4larjHK4zCL8rSBJV7q2jwUQbvt----
+Content-Type: text/html
+Content-ID: <frame-26512C69423E5D53F8256489FC97CC8A@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://cr.openjdk.java.net/~briangoetz/amber/datum_1.html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns=3D"http://www.w3.=
+org/1999/xhtml"><head><meta http-equiv=3D"Content-Type" content=3D"text/htm=
+l; charset=3DUTF-8"><link rel=3D"stylesheet" type=3D"text/css" href=3D"cid:=
+css-e0158a3a-f3a5-43c6-94e0-06ecafcf18b4@mhtml.blink" /><link rel=3D"styles=
+heet" type=3D"text/css" href=3D"cid:css-1bdf0aa7-4770-484a-b235-9a8f642dd18=
+f@mhtml.blink" />
+ =20
+  <meta http-equiv=3D"Content-Style-Type" content=3D"text/css">
+  <meta name=3D"generator" content=3D"pandoc">
+  <title></title>
+ =20
+     =20
+</head>
+<body>
+<h1 id=3D"data-classes-for-java">Data Classes for Java</h1>
+<h4 id=3D"brian-goetz-october-2017">Brian Goetz, October 2017</h4>
+<br>
+<h3>THIS DOCUMENT HAS BEEN SUPERSEDED AND IS PROVIDED FOR HISTORICAL CONTEX=
+T ONLY</h3>
+
+<p>This document explores possible directions for <em>data classes</em> in =
+the Java Language. This is an exploratory document only and does not consti=
+tute a plan for any specific feature in any specific version of the Java La=
+nguage.</p>
+<h2 id=3D"background">Background</h2>
+<p>It is a common (and often deserved) complaint that "Java is too verbose"=
+ or has too much "ceremony." A significant contributor to this is that whil=
+e classes can flexibly model a variety of programming paradigms, this invar=
+iably comes with modeling overheads -- and in the case of classes that are =
+nothing more than "plain data carriers", the modeling overhead can be subst=
+antial. To write such a class responsibly, one has to write a lot of low-va=
+lue, repetitive code: constructors, accessors, <code>equals()</code>, <code=
+>hashCode()</code>, <code>toString()</code>, and possibly others, such as <=
+code>compareTo()</code>. And because this is burdensome, developers may be =
+tempted to cut corners such as omitting these important methods, leading to=
+ surprising behavior or poor debuggability, or press an alternate but not e=
+ntirely appropriate class into service because it has the "right shape" and=
+ they don't want to define yet another class.</p>
+<p>There's no doubt that writing the usual boilerplate code for these membe=
+rs is annoying (especially as it seems so unnecessary.) Even though IDEs wi=
+ll generate much of this for you, it's still irritating -- a class with onl=
+y a few lines of real semantic content takes dozens of lines of code -- but=
+ more importantly, the IDEs don't help the <em>reader</em> to distill the d=
+esign intent of "I'm a plain vanilla data holder with fields <code>x</code>=
+, <code>y</code>, and <code>z</code>" from the code. And, more importantly =
+still, repetitive code is error-prone; boilerplate code gives bugs a place =
+to hide.</p>
+<h4 id=3D"data-classes">Data classes</h4>
+<p>Other OO languages have explored syntactic forms for more compact class =
+declaration: <code>case</code> classes in <a href=3D"https://docs.scala-lan=
+g.org/tour/case-classes.html">Scala</a>, <code>data</code> classes in <a hr=
+ef=3D"https://kotlinlang.org/docs/reference/data-classes.html">Kotlin</a>, =
+and soon, <code>record</code> classes in <a href=3D"https://github.com/dotn=
+et/roslyn/blob/features/records/docs/features/records.md">C#</a>. These hav=
+e in common that the some or all of the state of a class can be described d=
+irectly directly in the class header (though they vary in their semantics, =
+such as constraints on the mutability or accessibility of fields, extensibi=
+lity of the class, and other restrictions.) Committing in the class declara=
+tion to the relationship between state and interface enables suitable defau=
+lts to be generated for various state-related members. All of these mechani=
+sms (let's call them "data classes") seek to bring us closer to the goal of=
+ being able to define a plain XY <code>Point</code> class as:</p>
+<pre><code>__data class Point(int x, int y) { }</code></pre>
+<p>The clarity and compactness here is surely attractive -- this says that =
+a <code>Point</code> is a carrier for two integer components <code>x</code>=
+ and <code>y</code>, and from that, the reader immediately knows that there=
+ are sensible <em>and correct</em> implementations for the core <code>Objec=
+t</code> methods, and doesn't have to wade through a page of boilerplate to=
+ be able to confidently reason about their semantics. Most developers are g=
+oing to say "Well, of course I want <em>that</em>."</p>
+<h4 id=3D"meet-the-elephant">Meet the elephant</h4>
+<p>Unfortunately, such universal consensus is only syntax-deep; almost imme=
+diately after we finish celebrating the concision, come the arguments about=
+ the natural semantics of such a construct, and what restrictions we are wi=
+lling to accept. Are they extensible? Are the fields mutable? Can I control=
+ the behavior of the generated methods, or the accessibility of the fields?=
+ Can I have additional fields and constructors?</p>
+<p>Just like the story of the blind men and the elephant, different develop=
+ers are likely to bring very different assumptions about the "obvious" sema=
+ntics of a data class. To bring these implicit assumptions into the open, l=
+et's name the various positions.</p>
+<p><em>Algebraic Annie</em> will say "a data class is just an algebraic pro=
+duct type." Like Scala's case classes, they come paired with pattern matchi=
+ng, and are best served immutable. (And for dessert, Annie would order seal=
+ed interfaces.)</p>
+<p><em>Boilerplate Billy</em> will say "a data class is just an ordinary cl=
+ass with better syntax", and will likely bristle at constraints on mutabili=
+ty, extension, or encapsulation. (Billy's brother, JavaBean Jerry, will say=
+ "these must be for JavaBeans -- so of course I get getters and setters too=
+." And his sister, POJO Patty, remarks that she is drowning in enterprise P=
+OJOs, and reminds us that she'd like these to be proxyable by frameworks li=
+ke Hibernate.)</p>
+<p><em>Tuple Tommy</em> will say "a data class is just a nominal tuple" -- =
+and may not even be even expecting them to have methods other than the core=
+ <code>Object</code> methods -- they're just the simplest of aggregates. (H=
+e might even expect the names to be erased, so that two data classes of the=
+ same "shape" can be freely converted.)</p>
+<p><em>Values Victor</em> will say "a data class is really just a more tran=
+sparent value type."</p>
+<p>All of these personae are united in favor of "data classes" -- but have =
+different ideas of what data classes are, and there may not be any one solu=
+tion that makes them all happy.</p>
+<h4 id=3D"understanding-the-problem">Understanding the problem</h4>
+<p>It is superficially tempting to treat this feature as being primarily ab=
+out boilerplate reduction; after all, we're painfully aware of the state-re=
+lated boilerplate we deal with every day. However, boilerplate is just a sy=
+mptom of a deeper problem. Our main tool for data abstraction is classes, w=
+hich are indeed a versatile tool. And the primary hammer of classes is <em>=
+encapsulation</em>. Encapsulating our state (so it can't be manipulated dir=
+ectly) and our representation (so we can change representation freely while=
+ maintaining the same API contract) gives us a lot of flexibility, and it e=
+nables us to write code that can operate safely and robustly across a varie=
+ty of <em>boundaries</em>:</p>
+<ul>
+<li>Maintenance boundaries -- when our clients are working in a different s=
+ourcebase or organization;</li>
+<li>Security and trust boundaries -- where we do not want to expose our sta=
+te to clients because we do not fully trust them to not deliberately modify=
+ or use it in malicious ways;</li>
+<li>Integrity boundaries -- where we do not want to expose our state to cli=
+ents because, while we may trust their intent and are willing to share our =
+data with them, we do not trust them to ensure that key invariants are main=
+tained (or do not want to burden them with these concerns);</li>
+<li>Versioning boundaries -- where we want to ensure that clients compiled =
+against one version of a library continue to work when run against a subseq=
+uent version.</li>
+</ul>
+<p>These benefits are significant -- indeed, essential -- for classes like =
+<code>SocketInputStream</code>, but often less so for classes like <code>Po=
+int</code>. Many classes are not concerned with defending any of these boun=
+daries -- maybe it is private to a package or module and co-compiled with a=
+ll its clients, trusts its clients, and has no complex invariants that we n=
+eed to protect. Sadly, the cost of flexibility -- the need to spell everyth=
+ing out explicitly (how to map constructor arguments to state, how to deriv=
+e the equality contract from state, etc) -- is borne by all classes, but th=
+e benefit is not shared so equally, pushing the cost-benefit balance out of=
+ line for classes that are less concerned with defending their boundaries. =
+This is what Java developers mean by "too much ceremony" -- not that the ce=
+remony has no value, but that they're forced to invoke it even when it does=
+ not offer sufficient value, and imposes additional costs (both machine and=
+ human.)</p>
+<p>If we could say that a class was a <em>plain data carrier</em> for a giv=
+en state vector, then we could provide sensible and correct defaults for st=
+ate-related members like constructors, accessors, and <code>Object</code> m=
+ethods. Since there's currently no way to say what we really mean, our only=
+ alternative is to get out our imperative hammer and start bashing. But "pl=
+ain" domain classes are so common that it would be nice to capture this des=
+ign decision directly in the code -- where readers and compilers alike coul=
+d take advantage of it -- rather than simulating it imperatively (and there=
+by obfuscating our design intent). So while boilerplate may be the symptom,=
+ the disease is that our code cannot directly capture our design intent, an=
+d if we cure the disease, the boilerplate goes away. For these reasons, we =
+believe it is better to treat this feature as being about <em>modeling pure=
+ data aggregates</em>, rather than about concision or boilerplate.</p>
+<h2 id=3D"digression----enums">Digression -- enums</h2>
+<p>If the problem is that we're modeling something simple with something ov=
+erly general, simplification is going to come from constraint; by letting g=
+o of some degrees of freedom, we hope to be freed of the obligation to spec=
+ify everything explicitly.</p>
+<p>The <code>enum</code> facility, added in Java 5, is an excellent example=
+ of such a tradeoff. The type-safe enum pattern was well understood, and ea=
+sy to express (albeit verbosely), prior to Java 5 (see <a href=3D"https://w=
+ww.amazon.com/gp/product/0321356683?ie=3DUTF8&amp;tag=3Dbriangoetz-20&amp;c=
+amp=3D1789&amp;linkCode=3Dxm2&amp;creativeASIN=3D0321356683">Effective Java=
+, 1st Edition</a>, item 21.) The initial motivation to add enums to the lan=
+guage might have been irritation at the boilerplate required for this idiom=
+, but the real benefit is semantic.</p>
+<p>The key simplification of enums was to constrain the lifecycle of enum i=
+nstances -- enum constants are singletons, and the requisite instance contr=
+ol is managed by the runtime. By baking singleton-awareness into the langua=
+ge model, the compiler can safely and correctly generate the boilerplate ne=
+eded for the type-safe enum pattern. And because enums started with a seman=
+tic goal, rather than a syntactic one, it was possible for enums to interac=
+t positively with other features, such as the ability to <code>switch</code=
+> on enums.</p>
+<p>Perhaps surprisingly, enums delivered their syntactic and semantic benef=
+its without requiring us to give up most other degrees of freedom that clas=
+ses enjoy; Java's enums are not mere enumerations of integers, as they are =
+in many other languages, but instead are full-fledged classes, with unconst=
+rained state and behavior, and even subtyping (though this is constrained t=
+o interface inheritance only.)</p>
+<h4 id=3D"why-not-just-do-tuples">Why not "just" do tuples?</h4>
+<p>Some readers may feel at this point that if we "just" had tuples, we wou=
+ldn't need data classes. And while tuples might offer a lighter-weight mean=
+s to express some aggregates, the result is often inferior aggregates. A ce=
+ntral aspect of the Java philosophy is that <em>names matter</em>; a <code>=
+Person</code> with properties <code>firstName</code> and <code>lastName</co=
+de> is clearer and safer than a tuple of <code>String</code> and <code>Stri=
+ng</code>. The major pain of using named classes for aggregates is the synt=
+actic overhead of declaring them; if we reduce this overhead, the temptatio=
+n to reach for more weakly typed mechanisms is greatly reduced.</p>
+<h2 id=3D"towards-requirements-for-data-classes">Towards requirements for d=
+ata classes</h2>
+<p>It's easy to claim a class is "just a plain data carrier", but what do w=
+e mean by that? What degrees of freedom that classes enjoy do "plain" data =
+aggregates not need, that we can eliminate and thereby simplify the model?<=
+/p>
+<p>At one extreme, nobody thinks that <code>SocketInputStream</code> is "ju=
+st" its data; it fully encapsulates some complex and unspecified state (inc=
+luding a native resource) and exposes an interface contract that likely loo=
+ks nothing like its internal representation.</p>
+<p>At the other extreme, a class like</p>
+<pre><code>final class Point {
+    public final int x;
+    public final int y;
+
+    public Point(int x, int y) {
+        this.x =3D x;
+        this.y =3D y;
+    }
+
+    // state-based implementations of equals, hashCode, toString
+    // nothing else</code></pre>
+<p>}</p>
+<p>is clearly "just" the data <code>(x, y)</code>. Its representation is <c=
+ode>(x, y)</code>, its construction protocol accepts an <code>(x, y)</code>=
+ pair and stores it directly, and it provide unmediated access to its data.=
+ The combination of transparency and state-based equality means that a clie=
+nt can extract the data carried by a <code>Point</code> and instantiate ano=
+ther <code>Point</code> which is known to be valid and substitutible for th=
+e original.</p>
+<p>Let's formalize this notion of "plain data carrier" a bit, so we can use=
+ this to evaluate design decisions for a data class feature. We say a class=
+ <code>C</code> is a <em>transparent carrier</em> for a state vector <code>=
+S</code> if:</p>
+<ul>
+<li>There is a function <em>ctor : S -&gt; C</em> which maps an instance of=
+ the state vector to an instance of <em>C</em>. (This function may be parti=
+al; <em>ctor</em> may reject some state vectors as invalid, such as rationa=
+l numbers whose denominator is zero.)</li>
+<li>There is a total function <em>dtor : C -&gt; S</em> which maps an insta=
+nce of <em>C</em> to a state vector <em>S</em> in the domain of <em>ctor</e=
+m>.</li>
+<li>For any instance <em>c</em> of <em>C</em>, <em>ctor(dtor(c)) equals c</=
+em>, according to the <code>equals()</code> contract for <em>C</em>, and fu=
+rther, that the composition <em>ctor(dtor(x))</em> is an <em>identity</em> =
+on the codomain of <em>ctor</em>.</li>
+<li>For two state vectors <em>s1</em> and <em>s2</em> in the domain of <em>=
+ctor</em>, if each of their components is equal to the corresponding compon=
+ent of the other (according to the component's <code>equals()</code> contra=
+ct), then <em>ctor(s1) equals ctor(s2)</em>.</li>
+<li>For any mutative operations of <em>C</em>, performing the same operatio=
+n on equal instances of <em>C</em> results in equal instances of <em>C</em>=
+.</li>
+</ul>
+<p>This means that <code>C</code> has a constructor (or factory) which acce=
+pts the state vector <code>S</code>, and accessors (or a deconstruction pat=
+tern) which produces the components of <code>S</code>, and that for any val=
+id instance, extracting the state vector and then reconstructing an instanc=
+e from that state vector produces an instance that is equivalent to the ori=
+ginal. Similarly, constructing instances from equivalent state vectors prod=
+uces equivalent instances, and applying the same mutative operation to equi=
+valent instances preserves their equivalence. Such carriers are <em>transpa=
+rent</em> -- their state can be freely from the outside (because clients ca=
+n call the <em>dtor</em> function).</p>
+<p>Together, these requirements say that there is a very simple relationshi=
+p between the classes representation, its construction, and its destructuri=
+ng. In other words, the API <em>is</em> the representation -- and both clie=
+nt and compiler can safely assume this. A class that is a plain data carrie=
+r is <em>the data, the whole data, and nothing but the data</em>.</p>
+<p>Note that so far, we haven't said anything about syntax or boilerplate; =
+we've only talked about constraining the semantics of the class to be a sim=
+ple carrier for a specified state vector. But these constraints allow us to=
+ safely and mechanically generate the boilerplate for constructors, pattern=
+ extractors, accessors, <code>equals()</code>, <code>hashCode()</code>, and=
+ <code>toString()</code> -- and more.</p>
+<h4 id=3D"data-classes-and-pattern-matching">Data classes and pattern match=
+ing</h4>
+<p>By saying that a data class is a transparent carrier for a publicly-spec=
+ified state vector, rather than just a boilerplate-reduced class, we gain t=
+he ability to freely convert a data class instance back and forth between i=
+ts aggregate form and its state vector. This has a natural connection with =
+<em>pattern matching</em>; by committing that a class is merely a carrier f=
+or a state vector, there is an obvious deconstruction pattern -- whose sign=
+ature is the dual of the constructor's -- which can be mechanically generat=
+ed.</p>
+<p>For example, suppose we have data classes as follows:</p>
+<pre><code>interface Shape { }
+__data class Point(int x, int y) { }
+__data class Rect(Point p1, Point p2) implements Shape { }
+__data class Circle(Point center, int radius) implements Shape { }</code></=
+pre>
+<p>A client can deconstruct a shape as follows:</p>
+<pre><code>switch (shape) {
+     case Rect(Point(var x1, var y1), Point(var x2, var y2)): ...
+     case Circle(Point(var x, var y), int r): ...
+     ....
+}</code></pre>
+<p>with the mechanically generated pattern extractors. This synergy between=
+ data classes and pattern matching makes each feature more expressive. Howe=
+ver, a not-entirely-obvious consequence of this is that there is no such th=
+ing as truly <code>private</code> fields in a data class; even if the field=
+s were to be declared private, their values would still be implicitly reada=
+ble via the destructuring pattern. This would be surprising if our design c=
+enter for data class was that they are merely a boilerplate reduction tool =
+-- but is consistent with data classes being transparent carriers for their=
+ data.</p>
+<h4 id=3D"data-classes-and-externalization">Data classes and externalizatio=
+n</h4>
+<p>Data classes are also a natural fit for safe, mechanical externalization=
+ (serialization, marshaling to and from JSON or XML, mapping to database ro=
+ws, etc). If a class is a transparent carrier for a state vector, and the c=
+omponents of that state vector can be externalized in the desired encoding,=
+ then the carrier can be safely and mechanically marshaled and unmarshaled =
+with guaranteed fidelity, and without the security and integrity risks of b=
+ypassing the constructor (as built-in serialization does). In fact, a trans=
+parent carrier need not do anything special to support externalization; the=
+ externalization framework can deconstruct the object using its principal d=
+econstructor, and reconstruct it using its principal constructor, which are=
+ already public.</p>
+<h2 id=3D"refining-the-design-space">Refining the design space</h2>
+<p>The requirements for being a "plain data carrier" represent a sensible t=
+rade-off; by agreeing to transparently expose our representation and state,=
+ we gain safe and predictable implementations of constructors, <code>Object=
+</code> methods, destructuring patterns, and externalization. Let's take th=
+is as our starting point, and explore some other natural questions that com=
+e up in the context of designing such a feature.</p>
+<h4 id=3D"overriding-default-members">Overriding default members</h4>
+<p>The default implementations of constructors and <code>Object</code> meth=
+ods is likely to be what is desired in a lot of cases, but there may be cas=
+es where we want to refine these further, such as a constructor that enforc=
+es additional invariants, or an <code>equals()</code> method that compares =
+array components by content rather than delegating to <code>Object.equals()=
+</code>. (Allowing refined implementations expands the range of useful data=
+ classes, but also exposes us to the risk that the the explicit implementat=
+ions won't conform to the requirements of a plain data carrier.)</p>
+<h4 id=3D"constructors">Constructors</h4>
+<p>In our definition, we said that construction could be a partial function=
+, to allow constructors to enforce domain invariants (such as a "range" typ=
+e ensuring that the lower bound doesn't exceed the upper bound). Data class=
+es without representational invariants should not require an explicit const=
+ructor, but ideally it should be possible to specify an explicit constructo=
+r that enforces invariants -- without having to write out all the construct=
+or boilerplate out by hand.</p>
+<p>Data classes clearly need a constructor whose signature matches that of =
+the state vector (call this the <em>principal constructor</em>); otherwise,=
+ the class would not be merely a carrier for its state vector, as we couldn=
+'t freely deconstruct and reconstruct it. Can a data class have additional =
+constructors too? This seems reasonable -- if they are merely convenience i=
+mplementations that delegate to the principal constructor.</p>
+<h4 id=3D"ancillary-fields">Ancillary fields</h4>
+<p>Related to the previous item is the question of whether the state vector=
+ describes <em>all</em> the state of the class, or merely some distinguishe=
+d subset of it. While at first it might seem reasonable to allow additional=
+ fields, these also constitute a slippery slope away from the design center=
+ of "plain data carrier." If there were ancillary fields that affect the be=
+havior of <code>equals()</code> or <code>hashCode()</code>, then this will =
+almost certainly violate the requirement that deconstructing a carrier and =
+reconstructing it yields an equivalent instance.</p>
+<p>Similarly, if they affected the behavior of mutative methods, this would=
+ undermine the requirement that performing identical actions on equal carri=
+ers results in equal carriers. So while there are legitimate uses for ancil=
+lary variables (primarily caching state derived from the state vector), anc=
+illary fields come with the risk of violating the spirit of "the state, the=
+ whole state, and nothing but the state."</p>
+<h4 id=3D"extension">Extension</h4>
+<p>Can a data class extend an ordinary class? Can a data class extend anoth=
+er data class? Can a non-data class extend a data class? Again, let's evalu=
+ate these through our definition of plain data carrier.</p>
+<p>Extension between data classes and non-data classes, or between concrete=
+ data classes, seems immediately problematic. If a data class extends an or=
+dinary class, we would have no control over the <code>equals()</code> contr=
+act of the superclass, and therefore no reason to believe that the desired =
+invariants hold.</p>
+<p>Similarly, if another class (data or not) were to extend a data class, w=
+e'd almost certainly violate the desired invariants. Consider:</p>
+<pre><code>__data class C(STATE_VECTOR) { }
+class D extends C { ... }
+
+D d =3D ...
+switch (d) {=20
+    case C(var STATE_VECTOR): assert d.equals(new C(STATE_VECTOR));
+    ...
+}</code></pre>
+<p>Deconstructing a <code>C</code> into its state and then reconstructing i=
+t into a carrier should yield an equivalent instance -- but in this case, i=
+t will not. D is not a plain carrier for C's state vector, as it has at lea=
+st some additional typestate, and perhaps some additional state and behavio=
+r as well, which may cause the equality check to fail.</p>
+<h4 id=3D"mutability">Mutability</h4>
+<p>One of the thorniest problems is whether we allow mutability, and how we=
+ handle the consequences if we do. The simplest solution -- and surely a te=
+mpting one -- is to insist that state components of data classes be <code>f=
+inal</code>. While this is an attractive opening position, this may ultimat=
+ely be too limiting; while immutable data is surely better-behaved than mut=
+able data, mutable data certainly qualifies as "data", and there are many l=
+egitimate uses for mutable "plain data" aggregates. (And, even if we requir=
+ed that data class fields always be <code>final</code>, this only gives us =
+shallow immutability -- we still have to deal with the possibility that the=
+ contents are more deeply mutable.)</p>
+<p>It is worth noting that similar languages that went down the data-class =
+path -- including Scala, Kotlin, and C# -- all settled on not forcing data =
+classes to be immutable, though its almost certain that their designers ini=
+tially considered doing so. (Even if we allow mutability, we still have the=
+ option of nudging users towards finality, say by making the default for da=
+ta class fields <code>final</code>, and providing a way to opt out of final=
+ity for individual fields.)</p>
+<h4 id=3D"field-encapsulation">Field encapsulation</h4>
+<p>Related to the problem of mutability is whether fields can be individual=
+ly encapsulated. There are several reasons why one might want to encapsulat=
+e fields, even if we've given up on decoupling the representation from the =
+API:</p>
+<ul>
+<li>To protect integrity boundaries (rejecting writes that would violate re=
+presentational invariants);</li>
+<li>To detect when writes have happened, so that listeners can be notified =
+or cached state can be adjusted;</li>
+<li>To make defensive copies on reads, such as for array components.</li>
+</ul>
+<p>All are related, directly or indirectly, to mutability. If data class fi=
+elds are <code>final</code>, once the constructor establishes the invariant=
+s, they cannot be undermined, and if there are no writes, there's no need t=
+o take any action on writes. Similarly, only if data class state is deeply =
+mutable (such as for array components) would we need to consider defensive =
+copies. Absent any concern about deep mutability, if data class fields are =
+<code>final</code>, there's no reason for them to not also be <code>public<=
+/code> (since we've already given up on the ability to compatibly change th=
+e representation across maintenance boundaries.) And, even if fields are mu=
+table, if they do not participate in any invariants (no integrity boundarie=
+s) and are confined to a package or module (no maintenance or trust boundar=
+ies), then it might well be reasonable for mutable fields to be public as w=
+ell.</p>
+<p>The primary remaining motivation for encapsulating fields, then, is to l=
+imit writes to those fields when sharing instances across trust or integrit=
+y boundaries. Any support for state encapsulation should focus on these asp=
+ects alone.</p>
+<h4 id=3D"accessors">Accessors</h4>
+<p>No discussion involving boilerplate (or any question of Java language ev=
+olution, for that matter) can be complete without the subject of field acce=
+ssors (and properties) coming up. On the one hand, accessors constitute a s=
+ignificant portion of boilerplate in existing code; on the other hand, the =
+JavaBean-style getter/setter conventions are already badly overused. (Immut=
+able classes could forgo accessors in favor of public final fields, as long=
+ as they're not worried about maintenance boundaries. Even mutable classes =
+without state invariants could get away with public mutable fields instead =
+of accessors -- again as long as they're not worried about maintenance boun=
+daries. These two cases already cover a large proportion of the candidates =
+for data classes.)</p>
+<p>If it turns out to make sense to support mutable fields, it probably als=
+o make sense to support write-encapsulation of those fields to defend integ=
+rity boundaries. But we should be mindful of the purpose of these accessors=
+; it is not to abstract the representation from the API, but merely to enab=
+le rejection of bad values, and provide syntactic uniformity of access.</p>
+<p>Without rehashing the properties debate, one fundamental objection to au=
+tomating JavaBean-style field accessors is that it would take what is at be=
+st a questionable (and certainly overused) API naming convention and burn i=
+t into the language. Unlike the core methods like <code>Object.equals()</co=
+de>, field accessors do not have any special treatment in the language, and=
+ so names of the form <code>getSize()</code> should not either. (Also, whil=
+e tedious, writing (and reading) accessor declarations are not nearly as er=
+ror-prone as <code>equals()</code>.)</p>
+<h4 id=3D"arrays-and-defensive-copies">Arrays and defensive copies</h4>
+<p>Array-valued fields are particularly problematic, as there is no way to =
+make them deeply immutable. But they're really just a special case of mutab=
+le objects which do not provide unmodifiable views. APIs that encapsulate a=
+rrays frequently make defensive copies when they're on the other side of a =
+trust boundary from their users. Should data classes support this? Unfortun=
+ately, this also falls afoul of our requirements for data classes.</p>
+<p>Because the <code>equals()</code> method of arrays is inherited from <co=
+de>Object</code>, which compares instances by identity, making defensive co=
+pies of array components in read accessors would violate the invariant that=
+ destructuring an instance of a data class and reconstructing it yields an =
+equivalent instance -- the defensive copy and the original array will not b=
+e equal to each other. (Arrays are simply a bad fit for data classes, as th=
+ey are mutable, but unlike <code>List</code> their <code>equals()</code> me=
+thod is based on identity.) We'd rather not distort data classes to accomod=
+ate arrays, especially as there are ample alternatives available.</p>
+<h4 id=3D"thread-safety">Thread-safety</h4>
+<p>Allowing mutable state in data classes raises the question of whether, a=
+nd how, they can be made thread-safe. (Note that thread-safety is not a req=
+uirement for mutable classes; many useful classes, such as <code>ArrayList<=
+/code>, are not thread-safe.) Thread-safe classes encapsulate a protocol fo=
+r coordinating access to their shared mutable state. But, data classes disa=
+vow most forms of encapsulation. (Immutable objects are implicitly thread-s=
+afe, because there is no shared mutable state to which access need be coord=
+inated.)</p>
+<p>Like most non-thread-safe classes, instances of mutable data classes can=
+ still be used safely in concurrent environments through <em>confinement</e=
+m>, where the data class instance is encapsulated within a thread-safe clas=
+s. While it might be possible to nibble around the edges to support a few u=
+se cases, ultimately data classes are not going to be the right tool for cr=
+eating thread-safe mutable classes, and rather than reinventing all the fle=
+xibility of classes in a new syntax, we should probably just guide people t=
+o writing ordinary classes in these cases.</p>
+<h4 id=3D"data-classes-and-value-types">Data classes and value types</h4>
+<p>With <em>value types</em> coming down the road through <a href=3D"http:/=
+/openjdk.java.net/projects/valhalla/">Project Valhalla</a>, it is reasonabl=
+e to ask about the overlap between immutable data classes and value types, =
+as well as whether the intersection of data-ness and value-ness is a useful=
+ space to inhabit.</p>
+<p>Value types are primarily about enabling <em>flat</em> and <em>dense</em=
+> layout of object in memory. The central sacrifice of value types is <em>o=
+bject identity</em>; in exchange for giving up object identity (which means=
+ giving up mutability and layout polymorphism), we can elide object headers=
+ and can inline values directly into the layout of other values, objects, a=
+nd arrays, and freely hoist values out of the heap and onto the stack or in=
+to registers. The lack of layout polymorphism means we have to give up some=
+thing else: self-reference. A value type <code>V</code> cannot refer, direc=
+tly or indirectly, to another unboxed <code>V</code>. But value classes nee=
+d not give up any encapsulation, and in fact encapsulation is essential for=
+ some applications of value types (such as references to native resources.)=
+</p>
+<p>On the other hand, data classes instances have identity, which supports =
+mutability (maybe) but also supports self-reference. Unlike value types, da=
+ta class instances are entirely suited to representing self-referential gra=
+phs.</p>
+<p>Each of these simplified class forms -- values and data classes -- invol=
+ves accepting certain restrictions in exchange for certain benefits. If we'=
+re willing to accept both sets of restrictions, we get both sets of benefit=
+s; the notion of a "value data class" is perfectly sensible for things like=
+ extended numerics or tuples.</p>
+<h4 id=3D"compatibility-and-migration">Compatibility and migration</h4>
+<p>It is important that existing classes that meet the requirements for dat=
+a classes (or are willing to do so) should be able to be compatibly migrate=
+d to data classes, so that the many existing classes that are candidate for=
+ being data classes can benefit from the semantic transparency and syntacti=
+c concision of data classes. Similarly, it is important to be able to do th=
+e reverse, so that data classes can be compatibly refactored into regular c=
+lasses if they evolve to outgrow the constraints of data classes.</p>
+<p>If an existing class which meets the requirements wants to migrate to be=
+ a data class, it should be able to do so by simply exposing its state thro=
+ugh the class header and removing redundant field, constructor, and <code>O=
+bject</code> method declarations. Similarly, if a data class wants to migra=
+te to be a full-blown class, it should be able to do so by providing explic=
+it declarations of its fields, constructors, and <code>Object</code> method=
+s (and, when explicit pattern extractors are supported, pattern extractors)=
+. Both of these migrations should be source- and binary-compatible; it is t=
+he responsibility of the developer to ensure that they are behaviorally com=
+patible.</p>
+<p>Once a data class is published, however, changing the state description =
+will have compatibility consequences for clients that are outside the maint=
+enance boundary. The binary- and source- compatibility impact of such chang=
+es can be partially mitigated by declaring new constructors and pattern mat=
+ch extractors that follow the old state description (so that existing clien=
+ts can construct and deconstruct them), but depending on existing usage, it=
+ may be hard to mitigate the behavioral compatibility issues, as the result=
+ing class may well fall afoul of the various invariants of plain data carri=
+ers from the perspective of legacy clients, such as the deconstructing and =
+reconstructing a data class using an old state vector. For data classes ope=
+rating within a maintenance boundary, it may be practical to compatibly ref=
+actor both a data class and its clients when changing the state description=
+.</p>
+<h2 id=3D"a-concrete-proposal">A concrete proposal</h2>
+<p>Now that we have a good idea of what it is to "just" be a data carrier, =
+what is it that we give up? Primarily, we are disavowing several key uses o=
+f encapsulation: the ability to decouple a classes interface from its repre=
+sentation, and to hide state from curious readers. (The main form of encaps=
+ulation we retain is the ability to control modifications to the state.) Fu=
+rther, we are committing to a state-based interpretation of the core <code>=
+Object</code> methods, and that any methods on the data class be a pure fun=
+ction of its arguments and the class state.</p>
+<p>What <em>don't</em> we have to give up to get this? Quite a lot. Data cl=
+asses can be generic, can implement interfaces, can have static fields, and=
+ can have constructors and methods, all without compromising this committme=
+nts. To start, let's say that</p>
+<pre><code>__data class Point(int x, int y) { }</code></pre>
+<p>desugars to</p>
+<pre><code>final class Point extends java.lang.DataClass {
+    final int x;
+    final int y;
+   =20
+    public Point(int x, int y) {
+        this.x =3D x;
+        this.y =3D y;
+    }
+
+    // destructuring pattern for Point(int x, int y)
+    // state-based equals, hashCode, and toString
+    // public read accessors for x and y
+}</code></pre>
+<p>Any interfaces implemented by the data class are lifted onto the desugar=
+ed class in the obvious way, as are any type variables, static fields, stat=
+ic methods, and instance methods. If the data class provides an explicit im=
+plementation of any of the implicit members (constructor, pattern extractor=
+, <code>equals()</code>, <code>hashCode()</code>, <code>toString()</code>),=
+ it is used in place of the implicit member (but the explicit member must o=
+bey the stronger contract of these members for data classes, which will be =
+specified in the <code>DataClass</code> superclass.)</p>
+<p><strong>Constructors.</strong> If the data class imposes no invariants, =
+no constructor declaration is needed, and the class acquires a constructor =
+whose signature is that of the data class (the principal constructor). Addi=
+tional constructors may be explicitly declared -- but they must delegate to=
+ the principal constructor. The principal constructor may also be explicitl=
+y declared, but it too must delegate to the default principal constructor, =
+as in:</p>
+<pre><code>__data class Range(int lo, int hi) {
+
+    // Explicit principal constructor
+    public Range(int lo, int hi) {
+        // validation logic
+        if (lo &gt; hi)
+            throw new IllegalArgumentException(...);
+           =20
+        // delegate to default constructor
+        default(lo, hi);
+    }
+}</code></pre>
+<p>The <code>default()</code> call invokes the default constructor that wou=
+ld otherwise have been auto-generated for this data class (including the de=
+fault <code>super</code> constructor); this avoids the need to write out th=
+e tedious and error-inviting sequence of <code>this.x =3D x</code> assignme=
+nts. Similarly, the explicit constructor may mutate its arguments to saniti=
+ze / normalize / copy them, and pass the copies to the default constructor.=
+ (The rules about statements preceding calls to <code>super</code> or <code=
+>this</code> constructors can be relaxed, and the <code>this</code> referen=
+ce treated as <em>definitely unassigned</em> for statements preceding the <=
+code>default</code> or <code>this</code> call.)</p>
+<p><strong>Fields.</strong> Given a data class</p>
+<pre><code>__data class Foo(int x, int y) { ... }</code></pre>
+<p>we will lift the state components <code>(int x, int y)</code> onto field=
+s of <code>Foo</code> -- along with any annotations specified on the state =
+components. The Javadoc for data classes will allow class parameters to be =
+documented with the <code>@param</code> tag, as method parameters are now.<=
+/p>
+<p>The most restrictive approach would be that fields are always final; we =
+could also consider making them final by default, but allowing mutability t=
+o be supported by opting in via a mutability modifier (<code>non-final</cod=
+e>, <code>unfinal</code>, <code>mutable</code> -- bikeshed to be painted la=
+ter.) Similarly, the most restrictive approach would be for them to always =
+have <code>package</code> accessibility (or <code>protected</code> for fiel=
+ds of abstract data class); a less restrictive approach would be to treat t=
+hese as defaults, but allow them to optionally be declared <code>public</co=
+de>.</p>
+<p>With respect to additional fields beyond those in the state description,=
+ the most restrictive approach would be to prohibit them. While there are s=
+ome legitimate use cases for encapsulated private fields that do not violat=
+e the requirements (mostly having to do with caching derived properties of =
+the state vector), the risk that this state flows into equality or other se=
+mantics is high, bringing us away from the design center of "plain carrier =
+for the state vector."</p>
+<p><strong>Extension.</strong> We've already noted that arbitrary extension=
+ is problematic, but it should be practical to maintain inheritance from ab=
+stract data classes to other data classes. A sensible balance regarding ext=
+ension is:</p>
+<ul>
+<li>Non-abstract data classes are final;</li>
+<li>Data classes can be abstract (in which case they acquire no <code>equal=
+s()</code>, <code>hashCode()</code>, or <code>toString()</code> methods, an=
+d all constructors must be <code>protected</code>);</li>
+<li>Data classes can extend abstract data classes;</li>
+<li>No restrictions on what interfaces a data class could implement.</li>
+</ul>
+<p>This allows us to declare families of algebraic data types, such as the =
+following partial hierarchy describing an arithmetic expression:</p>
+<pre><code>interface Node { }
+
+abstract __data class BinaryOpNode(Node left,=20
+                                   Node right)=20
+    implements Node { }
+
+__data class PlusNode(Node left, Node right)=20
+      extends BinaryOperatorNode(left, right) { }
+
+__data class MulNode(Node left, Node right)=20
+      extends BinaryOperatorNode(left, right) { }
+     =20
+__data class IntNode(int constant) implements Node { }</code></pre>
+<p>When a data class extends an abstract data class, the state description =
+of the superclass must be a prefix of the state description of the subclass=
+:</p>
+<pre><code>abstract __data class Base(int x) { }
+__data class Sub(int x, int y) extends Base(x) { }</code></pre>
+<p>The arguments to the <code>extends Base()</code> clause is a list of <em=
+>names</em> of state components of <code>Sub</code>, not arbitrary expressi=
+ons, must be a prefix of the state description of <code>Sub</code>, and mus=
+t match the state description of <code>Base</code>; this suppresses the loc=
+al declaration of inherited fields, and also plays into the generation of t=
+he default principal constructor (which arguments are passed up to which su=
+perclass constructor, vs. which are used to initialize local fields.) These=
+ rules are sufficient for implementing algebraic data type hierarchies like=
+ the <code>Node</code> example above.</p>
+<p><strong>Accessors.</strong> Data classes are transparent; they readily g=
+ive up their state through the destructuring pattern. To make this explicit=
+, and to support the <em>uniform access principle</em> for state, data clas=
+ses implicitly acquire public read accessors for all state components, whos=
+e name is the same as the state component. (We will separately explore a mo=
+re general mechanism for accessors which can be used by arbitrary classes; =
+when such a mechanism is available, data classes will be able to customize =
+the name to suit the conventions they prefer by explicitly using this mecha=
+nism.) If write accessors are desired, they can be provided explicitly -- d=
+ata classes will not bring these automatically.</p>
+<p><strong>Reflection.</strong> While our implementation is essentially a d=
+esugaring into a mostly ordinary class with fields and methods, we don't ac=
+tually want to erase the data-ness completely; compilers need to be able to=
+ identify which classes are data classes, and what their state descriptions=
+ are, so they can enforce any restrictions on how they interact with other =
+classes -- so this information must be present in the class file. This can =
+be reflected on <code>Class</code> with methods such as <code>isDataClass()=
+</code> and a method to return the ordered list of fields that are the clas=
+ses state vector.</p>
+<h2 id=3D"summary">Summary</h2>
+<p>The key question in designing a facility for "plain data aggregates" in =
+Java is identifying which degrees of freedom we are willing to give up. If =
+we try to model all the degrees of freedom of classes, we just move the com=
+plexity around; to gain some benefit, we must accept some constraints. We t=
+hink that the sensible constraints to accept are disavowing the use of enca=
+psulation for decoupling representation from API, and for mediating read ac=
+cess to state.</p>
+
+
+</body></html>
+------MultipartBoundary--jiLwVqYekGDIUiF4larjHK4zCL8rSBJV7q2jwUQbvt----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-e0158a3a-f3a5-43c6-94e0-06ecafcf18b4@mhtml.blink
+
+@charset "utf-8";
+
+code { white-space: pre; }
+------MultipartBoundary--jiLwVqYekGDIUiF4larjHK4zCL8rSBJV7q2jwUQbvt----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-1bdf0aa7-4770-484a-b235-9a8f642dd18f@mhtml.blink
+
+@charset "utf-8";
+
+a { text-decoration: none; }
+
+a:link, a:visited { color: rgb(67, 114, 145); }
+
+a:visited { color: rgb(102, 102, 102); }
+
+a[href]:hover { color: rgb(231, 111, 0); }
+
+a img { border-width: 0px; }
+
+img { background: white; }
+
+a.internal { color: rgb(187, 0, 0); }
+
+a[name] { color: black; }
+
+body { background: white; margin: 2em 2em 100%; font-size: medium; width: 4=
+0em; }
+
+body { font-family: "Bitstream Vera Sans", Verdana, "sans serif"; }
+
+pre { font-family: monospace; }
+
+code { font-family: "courier new", monospace; font-size: medium; font-weigh=
+t: bold; }
+
+p { margin: 1ex 0em; }
+
+pre { margin: 1.5ex 2em; }
+
+blockquote { margin: 1.5ex 2em; }
+
+li blockquote { margin-left: 0em; }
+
+li { margin: 0ex 0em; }
+
+.todo { color: darkred; text-align: right; }
+
+table, th, td { border: 2px solid gray; padding: 2px; }
+
+table { border-collapse: collapse; }
+
+td { vertical-align: top; }
+
+ul li { list-style-type: square; }
+
+div.summary { margin: 2ex 2em; }
+
+div.head { margin-bottom: 2em; }
+
+div.doctitle { font-size: x-large; font-weight: bold; }
+
+div.twarn { color: rgb(204, 0, 0); font-size: smaller; font-weight: bold; m=
+argin-bottom: 1.5ex; }
+
+div.authors { margin-top: 1ex; font-size: large; }
+
+div.author a { font-style: italic; }
+
+div.version { font-size: medium; margin-top: 1ex; }
+
+div.copyright, div.comments { font-size: small; }
+
+div.version span.modified { color: green; font-weight: bold; }
+
+div.head div.notes { margin-top: 1ex; }
+
+p.subsection { margin-top: 2ex; }
+
+p.subsection:first-child { margin-top: 1ex; }
+
+p span.title { font-weight: bold; padding-right: 1em; }
+
+hr { border-width: 1px 0px 0px; border-right-style: initial; border-bottom-=
+style: initial; border-left-style: initial; border-right-color: initial; bo=
+rder-bottom-color: initial; border-left-color: initial; border-image: initi=
+al; border-top-style: solid; border-top-color: black; margin: 2ex 0em; }
+
+div.qa { margin-top: 2ex; }
+
+h1 { font-size: x-large; }
+
+h2 { font-size: large; margin-top: 3ex; margin-bottom: 0ex; }
+
+pre { width: 60em; padding: 1px 1ex; background: rgb(232, 232, 232); font-s=
+ize: smaller; }
+
+pre.jvm { font-style: italic; }
+------MultipartBoundary--jiLwVqYekGDIUiF4larjHK4zCL8rSBJV7q2jwUQbvt------

@@ -1,0 +1,66 @@
+    <style type="text/css">
+      A IMG { border-width: 0px; }
+
+      BODY {
+        background: white;
+        margin: 2em;
+        font-size: medium;
+        width: 40em;
+        margin-bottom: 100%;
+      }
+
+      BODY { font-family: Bitstream Vera Sans, Verdana, sans serif; }
+      PRE { font-family: monospace; }
+      CODE { font-family: courier new, monospace; font-size: medium; font-weight: bold; }
+      H1 { font-size: x-large; }
+      H2 { font-size: large; margin-top: 3ex; margin-bottom: 0ex; }
+      H3 { font-size: medium; margin-top: 3ex; margin-bottom: 0ex; }
+      H4 { font-size: medium; margin-top: 3ex; margin-bottom: 0ex; }
+
+      P { margin: 1ex 0em; }
+      P.subsection { margin-top: 2ex; }
+      P.subsection:first-child { margin-top: 1ex; }
+      P SPAN.title { font-weight: bold; padding-right: 1em; }
+
+      PRE {
+        margin: 1.5ex 2em; 
+        width: 60em;
+        padding: 1px 1ex;
+        background: #e8e8e8;
+        font-size: smaller;
+      }
+
+      // added for ```{.jvm} support
+      PRE.jvm { font-style: italic; }
+
+      BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+      LI BLOCKQUOTE { margin-left: 0em; }
+      LI { margin: 0ex 0em; }
+      
+      TABLE, TH, TD { border: 2px solid gray; padding: 2px; }
+      TABLE { border-collapse: collapse; }
+      TD { vertical-align: top; }
+
+      UL LI { list-style-type: square; }
+
+      DIV.summary { margin: 2ex 2em; }
+
+      DIV.head { margin-bottom: 2em; }
+      DIV.doctitle { font-size: x-large; font-weight: bold; }
+      DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                  margin-bottom: 1.5ex; }
+      DIV.authors { margin-top: 1ex; font-size: large; }
+      DIV.author A { font-style: italic; }
+      DIV.version { font-size: medium; margin-top: 1ex; }
+      DIV.copyright, DIV.comments { font-size: small; }
+      DIV.version SPAN.modified { color: green; font-weight: bold; }
+      DIV.head DIV.notes { margin-top: 1ex; }
+      DIV.qa { margin-top: 2ex; }
+
+      // added because pandoc syntax highlighting always uses scroll bars
+      DIV.sourceCode {
+          overflow: visible;
+      }
+
+      HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+   </style>
