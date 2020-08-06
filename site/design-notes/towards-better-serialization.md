@@ -957,5 +957,5 @@ via serialization.  With some extra work, and some limitations, we can
 get away from the undesirable status quo of the remotely-accessible
 API being _less_ defensive than the programmatic API.
 
-[records]: data-classes.html
-[patterns]: pattern-match.html
+[records]: records-and-sealed-classes-classes.html
+[patterns]: pattern-matching-for-java.html
