@@ -23,7 +23,7 @@
       P SPAN.title { font-weight: bold; padding-right: 1em; }
 
       PRE {
-        margin: 1.5ex 2em; 
+        margin: 1.5ex 2em;
         width: 60em;
         padding: 1px 1ex;
         background: #e8e8e8;
@@ -36,7 +36,7 @@
       BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
       LI BLOCKQUOTE { margin-left: 0em; }
       LI { margin: 0ex 0em; }
-      
+
       TABLE, TH, TD { border: 2px solid gray; padding: 2px; }
       TABLE { border-collapse: collapse; }
       TD { vertical-align: top; }

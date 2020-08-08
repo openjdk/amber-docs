@@ -132,7 +132,7 @@ public boolean equals(Object o) {
     if (!(o instanceof Point))
         return false;
     Point other = (Point) o;
-    return x == other.x 
+    return x == other.x
         && y == other.y;
 }
 ```
@@ -197,10 +197,10 @@ our formatting example as:
 ```{.java}
 String formatted =
     switch (obj) {
-        case Integer i -> String.format("int %d", i); 
-        case Byte b    -> String.format("byte %d", b); 
-        case Long l    -> String.format("long %d", l); 
-        case Double d  -> String.format("double %f", d); 
+        case Integer i -> String.format("int %d", i);
+        case Byte b    -> String.format("byte %d", b);
+        case Long l    -> String.format("long %d", l);
+        case Double d  -> String.format("double %f", d);
         case String s  -> String.format("String %s, s);
         default        -> String.format("Object %s", obj);
     };
@@ -251,7 +251,7 @@ class IntNode implements Node {
     int value;
 }
 
-class NegNode implements Node { 
+class NegNode implements Node {
     Node node;
 }
 
@@ -269,31 +269,31 @@ evaluate the expression; this is an ideal application for a virtual
 method:
 
 ```{.java}
-interface Node { 
+interface Node {
     int eval();
 }
 
 class IntNode implements Node {
     int value;
-    
+
     int eval() { return value; }
 }
 
-class NegNode implements Node { 
+class NegNode implements Node {
     Node node;
-    
+
     int eval() { return -node.eval(); }
 }
 
 class MulNode implements Node {
     Node left, right;
-    
+
     int eval() { return left.eval() * right.eval(); }
 }
 
 class AddNode implements Node {
     Node left, right;
-    
+
     int eval() { return left.eval() + right.eval(); }
 }
 ```
@@ -342,11 +342,11 @@ class EvalVisitor implements NodeVisitor<Integer> {
     Integer visit(IntNode node) {
         return node.value;
     }
-    
+
     Integer visit(NegNode node) {
         return -node.accept(this);
     }
-    
+
     Integer visit(MulNode node) {
         return node.left.accept(this) * node.right.accept(this);
     }
@@ -381,7 +381,7 @@ for structured data; typically, we construct an object from its state
 with constructors or factories, and then we access this state with
 accessor methods.  If we can access all the state components we pass
 into the constructor, we can think of construction as being
-reversible, and the reverse of construction is _deconstruction_. 
+reversible, and the reverse of construction is _deconstruction_.
 
 A _deconstruction pattern_ is like a constructor in reverse; it
 matches instances of the specified type, and then extracts the state
@@ -395,7 +395,7 @@ deconstruction) with
     case IntNode(int n) -> ... n is in scope here ...
 
 Here's how we'd implement our `eval()` method using deconstruction
-patterns on the `Node` classes: 
+patterns on the `Node` classes:
 
 ```{.java}
 int eval(Node n) {
@@ -571,7 +571,7 @@ int eval(Node n) {
         case IntNode(var i) -> i;
         case NegNode(var n) -> -eval(n);
         case AddNode(var left, var right) -> eval(left) + eval(right);
-        case MulNode(IntNode(0), var right), 
+        case MulNode(IntNode(0), var right),
              MulNode(var left, IntNode(0)) -> 0;
         case MulNode(var left, var right) -> eval(left) * eval(right);
     };
@@ -706,7 +706,7 @@ as follows:
 
 ```{.java}
 match Rect(Point p1, Point p2) = r,
-      Point(var x0, var y0) = p1, 
+      Point(var x0, var y0) = p1,
       Point(var x1, var y1) = p2;
 ```
 
@@ -719,7 +719,7 @@ matcher" whose bindings are the bindings from the pattern being matched:
 
 ```{.java}
 match Foo(int a, int b) = maybeAFoo
-else { 
+else {
     a = 0;
     b = 0;
 }
@@ -744,10 +744,10 @@ We've now seen several kinds of patterns:
    the target, destructure the target, and recursively match the
    components to subpatterns;
  - Method patterns, which are more general than deconstruction
-   patterns; 
+   patterns;
  - Var patterns, which match anything and bind their target;
  - The any pattern `_`, which matches anything and binds nothing.
-   
+
 We've also seen several contexts in which patterns can be used:
 
  - A `switch` statement or expresion;

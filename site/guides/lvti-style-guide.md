@@ -138,7 +138,7 @@ nature of the variable, such as "customers":
                         .filter(...)
                         .findAny();
     }
-            
+
 ### G2. Minimize the scope of local variables.
 
 Limiting the scope of local variables is good practice in

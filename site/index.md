@@ -12,7 +12,7 @@ of [_Preview_](http://openjdk.java.net/jeps/12) before becoming an
 official part of Java SE.  For a given feature, there are separate
 JEPs for each round of preview and for final standardization.  This
 page links only to the most recent JEP for a feature. Such JEPs may
-have links to earlier JEPs for the feature, as appropriate. 
+have links to earlier JEPs for the feature, as appropriate.
 
 ## Status of JEPs
 
@@ -51,7 +51,7 @@ Withdrawn:
  - [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes.html) (Feb 2019)
  - [Towards Better Serialization](design-notes/towards-better-serialization.html) (June 2019)
 
-## Community 
+## Community
 
   - [Members](http://openjdk.java.net/census#amber)
   - Mailing Lists

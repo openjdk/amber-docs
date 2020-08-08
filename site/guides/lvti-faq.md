@@ -20,7 +20,7 @@ the initializer. This is especially worthwhile if the type is
 parameterized with wildcards, or if the type is mentioned in the
 initializer. Using `var` can make code more concise without
 sacrificing readability, and in some cases it can improve readability
-by removing redundancy. 
+by removing redundancy.
 
 ## Does this make Java dynamically typed? Is this like `var` in JavaScript?
 

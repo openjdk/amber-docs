@@ -18,7 +18,7 @@ list of a bootstrap method.  These correspond to the Java types
 `Integer`, `Long`, `Float`, `Double`, `String`, `Class`, `MethodType`,
 and `MethodHandle` (and, soon, dynamically computed constants.)  For
 each of these constant types, there is a corresponding "live" object
-type (`String`, `Class`.) 
+type (`String`, `Class`.)
 
 Activities such as bytecode generation have a frequent need to
 describe constants such as classes.  However, a `Class` object is a
@@ -71,8 +71,8 @@ symbolic reference for a constant whose live type is `T`, and supports
 reflective resolution of constants, given a `Lookup`:
 
 ```{.java}
-public interface ConstantRef<T> { 
-    T resolveConstantRef(MethodHandles.Lookup lookup) 
+public interface ConstantRef<T> {
+    T resolveConstantRef(MethodHandles.Lookup lookup)
         throws ReflectiveOperationException;
 }
 ```
@@ -125,7 +125,7 @@ public interface ClassRef extends ConstantRef<Class<?>> {
 Because some class mirrors are represented in the constant pool using
 `Constant_Class_info`, and others (primitives) are represented using
 dynamic constants, there are multiple concrete implementations of
-`ClassRef`. 
+`ClassRef`.
 
 #### MethodTypeRef
 
@@ -269,14 +269,14 @@ This is how `EnumRef` and `VarHandleRef` are implemented.
 #### Representing invokedynamic sites
 
 Call sites for `invokedynamic` are defined similarly to dynamic
-constants, with `DynamicCallSiteRef`. 
+constants, with `DynamicCallSiteRef`.
 
 ```{.java}
 public final class DynamicCallSiteRef {
     // Factories
-    public static DynamicCallSiteRef ofCanonical(MethodHandleRef bootstrapMethod, String name, MethodTypeRef type, 
+    public static DynamicCallSiteRef ofCanonical(MethodHandleRef bootstrapMethod, String name, MethodTypeRef type,
                                                  ConstantRef<?>... bootstrapArgs);
-    public static DynamicCallSiteRef of(MethodHandleRef bootstrapMethod, String name, MethodTypeRef type, 
+    public static DynamicCallSiteRef of(MethodHandleRef bootstrapMethod, String name, MethodTypeRef type,
                                         ConstantRef<?>... bootstrapArgs);
     public static DynamicCallSiteRef of(MethodHandleRef bootstrapMethod, String name, MethodTypeRef type);
     public static DynamicCallSiteRef of(MethodHandleRef bootstrapMethod, MethodTypeRef type);
@@ -320,7 +320,7 @@ confidently about their translation by the compiler.
 public class Intrinsics {
     public static <T> T ldc(ConstantRef<T> constant) { ... }
 
-    public static Object invokedynamic(DynamicCallSiteRef site, 
+    public static Object invokedynamic(DynamicCallSiteRef site,
                                        Object... dynamicArgs)
             throws Throwable { ... }
 }
@@ -361,8 +361,8 @@ bootstrap method (and describe it as a `MethodHandleRef`.)  To load an
 what it looks like using the `enumConstant()` bootstrap directly:
 
 ```{.java}
-public static <T extends Enum<T>> T enumConstant(Lookup lookup, 
-                                                 String name, 
+public static <T extends Enum<T>> T enumConstant(Lookup lookup,
+                                                 String name,
                                                  Class<T> type);
 ```
 
@@ -370,9 +370,9 @@ We create a `DynamicConstantRef` to describe the desired constant:
 
 ```{.java}
 // Convenience method inserts the standard condy preamble
-MethodHandleRef bsm 
+MethodHandleRef bsm
     = MethodHandleRef.ofDynamicConstant(ClassRef.of("MyBootstraps"), "enumConstant");
-DynamicConstantRef ElementType_METHOD 
+DynamicConstantRef ElementType_METHOD
     = DynamicConstantRef.of(bsm, "METHOD", ClassRef.of("java.lang.ElementType"));
 ...
 ElementType et = Intrinsics.ldc(ElementType_METHOD);
@@ -396,8 +396,8 @@ We can express an `invokedynamic` site for this in Java source with:
 
 ```{.java}
 ClassRef owner = ClassRef.of("HelperClass");
-MethodHandleRef bsm 
-    = MethodHandleRef.ofDynamicCallSite(owner, "returnsStaticArg", 
+MethodHandleRef bsm
+    = MethodHandleRef.ofDynamicCallSite(owner, "returnsStaticArg",
                                         CR_String, CR_String);
 ...
 String s = Intrinsics.invokedynamic(bsm, "theString");
@@ -498,7 +498,7 @@ To complete the story of why intrinsification works, we have to add
 some more ways to generate TC constants.  We mark certain methods,
 including certain static factories, accessors, and combinators in the
 `ConstantRef` types, as "foldable":
-   
+
  - Invocations of foldable methods applied to TC constants (and
    receiver, if applicable) are TC.
  - Loads of foldable static final fields across compilation units are

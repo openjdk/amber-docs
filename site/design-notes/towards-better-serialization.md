@@ -25,7 +25,7 @@ is a perfectly reasonable idea.  The problem is with the _design_ of
 serialization in Java, and how it fits (or more precisely, does not
 fit) into the object model.
 
-## What's wrong with serialization? 
+## What's wrong with serialization?
 
 The mistakes made by Java's serialization are manifold.  A partial
 list of sins includes:
@@ -110,7 +110,7 @@ constructor, and an invisible but public set of accessors for your
 internal state.  This means it is easy to sneak bad data into a
 serializable class (unless you've (painfully) duplicated your argument
 checking between constructors and `readObject()`, in which case you
-have lost the biggest benefit of Java's serialization mechanism: 
+have lost the biggest benefit of Java's serialization mechanism:
 that it supposedly comes for free).
 
  - **Readers cannot verify correctness merely by reading the code.**
@@ -181,7 +181,7 @@ back door wide open and unguarded.
 
 The allure of magic is obvious; just sprinkle some serialization dust
 over your classes, and voila: instant transparent remoting!  But
-the accumulated cost is crippling. 
+the accumulated cost is crippling.
 
 In ["Goto Considered Harmful"](https://www.cs.utexas.edu/users/EWD/transcriptions/EWD02xx/EWD215.html),
 Dijkstra offers a rational basis for why a language with `goto` places
@@ -228,7 +228,7 @@ access control model, and safely reconstruct them on the other side
 with their invariants intact?  These problems have to be solved before
 we can even talk about bytestream encoding.
 
-### Why not write a new serialization library? 
+### Why not write a new serialization library?
 
 There is a veritable cottage industry of libraries that are either
 intended as serialization "replacements", or that are valid
@@ -257,7 +257,7 @@ address the fundamental programming-model or security concerns --- they
 are mostly concerned either with encoding format, efficiency, or
 flexibility.
 
-## What does success look like? 
+## What does success look like?
 
 As we've said, there's nothing fundamentally wrong with the _concept_
 of serializing objects to a bytestream.  But, if we want to avoid the
@@ -284,7 +284,7 @@ more modest; applications use serialiation to persist data, or to
 exchange data with other applications.  Not objects; data.
 
 We can make serialization considerably simpler and safer by narrowing
-the goals explicitly to reflect this reality: 
+the goals explicitly to reflect this reality:
 
 > We should seek to support serialization of _data_, not _objects_.
 
@@ -292,14 +292,14 @@ For example, many modern services are built around exchanging JSON
 documents --- which cannot even represent the notion of object
 identity!  The fact that JSON is considered a viable encoding strategy
 for nearly all services underscores the fact that Java serialization
-is solving a much harder problem than it actually needs to. 
+is solving a much harder problem than it actually needs to.
 
 Much of the complexity and risk of Java Serialization stems from the
 desire to transparently serialize logically cyclic data, such as
 collections that contain themselves (which cannot be represented by
 JSON documents at all).  Similarly, many of the potential attacks
 rely on exploiting backreferences --- which comes from the desire to
-produce a topologically identical copy. 
+produce a topologically identical copy.
 
 ### Make serialization explicit
 
@@ -361,7 +361,7 @@ Some basic requirements include:
    should provide class members that deconstruct and reconstruct the
    object.  It should be clear from reading the source or
    documentation for a class that it is designed for serialization.
-   
+
  - Authors should have control over the _serialized form_ of their
    classes; this is the logical at-rest state that can be written to a
    stream to represent an instance of the class.  (This can be, but
@@ -369,13 +369,13 @@ Some basic requirements include:
    the class.)  The serial form should be manifest in the code so
    readers can reason about it, and the choice of serial form should
    be orthogonal to the choice of bytestream encoding.
-   
+
  - Deserialized objects should be created through ordinary
    constructors or factories, to get the full benefit of validity
    checking and defensive copies.  The constructor used for
    deserialization could be, but need not be, shared with the
    front-door API.
-   
+
  - Schema evolution should be manifest in the source code.  It should
    be clear which old versions of the serial form a class agrees to or
    refuses to deserialize, and how they map to the current
@@ -406,7 +406,7 @@ Components of Java serialization include:
    object's in-memory state as its serial form.  Sometimes this is a
    sensible choice, but sometimes this is a terrible choice, and
    overriding this choice currently involves using a difficult and
-   error-prone mechanism (`readObject` and `writeObject`.) 
+   error-prone mechanism (`readObject` and `writeObject`.)
 
 - **Versioning.** Classes evolve over time; Java serialization forces
    implementations to confront past (and possibly future) versions of
@@ -430,7 +430,7 @@ Components of Java serialization include:
 - **Stream format.** The choice of stream format is probably the
    least interesting part of a serialization mechanism; once a
    suitable serial form is chosen, it can be encoded with any number
-   of encodings. 
+   of encodings.
 
 - **Relaxing encapsulation.**  In the desire to make serialization
    ubiquitous and transparent, core serialization is willing to
@@ -487,15 +487,15 @@ x, int y)`:
 public class Point {
     private final int x;
     private final int y;
-    
+
     // Constructor
-    public Point(int x, int y) { 
+    public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
     // Deconstruction pattern
-    public pattern Point(int x, int y) { 
+    public pattern Point(int x, int y) {
         x = this.x;
         y = this.y;
     }
@@ -582,7 +582,7 @@ scheme.
 public class Range {
     int lo;
     int hi;
-  
+
     private Range(int lo, int hi) {
         if (lo > hi)
             throw new IllegalArgumentException(String.format("(%d,%d)",
@@ -590,13 +590,13 @@ public class Range {
         this.lo = lo;
         this.hi = hi;
     }
- 
+
     @Serializer
-    public pattern Range(int lo, int hi) { 
+    public pattern Range(int lo, int hi) {
         lo = this.lo;
         hi = this.hi;
     }
-    
+
     @Deserializer
     public static Range make(int lo, int hi) {
         return new Range(lo, hi);
@@ -681,12 +681,12 @@ information needed to reconstruct the `ServerConnection`:
 ```{.java}
 class ServerMonitor {
     private final ServerConnection conn;
-    
+
     @Deserializer
     public ServerMonitor(String serverName) {
         conn = new ServerConnection(serverName);
     }
-    
+
     @Serializer
     public pattern serializeMe(String serverName) {
         serverName = conn.getName();
@@ -729,24 +729,24 @@ class C {
     int a;
     int b;
     int c;
-   
+
     @Deserializer(version = 3)
-    public C(int a, int b, int c) { 
+    public C(int a, int b, int c) {
         this a = a;
         this.b = b;
         this.c = c;
     }
-    
+
     @Deserializer(version = 2)
-    public C(int a, int b) { 
+    public C(int a, int b) {
         this(a, b, 0);
     }
 
     @Deserializer(version = 1)
-    public C(int a) { 
+    public C(int a) {
         this(a, 0, 0);
     }
-    
+
     @Serializer(version = 3)
     public pattern C(int a, int b, int c) {
         a = this.a;
@@ -815,14 +815,14 @@ class Foo {
     public Foo(ExternalState es) {
         this(new InternalState(es));
     }
-    
+
     @Deserializer
-    private open Foo(InternalState is) { 
+    private open Foo(InternalState is) {
         this.is = is;
     }
-    
+
     @Serializer
-    private open pattern serialize(InternalState is) { 
+    private open pattern serialize(InternalState is) {
         is = this.is;
     }
 }
@@ -885,11 +885,11 @@ across consecutive JDK versions.)
 We can migrate JDK classes compatibly via a three-step process:
 
  - Version N: add a _deserializer_, but not a serializer.  This will
-   enable serialized instances from version N+1 to be deserialized, 
+   enable serialized instances from version N+1 to be deserialized,
    providing the one-forward part of the story.
 
  - Version N+1: add a _serializer_, but leave old serialization members
-   in place.  This allows instances from version N to be deserialized, 
+   in place.  This allows instances from version N to be deserialized,
    providing the one-back part of the story.
 
  - Version N+2 (or later, depending on policy choices): remove old
@@ -940,7 +940,7 @@ Java serialization, and made them part of the object model:
  - Serialization frameworks (including Java serialization) can use
    these annotated members to safely extract and reconstitute state,
    using ordinary access control.
-   
+
 The result is that classes that are _designed for serialization_ can
 be serialized and deserialized safely, under the control of the class,
 with no magic extralinguistic state-scraping, reconstruction, or

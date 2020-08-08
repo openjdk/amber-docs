@@ -461,7 +461,7 @@ related quantities, enabling a more efficient (and readable)
 computation:
 
 ```{.java}
-record MinMax(int min, int max); 
+record MinMax(int min, int max);
 
 public MinMax minmax(int[] elements) { ... }
 ```
@@ -862,7 +862,7 @@ sealed interface ClassDesc extends ConstantDesc
     permits PrimitiveClassDescImpl, ReferenceClassDescImpl { }
 
 private class PrimitiveClassDescImpl implements ClassDesc { }
-private class ReferenceClassDescImpl implements ClassDesc { } 
+private class ReferenceClassDescImpl implements ClassDesc { }
 sealed interface MethodTypeDesc extends ConstantDesc
     permits MethodTypeDescImpl { }
 

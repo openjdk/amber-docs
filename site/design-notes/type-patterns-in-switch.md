@@ -240,7 +240,7 @@ switch (box) {
 
 The `Box` class expresses no opinions about what it olds; `null` is as good a
 value as any.  And this has to be OK; a pattern matching construct should not
-express an opinion about whether bindings can be null or not.  
+express an opinion about whether bindings can be null or not.
 
 Should any of these cases match `Box(null)`?  It would surely be confusing and
 error-prone for either of the _first two_ patterns to do so.  Given that
@@ -273,7 +273,7 @@ switch (box) {
 ```
 
 and the choice to use `Object` or `var` should be solely one of whether the
-manifest types are deemed to improve or impair readability.  
+manifest types are deemed to improve or impair readability.
 
 #### Construct and pattern nullability
 
@@ -468,7 +468,7 @@ writers of such patterns in this situation.
 
 So, only the top and bottom patterns in a switch could match null; if the top
 pattern is not `case null`, and the bottom pattern is not total, then the switch
-throws NPE on null, otherwise it accepts null.  
+throws NPE on null, otherwise it accepts null.
 
 #### Constant patterns
 
@@ -496,7 +496,7 @@ case Box(var x) when x == 2: ...
 
 At this point, constant patterns do not seem to carry their weight.  We can
 instead interpret a `case` label as carrying a compatible literal or pattern,
-but not make literals into actual patterns.  
+but not make literals into actual patterns.
 
 #### Adjusting instanceof
 
@@ -528,17 +528,17 @@ and we prevent the unrolling anomaly.
 For reasons of compatibility, we will have to continue to allow
 
 ```
-if (e instanceof Object) { ... }  
+if (e instanceof Object) { ... }
 ```
 
 which succeeds on all non-null operands, but since `Object o` is an "any"
 pattern, we would ban
 
 ```
-if (e instanceof Object o) { ... }  
+if (e instanceof Object o) { ... }
 ```
 
-in the same way as with `var x`.  
+in the same way as with `var x`.
 
 To clarify the distinction between "any" and "total"; in
 

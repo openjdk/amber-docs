@@ -119,7 +119,7 @@ having an unambiguous type.
 We define a _matches_ relation between patterns and expressions as
 follows.
 
- - The any pattern and the `var` pattern match anything. 
+ - The any pattern and the `var` pattern match anything.
  - The `null` constant pattern matches `e` if `e == null`.
  - A primitive constant pattern `c` of type `P` matches `e : P` if `c`
    is equal to `e`, and matches `e : T` if `e` is an instance of `P`'s
@@ -147,12 +147,12 @@ extracted from the target if the match succeeds.  These variables have
 types defined as follows:
 
  - For a type pattern `T t` or nullable type pattern `T? t`, the
-   pattern variable `t` has type `T`. 
+   pattern variable `t` has type `T`.
  - For a pattern `var x`, the type of the pattern variable `x` is
    computed by type inference, where constraints are derived from the
    match operand, and, in the case of a nested `var` pattern, from the
    types declared in the corresponding `extractor` declaration.
-   
+
 In both cases, the pattern variable is initialized to the match
 operand (after casting to the appropriate type) when a successful
 match is made.  Pattern variables are always `final`.
@@ -267,7 +267,7 @@ public boolean equals(Object o) {
 
 Why would we declare a pattern variable to be not in scope where it is
 not defined, rather than simply defining it to be DU?  This is so that
-binding names can be _reused_.  Consider the following: 
+binding names can be _reused_.  Consider the following:
 
 ```
 if (x instanceof Point p && p.x == 0) { ... }
@@ -300,7 +300,7 @@ yet tied their scopes to statements.  The obvious extension of the
 above rules to `if` statements would yield:
 
 ```
-if (x instanceof Foo f) { 
+if (x instanceof Foo f) {
     // f is in scope here
 }
 else {
@@ -311,7 +311,7 @@ else {
 But, what about this:
 
 ```
-if (!(x instanceof Foo(var y, var z))) 
+if (!(x instanceof Foo(var y, var z)))
     throw new NotFooException();
 // Are y and z in scope here?
 ```
@@ -322,7 +322,7 @@ be desirable for `y` and `z` to be in scope (and DA) in the remainder
 of the scope.  On the other hand, in this example:
 
 ```
-if (!(x instanceof Foo(var y, var z))) 
+if (!(x instanceof Foo(var y, var z)))
     System.out.println("not a Foo, saddenz");
 // Are y and z in scope here?
 ```
@@ -376,7 +376,7 @@ nonlocal control flow to our scoping rules:
 
 With these rules, we are able to get the full desired scoping with
 awareness of whether we throw out of `if` blocks, `break` out of
-`while` loops, or fall out of case groups.. 
+`while` loops, or fall out of case groups..
 
 As mentioned already, the motivation for flow-sensitive scoping is so
 we can reuse pattern variable names when they are not in scope:
@@ -424,10 +424,10 @@ pattern variables.  This avoids problems like:
 ```
 class Swiss {
     String s;
-    
-    void cheese(Object o) { 
+
+    void cheese(Object o) {
         // pattern variable s "declared" here
-        if (!(o instanceof String s)) { 
+        if (!(o instanceof String s)) {
             // But s not in scope here!
             // So s here would refer to the field
         }
@@ -462,9 +462,9 @@ what we have now, in part because the current story scales poorly to
 _nested patterns_.  If we have a class:
 
 ```
-class Box<T> { 
+class Box<T> {
     private final T t;
-    
+
     public Box(T t) { this.t = t; }
     public extractor Box(T t) { t = this.t; }
 }
@@ -535,7 +535,7 @@ to rehash the entire journey, let's look at some specific examples.
 
 We initially liked the idea that a type pattern `T t` would match
 anything that is assignment-compatible to `T`, including `null`.  But
-this runs into a few problems. 
+this runs into a few problems.
 
 First, it means that refactoring between `switch` and `instanceof` is
 painful, because `instanceof T t` would not be consistent with
@@ -646,12 +646,12 @@ itself).  Any subtyping conditions used in computing dominance is
 computed on raw types; type patterns for `List<?>` and `List<String>`
 are considered equivalent.
 
-Examples of dominance include: 
+Examples of dominance include:
 
  - A constant pattern of type `T` is dominated by a type pattern for
    `T`.
  - A type pattern for `T` is dominated by the nullable type pattern
-   for `T`. 
+   for `T`.
  - If `T <: U`, then a type pattern for `T` is dominated by a type
    pattern for `U`.
  - A deconstruction pattern `T(P)` is dominated by a type pattern for
@@ -696,12 +696,12 @@ document.
    These raise some questions for name resolution that must be dealt
    with.
  - **Value type patterns.** Similarly, the semantics of type patterns
-   for value types have also been left out. 
+   for value types have also been left out.
  - **Laziness**.  Laziness is a valuable optimization for some
    patterns, such as deconstruction patterns, but is not applicable to
    all patterns.
  - **Continue**.  It may be desirable to provide semantics to
    `continue` in `switch`, so that one can express the effect of
-   guards (and more). 
+   guards (and more).
 
 
