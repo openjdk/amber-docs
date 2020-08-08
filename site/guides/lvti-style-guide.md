@@ -118,7 +118,7 @@ that is evocative of the type of the variable, which is now implicit
 in the `var` declaration.
 
 Encoding the variable's type in its name, taken to its logical
-conclusion, results in "Hungarian Notation." Just as with explicit
+conclusion, results in "Hungarian Notation". Just as with explicit
 types, this is sometimes helpful, and sometimes just clutter.  In this
 example the name `custList` implies that a `List` is being
 returned. That might not be significant. Instead of the exact type,
@@ -142,7 +142,7 @@ nature of the variable, such as "customers":
 ### G2. Minimize the scope of local variables.
 
 Limiting the scope of local variables is good practice in
-general. This practice is described in *Effective Java (3rd edition)*,
+general. This practice is described in *Effective Java (3rd Edition)*,
 Item 57. It applies with extra force if `var` is in use.
 
 In the following example, the `add` method clearly adds the special
@@ -249,7 +249,7 @@ extract the key from the result (if present), as shown below:
 
 But the author probably resisted doing that because writing the types
 of the intermediate variables seemed too burdensome, so instead they
-distorted the control flow.  Using `var` allows us to express the the
+distorted the control flow.  Using `var` allows us to express the
 code more naturally without paying the high price of explicitly
 declaring the types of the intermediate variables:
 
@@ -267,7 +267,7 @@ whereas using full declarations of the intermediate variables in the
 second snippet makes it an unpalatable alternative.  As with many
 other situations, the correct use of `var` might involve both taking
 something out (explicit types) and adding something back (better
-variable names, better structuring of code.)
+variable names, better structuring of code).
 
 ### G5. Don't worry too much about "programming to the interface" with local variables.
 
@@ -282,7 +282,7 @@ of the code. For example:
 
 If `var` is used, however, the concrete type is inferred instead of the interface:
 
-    // Inferred type of list is ArrayList<String>.
+    // Inferred type of list is ArrayList<String>
     var list = new ArrayList<String>();
 
 It must be reiterated here that `var` can *only* be used for local

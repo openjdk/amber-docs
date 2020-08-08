@@ -59,7 +59,7 @@ obstructions, allowing you to embed code snippets and text sequences
 more or less as-is.
 
 A text block is an alternative form of Java string representation that can
-be used anywhere a traditional double quoted string literal can be used.
+be used anywhere a traditional double-quoted string literal can be used.
 For example:
 
     // Using a literal string
@@ -70,7 +70,7 @@ For example:
                     Pat Q. Smith""";
 
 The object produced from a text block is a `java.lang.String` with the
-same characteristics as a traditional double quoted string. This
+same characteristics as a traditional double-quoted string. This
 includes object representation and interning. Continuing with `dqName`
 and `tbName` from the examples above,
 
@@ -82,7 +82,7 @@ and `tbName` from the examples above,
 
 Text blocks can be used anywhere a string literal can be used. For
 example, text blocks may be intermixed with string literals in a
-string concatentation expression:
+string concatenation expression:
 
     String str = "The old";
     String tb = """
@@ -106,7 +106,7 @@ A text block can be used in place of a string literal to improve the
 readability and clarity of the code. This primarily occurs when a
 string literal is used to represent a multi-line string. In this case
 there is considerable clutter from quotation marks, newline escapes,
-and concatentation operators:
+and concatenation operators:
 
     // ORIGINAL
     String message = "'The time has come,' the Walrus said,\n" +
@@ -240,7 +240,7 @@ multi-line string without that final `\n`?
         green
         blue""";
 
-This text block is equivalent to is `"red\ngreen\nblue"`. Thus, placing
+This text block is equivalent to `"red\ngreen\nblue"`. Thus, placing
 the closing delimiter on the last visible line effectively drops the
 last `\n`.
 
@@ -564,8 +564,8 @@ With the `\<line-terminator>` escape sequence this could be expressed as;
                     et dolore magna aliqua.\
                     """;
 
-The `\s` escape sequence simple translates to space (`\040`, ASCII character 32,
-white space.) Since escape sequences don't get translated until after incident
+The `\s` escape sequence simply translates to space (`\040`, ASCII character 32,
+white space). Since escape sequences don't get translated until after incidental
 space stripping, `\s` can act as fence to prevent the stripping of trailing
 white space. Using `\s` at the end of each line in the following example,
 guarantees that each line is exactly six characters long.
@@ -859,12 +859,12 @@ and allows the closing delimiter to manage indentation._**
             blue\
         """;
 
-## Preview String Methods
+## New String Methods
 
-Several new methods are included on the `String` class as part of the
-text blocks preview feature. Note that these methods are marked
-deprecated, for removal, to indicate that they are part of a
-preview feature.
+Several new methods are included in the `String` class as part of the
+text blocks feature. (Note that these methods are marked
+deprecated, for removal, in Java SE 13 and 14, to indicate that they are part of a
+preview feature.)
 
 #### `String formatted(Object... args)`
 

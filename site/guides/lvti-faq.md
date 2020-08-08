@@ -123,7 +123,7 @@ try-with-resources statement.
 
 `var` cannot be used for fields, method parameters, and method return
 types. The reason is that types in these locations appear explicitly
-in class files and in javadoc specifications. With type inference,
+in class files and in Javadoc specifications. With type inference,
 it's quite easy for a change to an initializer to cause the variable's
 inferred type to change. For local variables, this is not a problem,
 because local variables are limited in scope, and their types are not
@@ -193,7 +193,7 @@ something like
 
 (Note that it isn't possible to declare a variable of this type
 explicitly.) Also note that this results in a boxing conversion when
-17 is assigned to `x`, which might be unexpected and undesirable.
+2 is assigned to `order`, which might be unexpected and undesirable.
 
 To avoid these problems, it seems preferable to require that the type
 be inferred using an explicit initializer.
@@ -233,6 +233,6 @@ right, or use `var` on the left with an explicit type on the
 right. See the [LVTI Style Guidelines][1], guideline G6, for further
 information.
 
-[1]: http://openjdk.java.net/projects/amber/LVTIstyle.html
+[1]: lvti-style-guide.html
 
 [2]: https://docs.oracle.com/javase/specs/jls/se11/html/jls-4.html#jls-4.1
