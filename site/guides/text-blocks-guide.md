@@ -1,7 +1,3 @@
----
-
-head_: <title>Test</title>
-
 <style>
 
 .control {
