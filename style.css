@@ -30,7 +30,7 @@
         font-size: smaller;
       }
 
-      // added for ```{.jvm} support
+      /* added for ```{.jvm} support */
       PRE.jvm { font-style: italic; }
 
       BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
@@ -57,7 +57,7 @@
       DIV.head DIV.notes { margin-top: 1ex; }
       DIV.qa { margin-top: 2ex; }
 
-      // added because pandoc syntax highlighting always uses scroll bars
+      /* added because pandoc syntax highlighting always uses scroll bars */
       DIV.sourceCode {
           overflow: visible;
       }
