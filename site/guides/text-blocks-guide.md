@@ -242,7 +242,9 @@ multi-line string without that final `\n`?
 
 This text block is equivalent to `"red\ngreen\nblue"`. Thus, placing
 the closing delimiter on the last visible line effectively drops the
-last `\n`.
+last `\n`. However, as described in guideline G12 below,
+a better alternative is to use the `\<line-terminator>` escape sequence
+(see [New Escape Sequences](#new-escape-sequences)).
 
 #### Incidental White Space
 
@@ -394,6 +396,12 @@ block.
 
 If you need to have trailing white space in a text block, then you can
 use one of the following strategies:
+
+    // new escape sequence for space, see below
+    String q = """
+        trailing\s\s\s
+        white space
+        """;
 
     // character substitution
     String r = """
@@ -890,7 +898,8 @@ is done for text blocks.
 #### `String translateEscapes()`
 
 The `translateEscapes` method performs the translation of escape
-sequences (`\b`, `\f`, `\n`, `\t`, `\r`, `\"`, `\'`, `\\` and octal
+sequences (`\b`, `\f`, `\n`, `\t`, `\r`, `\"`, `\'`, `\\`, `\s`,
+`\<line-terminator>` and octal
 escapes) and is used by the Java compiler to process text blocks and
 string literals.  This is useful if you have a program that reads text
 as input data and you want to perform escape sequence processing. Note
