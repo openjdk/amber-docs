@@ -15,7 +15,7 @@ designed as a limited mechanism for limited situations; one can only
 switch on a small set of types, and one can only have case labels that
 exactly match literal constants.  While its range was extended several
 times (switching on enums in Java 5, and strings in Java 7), the basic
-facility is largely unchanged from C. 
+facility is largely unchanged from C.
 
 As we consider extending `switch` to support a wider variety of types,
 and `case` labels to support patterns, it raises some new questions,
@@ -79,13 +79,13 @@ The following example illustrates the that "natural" scope of a
 binding variables is complex and not necessarily contiguous:
 
     if (x matches Foo(var y)) { .. y .. }                 // OK
-    if (x matches Foo(var y)) { ... } else { .. y .. }    // not OK 
+    if (x matches Foo(var y)) { ... } else { .. y .. }    // not OK
     if (x matches Foo(var y) && .. y ..) { ... }          // OK
     if (x matches Foo(var y) || .. y ..) { ... }          // not OK
-    if (!(x matches Foo(var y)) && .. y .. ) { ... }      // not OK 
-    if (!(x matches Foo(var y)) || .. y .. ) { ... }      // OK 
-    if (!(x matches Foo(var y))) { ... } else { .. y .. } // OK 
-    if (!(x matches Foo(var y))) { y } else { ... }       // not OK 
+    if (!(x matches Foo(var y)) && .. y .. ) { ... }      // not OK
+    if (!(x matches Foo(var y)) || .. y .. ) { ... }      // OK
+    if (!(x matches Foo(var y))) { ... } else { .. y .. } // OK
+    if (!(x matches Foo(var y))) { y } else { ... }       // not OK
 
 The above cases are derived from a standard application of _definite
 assignment_ rules; we'd like for a binding variable to be in scope
@@ -131,7 +131,7 @@ If e is `(x)`:
 
     e.T = x.T
     e.F = x.F
-    
+
 If e is `!x`:
 
     e.T = x.F
@@ -160,7 +160,7 @@ For `for (a; b; c) d`:
 
 For `switch (x) { ... case P: y; case Q: ... }`
 
-    include binding variables from P in y 
+    include binding variables from P in y
 
 Further, union and intersection should be limited to avoid conflicts.
 The `union` function should be a disjoint union: it is an error if any
@@ -185,7 +185,7 @@ above scoping rules.  For example:
         s;
 
 would be an error, just as `x matches Foo(int x) || x.matches
-Bar(float x)` would be. 
+Bar(float x)` would be.
 
 However, there's no reason why we can't make this work, with `x` in
 scope in `s`:
@@ -210,7 +210,7 @@ refinement of the scoping rules presented earlier.
 
 A more limited form of fallthrough is OR patterns:
 
-    case P1 || P2: 
+    case P1 || P2:
         s;
 
 Which is equivalent to:
@@ -227,7 +227,7 @@ the same set of binding variables.)
 
 Nested patterns, such as:
 
-    case Point(0, 0): 
+    case Point(0, 0):
 
 express _compound conditions_; we're testing that the target is a
 `Point`, and that both its `x` and `y` components match the constant
@@ -274,7 +274,7 @@ to given it an expression form:
         case SUNDAY -> 2;
         default -> 1;
     }
-    
+
 While statement switches need not be exhaustive (just as `if`
 statements need not have an `else`), expression switches must be (as
 the expression must evaluate to something.)  Exhaustiveness can always
@@ -289,11 +289,11 @@ Unrestricted fallthrough makes less sense in an expression `switch`,
 but OR patterns still do:
 
     int days = switch (month) {
-        case JANUARY 
-             || MARCH 
+        case JANUARY
+             || MARCH
              || MAY
              || JULY
-             || AUGUST 
+             || AUGUST
              || OCTOBER
              || DECEMBER -> 31;
          case FEBRUARY -> 28;

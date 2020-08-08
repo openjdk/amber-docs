@@ -199,7 +199,7 @@ _R_ representing _P && Q_ as follows:
    and `Q`;
  - The components of `R` is the concatenation of the components of `P`
    and `Q`.
-   
+
 Such combinators act only on the (constant) pattern objects, and are
 themselves constant pattern objects, so are suitable to construct at
 link time with indy/condy.  As a result, compilers can destructure
@@ -211,7 +211,7 @@ complex pattern generation to link time via indy/condy.
 
 Logically, patterns are members of classes, like methods and
 constructors, though we cannot use the exact encoding of these
-artifacts for reasons outlined earlier. 
+artifacts for reasons outlined earlier.
 
 Just as executable members include constructors, static methods, and
 instance methods, each of these cases is potentially sensible for
@@ -229,7 +229,7 @@ signatures.  For example, suppose we have overloaded constructors:
     File(String s) { ... }
     File(Path p) { ... }
     File(URI u) { ... }
-    
+
 We have these constructors for client convenience -- whatever the
 client has, we can make a `File` out of that.  So similarly, we want
 deconstructing a `File` to be equally convenient, and expose
@@ -268,11 +268,11 @@ method type `(LString;)LFile;`.  (This duality is not accidental; the
 two operations are inverses of each other.)  So let's call `D` the
 descriptor for a pattern, and `N` the name for the pattern
 (deconstruction patterns are named for the class, just like
-constructors.) 
+constructors.)
 
 If we pick an encoding scheme that can stably encode a descriptor and
 is resistent to collisions between overload-equivalent strings (such
-as the [symbolic freedom encoding][sym-free]), we can construct an 
+as the [symbolic freedom encoding][sym-free]), we can construct an
 identifier `DD=Enc(N,D)` and generate static factory methods:
 
 ```{.java}
@@ -330,7 +330,7 @@ abstraction.
 
 Because compile-time information is used to condition code generation,
 we need to be clear about what can change, and can't, in a
-binary-compatible way. 
+binary-compatible way.
 
 Compilers can use pattern total-ness to make exhaustiveness decisions,
 which is extremely useful.  To be able to rely on this, total-ness
@@ -364,7 +364,7 @@ public interface __Pattern<T> {
      * A method handle used to preprocess a target into an intermediate carrier.
      * The method handle accepts a match target and returns the intermediate
      * carrier.
-     * 
+     *
      * If the carrierFree() method returns true, then this method need not be
      * called, and null can be used for the carrier in other method handle
      * invocations.
@@ -375,7 +375,7 @@ public interface __Pattern<T> {
      * A method handle used to determine if the match succeeds.  It accepts
      * the match target and the intermediate carrier returned by preprocess(),
      * and returns a boolean indicating whether the match was successful.
-     * 
+     *
      * If the pattern is declared to always match, then this method need not be
      * called.
      */
@@ -421,7 +421,7 @@ public interface __Pattern<T> {
     /**
      * Return a __Pattern that is identical to this one, but with fewer
      * binding components
-     * @param positions indices of the binding components to drop 
+     * @param positions indices of the binding components to drop
      */
     default __Pattern<T> dropBindings(int... positions) {
         return __Patterns.dropBindings(this, positions);
@@ -444,7 +444,7 @@ public interface __Pattern<T> {
     }
 
     /**
-     * Return a pattern handle that matches a non-null reference 
+     * Return a pattern handle that matches a non-null reference
      */
     static<T> __Pattern<T> ofNonNull(Class<T> targetType) {
         return __Patterns.ofNonNull(targetType);
@@ -462,7 +462,7 @@ public interface __Pattern<T> {
     /**
      * Return a pattern handle for a given target type that always succeeds, and
      * produces its target as a binding component.
-     * 
+     *
      * To accept a broader range of target types, use {@link __Pattern::ofType(Class,Class)}
      * or {@link __Pattern::adaptTarget}
      */
@@ -471,7 +471,7 @@ public interface __Pattern<T> {
     }
 
     /**
-     * Return a pattern handle that always succeeds 
+     * Return a pattern handle that always succeeds
      */
     static <T> __Pattern<T> ofAny(Class<T> targetType) {
         return __Patterns.ofAny(targetType);
@@ -491,7 +491,7 @@ public interface __Pattern<T> {
     /**
      * Adapt a pattern handle to a broader target type.
      */
-    static<T, U extends T> __Pattern<T> adaptTarget(Class<T> targetType, 
+    static<T, U extends T> __Pattern<T> adaptTarget(Class<T> targetType,
                                                         __Pattern<U> pattern) {
         return __Patterns.adaptTarget(pattern, targetType);
     }
@@ -501,8 +501,8 @@ public interface __Pattern<T> {
      * The binding components will be the union of the binding components
      * of the two patterns.
      */
-    static<T> __Pattern<T> and(Class<T> targetType, 
-                                   __Pattern<? extends T> left, 
+    static<T> __Pattern<T> and(Class<T> targetType,
+                                   __Pattern<? extends T> left,
                                    __Pattern<? extends T> right) {
         return __Patterns.and(targetType, left, right);
     }

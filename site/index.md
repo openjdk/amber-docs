@@ -12,7 +12,7 @@ of [_Preview_](http://openjdk.java.net/jeps/12) before becoming an
 official part of Java SE.  For a given feature, there are separate
 JEPs for each round of preview and for final standardization.  This
 page links only to the most recent JEP for a feature. Such JEPs may
-have links to earlier JEPs for the feature, as appropriate. 
+have links to earlier JEPs for the feature, as appropriate.
 
 ## Status of JEPs
 
@@ -45,18 +45,18 @@ Withdrawn:
 
  - [Local Variable Type Inference Style Guide](guides/lvti-style-guide.html) (March 2018)
  - [Local Variable Type Inference FAQ](guides/lvti-faq.html) (Oct 2018)
- - [Programmers Guide to Text Blocks](guides/text-blocks-guide.html) (Aug 2019)
+ - [Programmer's Guide to Text Blocks](guides/text-blocks-guide.html) (Aug 2019)
  - [Pattern Matching for Java](design-notes/pattern-match.html) (Sept 2018)
  - [Pattern Matching for Java -- Semantics](design-notes/pattern-match-semantics.html) (Sept 2018)
  - [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes.html) (Feb 2019)
  - [Towards Better Serialization](design-notes/towards-better-serialization.html) (June 2019)
 
-## Community 
+## Community
 
   - [Members](http://openjdk.java.net/census#amber)
   - Mailing Lists
     - [amber-dev](http://mail.openjdk.java.net/mailman/listinfo/amber-dev) -- For technical discussion related to Project Amber
     - [amber-spec-experts](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-experts) -- For Expert Group members only
-    - [amber-spec-observers](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-observers) -- A read only clone of amber-spec-experts
+    - [amber-spec-observers](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-observers) -- A read-only clone of amber-spec-experts
     - [amber-spec-comments](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-comments) -- For submitting comments on the official specs
 

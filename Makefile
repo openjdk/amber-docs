@@ -14,7 +14,7 @@ COPIED_FILES = $(patsubst %,$(OUT_DIR)/%, $(ASSET_SOURCES))
 
 site: $(GENERATED_FILES) $(COPIED_FILES)
 
-$(GENERATED_FILES) : $(OUT_DIR)/%.html : $(IN_DIR)/%.md 
+$(GENERATED_FILES) : $(OUT_DIR)/%.html : $(IN_DIR)/%.md
 	mkdir -p $(dir $@)
 	pandoc -f markdown $< -o $@ -H $(CSS)
 
