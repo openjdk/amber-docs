@@ -1,6 +1,5 @@
 # Pattern Matching for Java -- Semantics
-
-#### Gavin Bierman and Brian Goetz, September 2018
+#### Gavin Bierman and Brian Goetz (Updated August 2020)
 
 This document explores a possible direction for supporting _pattern
 matching_ in the Java Language.  This is an exploratory document only
@@ -8,93 +7,99 @@ and does not constitute a plan for any specific feature in any
 specific version of the Java Language.  This document also may
 reference other features under exploration; this is purely for
 illustrative purposes, and does not constitute any sort of plan or
-committment to deliver any of these features.
+commitment to deliver any of these features.
 
 In [a companion document](pattern-matching-for-java.html), we outline the
 motivation for adding pattern matching to Java, the sorts of patterns
 that might be supported (constant patterns, type patterns,
 deconstruction patterns, etc) and the constructs that could support
-patterns (`instanceof`, `switch`, and a pattern-bind statement.)
+patterns (`instanceof`, `switch`, pattern assignment.)
 
-## Pattern semantics
+## Types of patterns
 
-We first define what it means for a pattern to match a target, and
-then we will outline the interaction between pattern matching and
-pattern-aware language constructs.  We define several categories of
-patterns:
+There are multiple types of patterns.  We will use a denotation for purposes of
+exposition in this document, but the final denotation in the language, and which
+of these pattern types are eventually supported, may be different than presented
+here.
 
- - The _any_ pattern, denoted by `_`;
- - The _var_ pattern, denoted by `var x`;
  - _Type patterns_, denoted by `T t`;
- - _Nullable type patterns_, denoted by `T? t`;
- - _Constant patterns_, denoted by lexical literals or by names of
-   constant variables (JLS 4.12.4) or enum constants;
- - _Deconstruction patterns_ for a type `T`, denoted by `T(P*)`, where
-   `P*` is a sequence of nested patterns.
+ - The _var_ pattern, denoted by `var x`;
+ - The _ignore_ pattern, denoted by `_`;
+ - _Constant patterns_ (including the _null constant pattern_) denoted by
+   lexical literals or by names of constant variables (JLS 4.12.4) or enum
+   constants;
+ - _Deconstruction patterns_ for a type `T`, denoted by `T(P*)`, where `P*` is a
+   sequence of nested patterns;
+ - _Declared patterns_, denoted by `id(P*)` or `C.id(P*)`.  
 
-#### Static type checking
+In any pattern match,  is always a pattern and a _match target_.  For
+`instanceof` the match target is the LHS operand; for `switch` it is the operand
+in the switch header.  The match target has both a static and dynamic type; both
+may be used in determining whether the pattern matches.
 
-In a pattern match, there is an _operand_ (the thing we are trying to
-match against the pattern) and a pattern.  The operand is an
-expression, so it has both a static and a dynamic type.  Certain
-pattern matches can be rejected at compile time based on static types,
-such as:
+#### Type checking
+
+Certain pattern matches can be rejected at compile time based strictly on static
+checks, such as:
 
 ```
 String s = "Hello";
 if (s instanceof Integer i) { ... }
 ```
 
-The compiler knows the operand `s` is a `String`, and the type pattern
-`Integer i` only matches expressions of type `Integer`, and that both
-are final classes.  So we can conclude the match cannot succeed, and
-can therefore reject this at compile time on the basis of static type
-checking (just as we reject an attempt to cast an `Integer` to a
-`String`.)
+The target `s` is a `String` and the pattern `Integer i` only matches
+expressions of type `Integer`.  Since both are final classes,  we know
+statically that the match cannot succeed and it is rejected, just as we would
+reject an attempt to cast an `Integer` to a `String`.
 
-We define an _applicability_ relation between a pattern and a type,
-which determines if the pattern is applicable to an operand of
-(static) type `T`.  We define applicability as follows:
+We can define an _applicability_ relation between a pattern and a static type,
+which determines if the pattern is applicable to a target of that type.  (In all
+the rules that follow, "castable" means "cast-convertible without an unchecked
+warning.")
 
- - The any pattern and the `var` pattern are applicable to all types.
+ - The ignore pattern and the `var` pattern are applicable to all types.
  - The `null` constant pattern is applicable to all reference types.
- - A numeric literal constant pattern `n` without a type suffix is
-   applicable to any primitive type `P` to which `n` is assignable
-   (within the numeric range of `P`), and to `P`'s box type.
- - Other constant patterns of primitive type `P` are applicable to `P`
-   and to types `U` which are cast-convertible to `P`'s box type.
- - Constant patterns of reference type `T` are applicable to types
-   `U` which are cast-convertible to `T`.
+ - A numeric literal constant pattern for `n` without a type suffix is
+   applicable to any primitive type `P` to which `n` is assignable (within the
+   numeric range of `P`), and to `P`'s box type, and its supertypes.
+ - Other constant patterns of primitive type `P` are applicable to `P` and to
+   types `U` which are castable to `P`'s box type, and its supertypes.
+ - Constant patterns of reference type `T` are applicable to types `U` which are
+   castable to `T`.
  - The type pattern `P p` for a primitive type `P` is applicable to `P`.
- - The type pattern `T t` and the nullable type pattern `T? t` for a
-   reference type `T`, are applicable to types `U` which are
-   cast-convertible to `T`.
- - A deconstruction pattern `D(...)`, is applicable to types `U`
-   which are cast convertible to `D`.
+ - The type pattern `T t` for a reference type `T` is applicable to types `U`
+   which are castable to `T`.
+ - A deconstruction pattern `D(P*) [d]`, is applicable to types `U` which are
+   castable to `D`.
+ - A declared pattern `p(P*)` is applicable to types `U` which are castable to
+   the target type of `p`.  (An example of a declared pattern is
+   `Optional.of(var x)`, which would be declared in `Optional` and has a target
+   type of `Optional<T>`.)
 
-Generic type patterns are permitted (this is a relaxation of the
-current semantics of the `instanceof` operator, which requires that
-the type operand is reifiable.)  However, when determining
-applicability involves cast conversions, the pattern is not applicable
-if the cast conversion would be _unchecked_.  So it is allowable to
-say
+If a pattern is not applicable to the target type, a compilation error results.
+Generic type patterns are permitted; this is a relaxation of the current
+semantics of the `instanceof` operator, which requires that the type operand is
+reifiable.  However, when determining applicability involves cast conversions,
+the pattern is not applicable if the cast conversion would be _unchecked_.  So
+it is allowable to say
 
-    List<Integer> list = ...
-    if (list instanceof ArrayList<Integer> a) { ... }
-
+```
+List<Integer> list = ...
+if (list instanceof ArrayList<Integer> a) { ... }
+```
 but not
 
-    List<?> list = ...
-    if (list instanceof ArrayList<String> a) { ... }
+```
+List<?> list = ...
+if (list instanceof ArrayList<String> a) { ... }
+```
+as a cast conversion from `List<?>` to `ArrayList<String>` would be unchecked.
 
-as the latter cast conversion would be unchecked.
-
-If a pattern is not applicable to the static type of its operand
-(including if a cast conversion required for applicability would be
-unchecked), a compilation error results.  For a deconstructor declared
-`D(T*)` (where `T*` are the types of the pattern variables), we
-further require a deconstruction pattern `D(P*)` have each `Pi` be
-applicable to the corresponding `Ti`.
+For deconstruction and declared patterns, which contain nested sub-patterns, we
+further required that the nested sub-patterns are applicable to the static type
+of the corresponding binding variables of the enclosing pattern.  So if class
+`D` has a deconstructor `D(String s, int y)`, a pattern `D(P, Q)` is only
+applicable if `P` is applicable to `String` and `Q` is applicable to `int`.
 
 It may appear we are being unnecessarily unfriendly to numeric
 constant patterns here, by not being more liberal about widening and
@@ -116,91 +121,95 @@ having an unambiguous type.
 
 #### Matching
 
-We define a _matches_ relation between patterns and expressions as
-follows.
+Some patterns are _total_ on certain target types, which means no dynamic type
+test is required to determine matching.  The "ignore" and "var" patterns
+are total on all types.  A type pattern `T t` is total on any type `U <: T`.  A
+deconstruction `D(P*)` is total on `U` if `U <: T` and each `Pi` is total on the
+type of the corresponding binding variable of `D`.
 
- - The any pattern and the `var` pattern match anything.
+We define a _matches_ relation between patterns and expressions as follows.
+
+ - The "ignore" and `var` patterns match anything, including null.  - A type
+   pattern `T t` matches `e` if `e instanceof T`, and additionally  matches
+   `null` if the type pattern is total on the target type.
  - The `null` constant pattern matches `e` if `e == null`.
- - A primitive constant pattern `c` of type `P` matches `e : P` if `c`
-   is equal to `e`, and matches `e : T` if `e` is an instance of `P`'s
-   box type, and `c` equals `unbox(e)`.  Equality is determined by the
-   appropriate primitive `==` operator, except for `float` and
-   `double`, where equality is determined by the semantics of
-   `Float::equals` and `Double::equals`.
- - A reference constant pattern `c` of type `T` matches `e` if
-   `c.equals(e)`.
- - A type pattern `T t` matches `e` if `e instanceof T`.
- - A nullable type pattern `T? t` matches `e` if `e == null` or `e
-   instanceof T`.
- - A deconstruction pattern `D(Pi...)` matches `e` if `e instanceof T`,
-   and for all _i_, `Pi` matches the _i_th component extracted by `D`.
+ - A primitive constant pattern `c` of type `P` matches `e : P` if `c` is equal
+   to `e`, and matches `e : T` if `e` is an instance of `P`'s box type, and `c`
+   equals `unbox(e)`.  Equality is determined by the appropriate primitive `==`
+   operator, except for `float` and `double`, where equality is determined by
+   the semantics of `Float::equals` and `Double::equals`.
+ - A reference constant pattern `c` of type `T` matches `e` if `c.equals(e)`.
+ - A deconstruction pattern `D(Pi...)` matches `e` if `e instanceof T`, and for
+   all _i_, `Pi` matches the _i_'th component extracted by `D`.
 
-A pattern is _nullable_ if it can match null; the any pattern, `var`
-patterns, the `null` constant pattern, and nullable type patterns are
-nullable.  We say a pattern is _total_ on a type `T` if it matches all
-values of type `T`.
+The only patterns that are nullable are the null constant pattern, the "ignore"
+and `var` patterns, and total type patterns.  (The latter three are actually
+equivalent -- they are all variants of "any" patterns.)
 
-#### Pattern variables
+Deconstruction (and declared) patterns can contain nested sub-patterns.  If a
+deconstructor `D` has a single binding variables of type `T`, then `x` matches
+`D(P)` if and only if `x` matches `D(var alpha)` and `alpha` matches `P`.  In
+such a match, the target of `D(P)` is `x`, but the target of `P` is the
+synthetic variable `alpha`.
 
-Some patterns define variables which will be bound to components
-extracted from the target if the match succeeds.  These variables have
-types defined as follows:
+#### Binding variables
 
- - For a type pattern `T t` or nullable type pattern `T? t`, the
-   pattern variable `t` has type `T`.
- - For a pattern `var x`, the type of the pattern variable `x` is
-   computed by type inference, where constraints are derived from the
-   match operand, and, in the case of a nested `var` pattern, from the
-   types declared in the corresponding `extractor` declaration.
+Some patterns define variables which will be bound to components extracted from
+the target if the match succeeds.  These variables have types defined as
+follows:
 
-In both cases, the pattern variable is initialized to the match
-operand (after casting to the appropriate type) when a successful
-match is made.  Pattern variables are always `final`.
+ - For a type pattern `T t`, the binding variable `t` has type `T`.
+ - For a deconstruction pattern `D(P*) d`, the binding variable `d` has type
+   `D`.
+ - For a pattern `var x` on a target of type `U`, the binding variable `x` has
+   type `U`.  (Patterns in nested context get their target types from the type
+   of the corresponding binding variable in the declaration of the enclosing
+   pattern.)
+
+In each of these cases, the pattern variable is initialized to the match target,
+after casting or converting to the target type, when a successful match is made.
 
 ## Pattern-aware constructs
 
-Several constructs, such as `instanceof`, `switch`, and `__let`, are
-pattern-aware.
+Several constructs, such as `instanceof` and `switch`, will be made
+pattern-aware.  The syntax of `instanceof` is extended as follows:
 
-The syntax of `instanceof` is extended as follows:
+```
+<expression> instanceof <reifiable-type>
+<expression> instanceof <pattern>
+```
 
-    <expression> instanceof <reifiable-type>
-    <expression> instanceof <pattern>
+The `instanceof` operator evaluates to `false` if the pattern is non-nullable
+and the expression operand is `null`.  Because the only nullable patterns are
+the `null` constant pattern and the total patterns (ignore, `var`, total type
+patterns), all of which are somewhat silly to use in `instanceof`, we may
+restrict the pattern operand of `instanceof` to exclude nullable patterns, to
+avoid confusion with the current behavior of "`instanceof` which is always false
+on `null`.
 
-The `instanceof` operator evaluates to `false` if the pattern operand
-is non-nullable and the expression operand is `null`.
+Currently, `switch` only supports a limited range of operand types; when it
+becomes pattern aware, it can accept any operand type (but patterns are type
+checked for applicability with the operand type), and patterns may be used as
+`case` labels.  
 
-Currently, `switch` only supports a limited range of operand types;
-when it becomes pattern aware, it can accept any operand type (but
-patterns are type checked for applicability with the operand type),
-and patterns may be used as `case` labels.
+A _pattern bind_ statement is a generalization of a local variable declaration,
+and is written
 
-If none of the patterns in a switch is nullable, then a `switch`
-throws `NullPointerException` on entry if the expression operand is
-`null.`
+```
+P = e
+```
 
-A _pattern bind_ statement, which for purposes of exposition we'll
-call `__let`, will unconditionally match the expression operand to the
-pattern.
+The pattern in a pattern bind statement must have at least one binding variable,
+and must be total on the type of `e`.  If `P` is not nullable, a pattern bind
+may throw `NullPointerException` when `e==null`.  A pattern bind statement
+with a type or `var` pattern is equivalent to a local variable declaration;
+additionally pattern bind statements may use deconstruction patterns:
 
-    __let <pattern> = <expression>;
+```
+Point(var x, var y) = component.getCenter();
+```
 
-    __let <pattern> = <expression>
-    else <statement>;
-
-In the simpler form (no `else`), the pattern must be total on the type
-of the expression operand (excluding `null` for non-nullable
-patterns.)  This allows us to write:
-
-    Point p;
-    __let Point(var x, var y) = p;
-    // can use x and y here
-
-without having to explicitly write an `else` clause.
-
-In the full form, partial patterns are allowed, and if the expression
-operand does not match the pattern, the `else` statement is executed.
-The `else` statement must terminate abruptly.
+which declares new locals `x` and `y`.
 
 ## Scoping of pattern variables
 
@@ -281,7 +290,7 @@ name for its pattern variable.  With a simple `if..else` like this
 one, this might not seem like a big deal, but in a `switch` statement
 with dozens of clauses, this would indeed get annoying.
 
-Further, we want to support _merging_ of pattern bindings, as in:
+Further, we may eventually want to support _merging_ of pattern bindings, as in:
 
 ```
 if ((x instanceof BlueBox(int height)
@@ -367,16 +376,15 @@ nonlocal control flow to our scoping rules:
 |}                             |     : bindings(Q) in b;                 |
 |                              |                                         |
 +------------------------------+-----------------------------------------+
-|let P = e;<br>                |e.T in t                                 |
-|else s;<br>                   |                                         |
-|t;                            |                                         |
+|P = e;<br>                    |e.T in S                                 |
+|S;                            |                                         |
 |                              |                                         |
 |                              |                                         |
 +------------------------------+-----------------------------------------+
 
 With these rules, we are able to get the full desired scoping with
 awareness of whether we throw out of `if` blocks, `break` out of
-`while` loops, or fall out of case groups..
+`while` loops, or fall out of case groups.
 
 As mentioned already, the motivation for flow-sensitive scoping is so
 we can reuse pattern variable names when they are not in scope:
@@ -388,7 +396,7 @@ switch (e) {
 }
 ```
 
-And we can even even merge pattern variables in switch fallthrough:
+And we can even (if we want to) merge pattern variables in switch fallthrough:
 
 ```
 switch (e) {
@@ -412,14 +420,14 @@ not.)
 
 #### Shadowing
 
-Because the scoping of pattern bindings is not exactly the same as for
-local variables, we must describe the interaction between pattern
-bindings and other kinds of variables (locals, fields.)
-
-To avoid confusion, it makes sense to adopt a strict "no shadowing"
-rule: pattern variables may not shadow local variables, fields, or
-other pattern variables, and similarly locals cannot shadow
-pattern variables.  This avoids problems like:
+Because the scoping of pattern bindings is not exactly the same as for local
+variables, we must describe the interaction between pattern bindings and other
+kinds of variables (locals, fields.)  We adopt the same rules for shadowing as
+we do for locals -- binding variables may not shadow other binding variables or
+locals (or vice-versa), but they may shadow fields.  The unusual shape of the
+scopes of binding variables may occasionally lead to scoping confusion such as
+the following, but it was deemed that "curing" this "problem" was probably worse
+than the disease.
 
 ```
 class Swiss {
@@ -442,124 +450,115 @@ choose names that do not conflict with locals or fields in scope.
 
 ## Nullability
 
-Nullability is a complex topic, and one fraught with tradeoffs.  We
-start with existing constraints: `switch` throws
-`NullPointerException` on entry if its operand is `null`; `instanceof`
-treats `null` as not an instance of anything but does not throw.
-Source compatibility prevents us from changing these for code that is
-currently valid, but we also want to extend the semantics of these
-constructs in a non-surprising way.  Along the way, we will encounter
-strong and diverse opinions about how `null` should be handled
-(ranging from "null is just another value" to "kill it dead, now,
-dead, now.")  Our approach is to avoid picking winners and losers
-here, and to provide a set of primitives that can equally well support
-null-avoiding and null-tolerant coding styles.
+Nullability is a complex topic fraught with tradeoffs.  The  existing constructs
+have pre-existing notions about nullability; currently `instanceof` always says
+`false` on null, and `switch` always throws on `null`.
 
-#### Constraints
+These were the right defaults given the role of these constructs in the language
+as originally designed -- `instanceof` was solely a dynamic type test (matching
+the behavior of the `INSTANCEOF` bytecode), and `switch` only allows us to
+compare for equality with a constant, on a limited number of types.  However, as
+these constructs become dramatically richer when we upgrade them to support
+patterns, we may need to (compatibly) refine these behaviors.
 
-Unfortunately, a more nuanced story for null handling is needed than
-what we have now, in part because the current story scales poorly to
-_nested patterns_.  If we have a class:
+Source compatibility prevents us from changing these for code that is currently
+valid, but we also want to avoid extending the semantics of these constructs in
+a too-surprising way.  Along the way, we have encountered strong and diverse
+opinions about how `null` should be handled (ranging from "null is just another
+value" to "kill it dead, now, dead, now.")  Our approach is to avoid picking
+winners and losers here, and to provide a set of primitives that can equally
+well support null-avoiding and null-tolerant coding styles.
+
+The obvious choice is to simply continue with the null semantics we have now.
+But the current story scales poorly to _nested patterns_.  If we have a class:
 
 ```
 class Box<T> {
     private final T t;
 
     public Box(T t) { this.t = t; }
-    public extractor Box(T t) { t = this.t; }
+    public deconstructor Box(T t) { t = this.t; }
 }
 ```
 
-The author of the class has decided that `new Box(null)` is an
-entirely reasonable value for this class; the language shouldn't
-second-guess this design choice.  So it would be unreasonable to
-prevent `Box(_)` from matching `Box(null)`, for example; if we're
-matching "any box", then we should match any box.
+The author of the class has decided that `new Box(null)` is an entirely
+reasonable value for this class; the language should not be second-guessing this
+design choice.  So it would be unreasonable to prevent `Box(_)` from matching
+`Box(null)`, for example; if we're matching "any box", then we should match any
+box.  The "ignore" pattern (if we support it at all) doesn't let us bind to its
+target, so we might also want to use a nested `var` or type pattern here.  And
+the same argument applies to `Box(var x)` as to `Box(_)`; we're saying "any box,
+and please bind `x` to whatever it is a box of."   And we can extend this
+argument to a nested total type pattern as well -- in fact, we sort of have to,
+or we risk undermining the claim that `var` is "just type inference."   As with
+`var` in variable declarations, we want the choice of inference or not to be
+made on the basis of what the author finds most readable -- and so the pattern
+`var x` must just be type inference for some type pattern `T x`, and the
+sensible type to infer is the target type (being the narrowest type that is
+total on the target.)  So we conclude that total type patterns and `var`
+patterns are equivalent, and therefore are both nullable, at least in a nested
+context.
 
-We also have some constraints that come from the desire to have
-unsurprising semantics for control constructs.  For example, for a
-switch that is free of "weird" control flow (i.e., fallthrough):
+But, having different semantics for nested vs top-level context would be even
+more complicated; it is simplest to think about nesting when it is  mere
+"unrolling".  So the natural thing to do is say that these patterns just match
+null.  Which leaves us with how to resolve this with the fact that `instanceof`
+and `switch` have pre-existing opinions about nulls.
+
+One thing we could do here is nothing; just let these behaviors continue.  And
+for `instanceof`, we probably should do that -- but to accomplish that, we have
+to ban nullable patterns in `instanceof` (that prevents `instanceof Object` and
+`instanceof Object o` from meaning different things, which would be confusing).
+Which is probably fine, since `e instanceof var x` is kind of a silly way to
+write `var x = e`.
+
+For `switch`, though, we have a harder choice.  We could let `switch` keep
+throwing -- but this has consequences too.  For example, it means giving up the
+ability to refactor a switch of nested patterns:
 
 ```
-switch (e) {
-    case P: A;
-    case Q: B;
-    default: C;
+switch (o) {
+    case D(P): A
+    case D(Q): B
 }
 ```
 
-this should be (to the extent possible) equivalent to, and therefore
-mechanically refactorable back and forth between, an `if-else` chain:
+to the obvious nested switch:
 
 ```
-if (e instanceof P) { A }
-else if (e instanceof Q) { B }
-else { C }
-```
-
-Similarly, a switch on nested patterns:
-
-```
-switch (e) {
-   case Foo(P): ...
-   case Foo(Q): ...
-   case Foo(_): ...
+switch (o) {
+    case D(var x):
+       switch (x) {
+           case P: A
+           case Q: B
+       }
 }
 ```
 
-should be "unrollable" to:
+because doing so would cause NPE if `x==null`.  Alternately, we can refine the
+semantics of `switch` to only throw on `null` when no nullable patterns -- which
+means no `case null` (which must always be first) and no total pattern (which
+must always be last).  Similarly, we would like to be able to refactor chains
+of `instanceof` and `switch` to each other.  
 
-```
-switch (e) {
-    case Foo(var x):
-        switch (x) {
-            case P: ...
-            case Q: ...
-            case _: ...
-        }
-}
-```
+#### Nullity -- some false starts
 
-Taken together, this means that there are at least some cases where it
-is reasonable to expect `switch` to deal with null operands without
-throwing NPE.  (If `Foo(_)` should match `Foo(null)`, then
-unrollability demands `_` should match `null` -- which means a
-`switch` containing a `_` pattern should _not_ throw on entry when the
-operand is `null`.)
+Our path for determining the semantics of various patterns with respect to null
+has been a fairly winding one.  While it is impractical to rehash the entire
+journey, let's look at some specific examples.
 
-#### Nulls and individual patterns
+We initially liked the idea that a type pattern `T t` would match anything that
+is assignment-compatible to `T`, including `null`.  But this runs into a few
+problems.
 
-Our path for determining the semantics of various patterns with
-respect to null has been a fairly winding one.  While its impractical
-to rehash the entire journey, let's look at some specific examples.
+First, it means that refactoring between `switch` and `instanceof` is painful,
+because `instanceof T t` would not be consistent with `instanceof T` for any
+`T`.  (Some might assume the problem here is that we're trying to reuse
+`instanceof`, but having a `matches T t` that behaves similarly but subtly
+differently from `instanceof T` is no better.)
 
-We initially liked the idea that a type pattern `T t` would match
-anything that is assignment-compatible to `T`, including `null`.  But
-this runs into a few problems.
-
-First, it means that refactoring between `switch` and `instanceof` is
-painful, because `instanceof T t` would not be consistent with
-`instanceof T`; this was a warning sign.  (Some might assume the
-problem here is that we're trying to generalize `instanceof`, but
-having a `matches T t` that behaves similarly but subtly differently
-from `instanceof T` is no better, as it has a similar cognitive load
-for users to deal with.)
-
-Additionally, if `T t` were to match nulls, this would likely lead to
-unexpected NPEs.  For example, it would be easy to forget that one
-can't safely use `s` in the following example:
-
-```
-if (x instanceof String s)
-    printf("String of length %d%n", s.length());
-```
-
-If the type pattern `String s` matched `null`, this code would NPE in
-the body of the `if`, since we'd be dereferencing a null `String`
-reference.  This would be a sharp edge that cuts over and over.
-
-Further, having type patterns match nulls would result in surprising
-order dependency.  If we have:
+Further, having type patterns match nulls would result in surprising order
+dependency.  If we have:
 
 ```
 switch (box) {
@@ -569,71 +568,46 @@ switch (box) {
 }
 ```
 
-and type patterns matched null, the nulls would fall into the first
-`case`.  Not only is this surprising, but its even more surprising
-that if we reordered the first two cases -- which surely look disjoint
--- it would subtly change the behavior of the program, because they
-both match `Box(null)`.
+and type patterns matched null, the nulls would fall into the first `case`.  Not
+only is this surprising and arbitrary, but its even more surprising that if we
+reordered the first two cases -- which surely look disjoint and therefore safely
+reorderable -- it would subtly change the behavior of the program, because now
+`Box(Integer)` would get the nulls.
 
-So the conclusion is: type patterns `T t` should be have the same
-semantics as `instanceof T`.
-
-On the other hand, there _must_ be some way to match and destructure
-all boxes; asking users to partition boxes into null-containing and
-non-null-containing ones would be unworkable.
-
-Intuitively, we'd like `Box(var x)` to match all boxes, even if the
-box holds a `null`, but this also runs afoul of another intuition --
-that `var` patterns should simply be type-inferred type patterns, so
-that `var x` is merely a shorthand for writing some other type
-pattern.
-
-Another candidate, that also is a near-miss, is to treat _total_
-patterns specially in a nested context; to have `Box(Object o)` match
-all boxes, even those that contain a null.  This seems attractive when
-you look at typical switches over nested patterns; there are often
-some more specific patterns first, and then we fall into the most
-general `Box` pattern, `Box(Object o)`.  But, this falls afoul of
-desiring that a `switch` with nested patterns neatly unroll into a
-nest of switches with non-nested patterns, and creates an "action at a
-distance" effect.
-
-#### Nullable type patterns
-
-The root cause of our wanderings here is that sometimes we want
-`Object` to mean non-null objects (as in `instanceof`), and other
-times we want to use it as a catch-all that means "everything".  The
-standard move in this situation is to split it into two locutions, so
-people can say what they mean explicitly.
-
-To accomplish this, we introduce a _nullable type pattern_, `T? t`,
-which matches instances of `T` as well as `null`.  (This does not mean
-we're introducing nullable types, but also doesn't foreclose on our
-ability to do so later.)  So our inclusive chain of box-matching is
-now:
+Additionally, if `T t` were to match nulls for arbitrary `T`, this would likely
+lead to many unexpected NPEs.  For example, it would be easy to forget that one
+can't safely use `s` in the following example:
 
 ```
-switch (box) {
-    case Box(String s): ...
-    case Box(Integer i): ...
-    case Box(Object? o): ...
-}
+if (x instanceof String s)
+    printf("String of length %d%n", s.length());
 ```
 
-and it is clear from the source that `o` might be null.  We can think
-of `Box(var x)` as using type inference to find the maximal type that
-is permitted based on the pattern signature, and then inferring a
-nullable type pattern.  So if given:
+If the type pattern `String s` matched `null`, this code would NPE in the body
+of the `if`, since we'd be dereferencing a null `String` reference.  This would
+be a sharp edge that cuts over and over, because the intent of the code above
+is to perform a dynamic type test.  
 
-```
-class StringBox {
-    StringBox(String s) { ... }
-    extractor StringBox(String s) { ... }
-}
-```
+At this point, readers should ask: why would it be different for total patterns?
+And the reason is: we don't use total patterns in `instanceof` at all (so it
+doesn't matter there), and when we use them in `switch`, we are not using them
+as dynamic type tests -- we are using them as catch-alls.
 
-then the pattern `StringBox(var x)` will be equivalent, after
-inference, to `StringBox(String? x)`.
+Another idea that didn't work out is to say `var x` is nullable but `Object x`
+never is.  This is doable, but it has a big cost -- it violates the  sensible
+intuition that `var` is "just" type inference, not a semantically different
+thing.  We want the rules for nullity to be robust to a variety of refactorings
+that seem like they should be the same thing -- so we want them to be the same
+thing:
+
+ - That `var x` is just type inference for some type pattern `T t`;
+ - A chain of `if (x instanceof P)` ... `else if (x instanceof Q)` can be
+   refactored to or from a switch with cases P and Q;
+ - A sequence of switch cases `P(Q)`, `P(R)` can be refactored to a single case
+   `P p` with a nested switch on `p` with cases `Q` and `R`.
+
+Each of the ideas discussed and rejected in this section would have fallen
+afoul of one of these goals.
 
 ## Pattern dominance
 
@@ -648,60 +622,33 @@ are considered equivalent.
 
 Examples of dominance include:
 
- - A constant pattern of type `T` is dominated by a type pattern for
-   `T`.
- - A type pattern for `T` is dominated by the nullable type pattern
+ - A constant pattern for a constant of type `T` is dominated by a type pattern
    for `T`.
- - If `T <: U`, then a type pattern for `T` is dominated by a type
-   pattern for `U`.
- - A deconstruction pattern `T(P)` is dominated by a type pattern for
-   `T`.  If `T(P)` is total on `T`, then the type pattern `T t` is
-   also dominated by `T(P)`.
- - If `T <: U`, then a total deconstruction pattern `T(P)` is
-   dominated by a total deconstruction pattern `U(Q)`.
+ - If `T <: U`, then a type pattern for `T` is dominated by a type pattern for
+   `U`.
+ - A deconstruction pattern `T(P*)` is dominated by a type pattern for `T`.  If
+   `T(P*)` is total on `T`, then the type pattern `T t` is also dominated by
+   `T(P*)`.
+ - If `T <: U`, then a total deconstruction pattern `T(P*)` is dominated by a
+   total deconstruction pattern `U(Q*)`.
  - If `P` is dominated by `Q`, then `T(P)` is dominated by `T(Q)`.
  - `null` is dominated by any nullable type pattern.
- - All patterns are dominated by the "any" pattern `_` and by `var`
-   patterns.
+ - A guarded pattern `P when g` is dominated by `P`.  
+ - All patterns are dominated by the "ignore" pattern `_` and `var` patterns.
 
-It is a compile-time error to have a `case` label in a `switch` that
-cannot match any values.  This includes patterns that are dominated by
-prior `case` labels, as well as `case` labels that are dominated by
-combinations of prior case labels -- such as a `T?` pattern that
-follows a nullable pattern and a `T` pattern.
+It is a compile-time error to have a `case` label in a `switch` that cannot
+match any values.  This includes patterns that are dominated by prior `case`
+labels, as well as `case` labels that are dominated by combinations of prior
+case labels (which can arised from type patterns involving sealed classes.)
 
-The `default` case is special.  For switches with reference operands,
-`default` effectively means `case Object`, in that it matches
-everything but `null`, and for switches with primitive operands, it
-effectively means `case _`.  For existing switches, the `default`
-clause need not be the last case (in fact, you can even fall _out_ of
-a default into a labeled case!), but once we start enforcing dominance
-order, this will be confusing.  So for switches that are not "classic"
-switches (operand is one of the currently supported types, and all
-cases are constant labels), `default` will be treated as either `case
-Object` or `case _`, and the dominance order enforced.  (For those who
-want `default` to match anything _including_ `null`, that's easy: have a
-`case null` arm that falls into `default`, which renders the switch
-nullable, or have an explicit `case Object? o` or `case _` arm.)
-
-## Open issues
-
-Some open issues include:
-
- - **Pattern declaration**.  This will be covered in a separate
-document.
- - **Static and instance patterns.** The matching semantics of static
-   and instance patterns have been left out largely for simplicity of
-   exposition, as they are likely to arrive in a later delivery.
-   These raise some questions for name resolution that must be dealt
-   with.
- - **Value type patterns.** Similarly, the semantics of type patterns
-   for value types have also been left out.
- - **Laziness**.  Laziness is a valuable optimization for some
-   patterns, such as deconstruction patterns, but is not applicable to
-   all patterns.
- - **Continue**.  It may be desirable to provide semantics to
-   `continue` in `switch`, so that one can express the effect of
-   guards (and more).
-
-
+The `default` case is special, and to some extent legacy.  It matches everything
+but `null` that is not matched by some other case (before or after).  For
+existing switches, the `default` clause need not be the last case (in fact, you
+can even fall _out_ of a default into a labeled case!), but once we start
+enforcing dominance order, this will be confusing, since we'd like for switches
+to be seen as equivalent to an if-else chain (with potentially optimized
+dispatch).  So for switches that are not "classic" switches (operand is one of
+the currently supported types, and all cases are constant labels), `default`
+must come last, and continues to mean "everything but null."  In reality,
+though, `default` is far less useful in pattern switches because it doesn't
+support a binding variable, so we will probably prefer type patterns instead.
