@@ -3,7 +3,7 @@
 
 This document describes a possible approach for a future phase of _pattern
 matching_ -- adding deconstruction patterns for records and classes.  This
-builds on the work of [JEP 375][jep375], and would follow [type patterns in
+builds on the work of [JEP 375][patterns0], and would follow [type patterns in
 switch](type-patterns-in-switch.html).  _This is an exploratory document only
 and does not constitute a plan for any specific feature in any specific version
 of the Java Language._
