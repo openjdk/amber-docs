@@ -1,6 +1,8 @@
 # Functional transformation of immutable objects
 #### Brian Goetz, Aug 2020
 
+This document is an _early stage draft_ outlining a possible direction for supporting _functional transformation_ in the Java Language. This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language. This document also may reference other features under exploration; this is purely for illustrative purposes, and does not constitute any sort of plan or commitment to deliver any of these features.
+
 Everyone likes records.  But, adding features like records and deconstruction,
 which solves some old problems, raises news ones.  And, everything we can do
 with records but not with classes increases a gap where users might feel they
