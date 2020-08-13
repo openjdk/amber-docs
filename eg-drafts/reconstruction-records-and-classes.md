@@ -245,7 +245,8 @@ and they must be assignments to "properties" of the object being reconstructed.
 Making the parameter and binding names of constructors and deconstructors
 significant was needed for this feature (and, as it turns out, for a number of
 other desirable features too.)  We surely can't just say "from today on, they
-are significant", but we can give people an opt-in to significant names.  We'll
+are significant", but we can give people an opt-in to significant names.  For purposes
+of exposition within this document, we'll
 use the modifier `__byname` on a constructor or deconstructor to indicate that
 names are significant.
 
