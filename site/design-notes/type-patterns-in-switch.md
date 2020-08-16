@@ -71,7 +71,7 @@ of, or into, a case label with binding variables.
 Switches on primitives and their wrapper types are translated using the
 `tableswitch` or `lookupswitch` bytecodes; switches on strings and enums are
 lowered in the compiler to switches involving hash codes (for strings) or
-ordinals (for enums.)
+ordinals (for enums).
 
 For switches on patterns, we would need a new strategy, one likely built on
 `invokedynamic`, where we lower the cases to a densely numbered `int` switch,
@@ -238,7 +238,7 @@ switch (box) {
 }
 ```
 
-The `Box` class expresses no opinions about what it olds; `null` is as good a
+The `Box` class expresses no opinions about what it holds; `null` is as good a
 value as any.  And this has to be OK; a pattern matching construct should not
 express an opinion about whether bindings can be null or not.
 
@@ -247,7 +247,7 @@ error-prone for either of the _first two_ patterns to do so.  Given that
 `Chocolate` and `Frog` have no type relation, it should be perfectly safe to
 reorder the two, and users will surely assume that this is a safe refactoring
 (as it should be).  On the other hand, the last pattern does seem obviously
-total on boxes.  In fact,  would be terrible if there were _no_ way to say
+total on boxes.  In fact, it would be terrible if there were _no_ way to say
 "Match any `Box`, even if it contains `null`.  (While one might initially think
 this could be repaired with OR patterns, imagine that destructuring a `Box`
 yielded _n_ bindings -- we'd need to OR together _2^n_ patterns, with complex
@@ -282,7 +282,7 @@ throws on `null`.  Whatever null opinions a construct has, these are applied
 before we even test any patterns.  We need to keep the notion of "what does a
 construct do with null" separate from "does a pattern match null."
 
-The above examples about `Box(var x)` and `Box(Object o)` leads pretty squarely
+The above examples about `Box(var x)` and `Box(Object o)` lead pretty squarely
 to the conclusion that `Box(Object)` should also match any box.  But if `P(Q)`
 is merely a shorthand for `P(var x) && x matches Q`, then this leads us to the
 conclusion that `Object o` also must match null.
@@ -352,7 +352,7 @@ to reason about; it always throws when confronted with a `null`.  Any relaxed
 behavior would be more complex; some switches would still have to throw (for
 compatibility with existing semantics), and some (which can't be expressed
 today) might accept nulls.  This is a tricky balance to achieve, but I think we
-have a found a good one.
+have found a good one.
 
 A starting point is that we don't want to require readers to do an _O(n)_
 analysis of each of the `case` labels just to determine whether a given switch
@@ -398,14 +398,14 @@ The direction we're going here is that if we can localize the null-acceptance of
 switches in the first (is it `case null`?) and last (is it total?) cases, then
 the incremental complexity of allowing _some_ switches to accept null might be
 outweighed by the incremental benefit of treating `null` more uniformly (and
-thus eliminating the refactoring anomalies.)  Note also that there is no actual
+thus eliminating the refactoring anomalies).  Note also that there is no actual
 code compatibility issue; this is all mental-model compatibility.
 
 So far, we're suggesting:
 
  - A switch with a constant `null` case will accept nulls;
  - If present, a constant `null` case must go first;
- - A switch with a total (any) case matches also accepts nulls;
+ - A switch with a total (any) case also accepts nulls;
  - If present, a total (any) case must go last.
 
 #### What about `default`?
@@ -426,7 +426,7 @@ current behavior as:
    case.
 
 If we adopt this change of perspective, then `default`, not `switch`, is in
-control of the null rejection behavior -- and we can view these changes as
+control of the null-rejection behavior -- and we can view these changes as
 adjusting the behavior of `default`.  So we can recast the proposed changes as:
 
   - Switches accept null;
@@ -570,4 +570,4 @@ on "any" patterns matching null, we may wish to adjust the behavior of
 
 [jep305]: https://openjdk.java.net/jeps/305
 [jep375]: https://openjdk.java.net/jeps/375
-[patternmatch]: ../design-notes/pattern-matching-for-java.html
+[patternmatch]: pattern-matching-for-java.html
