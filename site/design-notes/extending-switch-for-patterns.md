@@ -4,9 +4,27 @@
 
 This document explores a possible direction for enhancements to
 `switch` in the Java language, motivated by the desire to
-support [_pattern matching_][pattern-match].  This is an exploratory
+support [_pattern matching_][pattern-match].  _This is an exploratory
 document only and does not constitute a plan for any specific feature
-in any specific version of the Java Language.
+in any specific version of the Java Language._
+
+#### Pattern matching documents
+
+- [Pattern Matching For Java](pattern-matching-for-java.md).  Overview of
+  pattern matching concepts, and how they might be surfaced in Java.
+- [Pattern Matching For Java -- Semantics](pattern-match-semantics.md).  More
+  detailed notes on type checking, matching, and scoping of patterns and binding
+  variables.
+- [Extending Switch for Patterns](extending-switch-for-patterns.md) (this
+  document).  An early exploration of the issues surrounding extending pattern
+  matching to the `switch` statement.
+- [Type Patterns in Switch](type-patterns-in-switch.md).  A more up-to-date
+  treatment of extending pattern matching to `switch` statements, including
+  treatment of nullity and totality.
+- [Pattern Matching in the Java Object model](pattern-match-object-model.md).
+  Explores how patterns fit into the Java object model, how they fill a hole we
+  may not have realized existed, and how they might affect API design going
+  forward.
 
 ## Background
 
@@ -366,5 +384,4 @@ are boolean expressions:
 
 
 
-[pattern-match]: pattern-match.html
-
+[pattern-match]: pattern-matching-for-java.md

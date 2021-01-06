@@ -1,10 +1,10 @@
-OUT_DIR = out
+OUT_DIR = web
 IN_DIR = site
 CSS = style.css
 
 WILDCARD = $(patsubst $(IN_DIR)/%, %, $(wildcard $(IN_DIR)/*.$(1) $(IN_DIR)/**/*.$(1) ))
 
-ASSET_EXTS = html jpg jpg gif svg
+ASSET_EXTS = html jpg jpg gif svg png
 
 MD_SOURCES = $(call WILDCARD,md)
 ASSET_SOURCES = $(foreach X, $(ASSET_EXTS), $(call WILDCARD,$(X)))
@@ -13,6 +13,7 @@ GENERATED_FILES = $(patsubst %.md, $(OUT_DIR)/%.html, $(MD_SOURCES))
 COPIED_FILES = $(patsubst %,$(OUT_DIR)/%, $(ASSET_SOURCES))
 
 site: $(GENERATED_FILES) $(COPIED_FILES)
+	tar czf site.tar.gz -C $(OUT_DIR) --xform s:'./':: .
 
 $(GENERATED_FILES) : $(OUT_DIR)/%.html : $(IN_DIR)/%.md
 	mkdir -p $(dir $@)
@@ -25,4 +26,4 @@ $(COPIED_FILES) : $(OUT_DIR)/% : $(IN_DIR)/%
 clean:
 	rm -rf $(OUT_DIR)
 
-.PHONY: all clean
+.PHONY: all site clean

@@ -133,7 +133,7 @@ any one solution that makes them all happy.
 
 While we're painfully aware of the state-related boilerplate we deal
 with every day, the boilerplate is just a symptom of a deeper problem,
-which is that Java asks all classes are asked to pay equally for the
+which is that Java asks all classes to pay equally for the
 cost of encapsulation -- but not all classes benefit equally from it.
 
 To be sure, encapsulation is essential; mediating access to our state
@@ -494,9 +494,9 @@ project back to the desired result, as in:
 ```{.java}
 List<Person> topThreePeople(List<Person> list) {
     // local records are OK too!
-    record PersonX(Person p, int hash) {
-        PersonX(Person p) {
-            this(p, p.name().toUpperCase().hashCode());
+    record PersonX(Person person, int hash) {
+        PersonX(Person person) {
+            this(person, person.name().toUpperCase().hashCode());
         }
     }
 
@@ -896,4 +896,3 @@ improve the situation for these use cases as well.
 [uniform]: https://en.wikipedia.org/wiki/Uniform_access_principle
 [adt]: https://en.wikipedia.org/wiki/Algebraic_data_type
 [patterns]: https://openjdk.java.net/jeps/305
-

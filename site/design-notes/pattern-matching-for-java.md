@@ -3,12 +3,31 @@
 #### Gavin Bierman and Brian Goetz, September 2018
 
 This document explores a possible direction for supporting _pattern
-matching_ in the Java Language.  This is an exploratory document only
+matching_ in the Java Language.  _This is an exploratory document only
 and does not constitute a plan for any specific feature in any
-specific version of the Java Language.  This document also may
+specific version of the Java Language._  This document also may
 reference other features under exploration; this is purely for
 illustrative purposes, and does not constitute any sort of plan or
 committment to deliver any of these features.
+
+#### Pattern matching documents
+
+ - [Pattern Matching For Java](pattern-matching-for-java.md) (this document).
+   Overview of pattern matching concepts, and how they might be surfaced in Java.
+ - [Pattern Matching For Java -- Semantics](pattern-match-semantics.md).  More
+   detailed notes on type checking, matching, and scoping of patterns and
+   binding variables.  
+ - [Extending Switch for Patterns](extending-switch-for-patterns.md).  An early
+   exploration of the issues surrounding extending pattern matching to the
+   `switch` statement.
+ - [Type Patterns in Switch](type-patterns-in-switch.md).  A more up-to-date
+   treatment of extending pattern matching to `switch` statements, including
+   treatment of nullity and totality.  
+ - [Pattern Matching in the Java Object model](pattern-match-object-model.md).
+   Explores how patterns fit into the Java object model, how they fill a hole we
+   may not have realized existed, and how they might affect API design going
+   forward.
+
 
 ## Motivation
 

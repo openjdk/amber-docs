@@ -2,18 +2,31 @@
 #### Gavin Bierman and Brian Goetz (Updated August 2020)
 
 This document explores a possible direction for supporting _pattern
-matching_ in the Java Language.  This is an exploratory document only
+matching_ in the Java Language.  _This is an exploratory document only
 and does not constitute a plan for any specific feature in any
-specific version of the Java Language.  This document also may
+specific version of the Java Language._  This document also may
 reference other features under exploration; this is purely for
 illustrative purposes, and does not constitute any sort of plan or
 commitment to deliver any of these features.
 
-In [a companion document](pattern-matching-for-java.html), we outline the
-motivation for adding pattern matching to Java, the sorts of patterns
-that might be supported (constant patterns, type patterns,
-deconstruction patterns, etc) and the constructs that could support
-patterns (`instanceof`, `switch`, pattern assignment.)
+#### Pattern matching documents
+
+ - [Pattern Matching For Java](pattern-matching-for-java.md).  Overview of
+   pattern matching concepts, and how they might be surfaced in Java.
+ - [Pattern Matching For Java -- Semantics](pattern-match-semantics.md)  (this
+   document).  More detailed notes on type checking, matching, and scoping of
+   patterns and binding variables.
+ - [Extending Switch for Patterns](extending-switch-for-patterns.md).  An early
+   exploration of the issues surrounding extending pattern matching to the
+   `switch` statement.
+ - [Type Patterns in Switch](type-patterns-in-switch.md).  A more up-to-date
+   treatment of extending pattern matching to `switch` statements, including
+   treatment of nullity and totality.
+ - [Pattern Matching in the Java Object model](pattern-match-object-model.md).
+   Explores how patterns fit into the Java object model, how they fill a hole we
+   may not have realized existed, and how they might affect API design going
+   forward.
+
 
 ## Types of patterns
 
@@ -32,7 +45,7 @@ here.
    sequence of nested patterns;
  - _Declared patterns_, denoted by `id(P*)` or `C.id(P*)`.  
 
-In any pattern match,  is always a pattern and a _match target_.  For
+In any pattern match, there is always a pattern and a _match target_.  For
 `instanceof` the match target is the LHS operand; for `switch` it is the operand
 in the switch header.  The match target has both a static and dynamic type; both
 may be used in determining whether the pattern matches.
@@ -129,9 +142,9 @@ type of the corresponding binding variable of `D`.
 
 We define a _matches_ relation between patterns and expressions as follows.
 
- - The "ignore" and `var` patterns match anything, including null.  - A type
-   pattern `T t` matches `e` if `e instanceof T`, and additionally  matches
-   `null` if the type pattern is total on the target type.
+ - The "ignore" and `var` patterns match anything, including null.
+ - A type pattern `T t` matches `e` if `e instanceof T`, and additionally
+   matches `null` if the type pattern is total on the target type.
  - The `null` constant pattern matches `e` if `e == null`.
  - A primitive constant pattern `c` of type `P` matches `e : P` if `c` is equal
    to `e`, and matches `e : T` if `e` is an instance of `P`'s box type, and `c`
@@ -469,7 +482,7 @@ value" to "kill it dead, now, dead, now.")  Our approach is to avoid picking
 winners and losers here, and to provide a set of primitives that can equally
 well support null-avoiding and null-tolerant coding styles.
 
-The obvious choice is to simply continue with the null semantics we have now.
+The "obvious" choice is to simply continue with the null semantics we have now.
 But the current story scales poorly to _nested patterns_.  If we have a class:
 
 ```
