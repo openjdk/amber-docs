@@ -2,20 +2,54 @@
       A IMG { border-width: 0px; }
 
       BODY {
-        background: white;
-        margin: 2em;
+          background: white;
+          margin: 2em;
         font-size: medium;
-        width: 40em;
+        max-width: 60em;
         margin-bottom: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
       }
 
-      BODY { font-family: Bitstream Vera Sans, Verdana, sans serif; }
-      PRE { font-family: monospace; }
-      CODE { font-family: courier new, monospace; font-size: medium; font-weight: bold; }
-      H1 { font-size: x-large; }
-      H2 { font-size: large; margin-top: 3ex; margin-bottom: 0ex; }
-      H3 { font-size: medium; margin-top: 3ex; margin-bottom: 0ex; }
-      H4 { font-size: medium; margin-top: 3ex; margin-bottom: 0ex; }
+      code, pre, tt {
+	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+	font-size: medium
+      }
+
+      code {
+          display: inline-block;
+          padding: .1em .2em;
+        font-size: 90%;
+        border-radius: 6px;
+	background-color: #e8e8e8;
+        box-sizing: border-box;
+      }
+
+      h1 {
+	  font-size: 32px;
+      }
+
+      h1,
+      h2 {
+	  font-weight: 600;
+          border-bottom: 1px solid #e8e8e8;
+      }
+      
+      h2 {
+	  font-size: 24px
+      }
+      
+      h3 {
+	  font-size: 20px
+      }
+      
+      h3,
+      h4 {
+	  font-weight: 600
+      }
+      
+      h4 {
+	  font-size: 20px
+      }
 
       P { margin: 1ex 0em; }
       P.subsection { margin-top: 2ex; }
@@ -24,10 +58,14 @@
 
       PRE {
         margin: 1.5ex 2em;
-        width: 60em;
         padding: 1px 1ex;
         background: #e8e8e8;
-        font-size: smaller;
+      }
+
+      .sidebar {
+        margin: 1.5ex 2em;
+        padding: 1px 1ex;
+        background: #e8e8e8;
       }
 
       /* added for ```{.jvm} support */
@@ -37,7 +75,12 @@
       LI BLOCKQUOTE { margin-left: 0em; }
       LI { margin: 0ex 0em; }
 
-      TABLE, TH, TD { border: 2px solid gray; padding: 2px; }
+      TABLE, TH, TD { border: 1px solid #e8e8e8;
+                      padding: 6px 12px; }
+      TR:nth-child(2n) {
+          background-color: #f6f6f6;
+      }
+      TH { font-weight: 600 }
       TABLE { border-collapse: collapse; }
       TD { vertical-align: top; }
 
