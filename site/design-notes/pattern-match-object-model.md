@@ -240,7 +240,7 @@ be handled as a nested _constant pattern_, should we decide to support them.
 This might look like (illustrative syntax only):
 
 ```
-if (os instanceof Optional.of(Shape.ofRedBall(== 0))) { ... }
+if (os instanceof Optional.of(Shape.ofRedBall(== 1))) { ... }
 ```
 
 where `== c` is a constant pattern that matches the constant `c`.  
