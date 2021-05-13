@@ -99,7 +99,8 @@
       DIV.version SPAN.modified { color: green; font-weight: bold; }
       DIV.head DIV.notes { margin-top: 1ex; }
       DIV.qa { margin-top: 2ex; }
-
+      DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+      
       /* added because pandoc syntax highlighting always uses scroll bars */
       DIV.sourceCode {
           overflow: visible;

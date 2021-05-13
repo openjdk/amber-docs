@@ -7,7 +7,7 @@ the [OpenJDK JEP Process](http://openjdk.java.net/jeps/1). This
 Project is sponsored by
 the [Compiler Group](http://openjdk.java.net/groups/compiler).
 
-Most Project Amber features go through at least one round
+Most Project Amber features go through at least two rounds
 of [_Preview_](http://openjdk.java.net/jeps/12) before becoming an
 official part of Java SE.  For a given feature, there are separate
 JEPs for each round of preview and for final standardization.  This
@@ -18,18 +18,22 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
 
-  - [Records (second preview)](http://openjdk.java.net/jeps/384)
-  - [Sealed Classes (first preview)](http://openjdk.java.net/jeps/360)
-  - [Pattern Matching for instanceof (second preview)](http://openjdk.java.net/jeps/375)
+  - [Sealed Classes](http://openjdk.java.net/jeps/409)
+  - [Pattern Matching for <code>switch</code> (Preview)](http://openjdk.java.net/jeps/406)
+  - [Record Patterns and Array Patterns (Preview)](http://openjdk.java.net/jeps/405)
+</ul>
 
-Delivered:
+<p>Delivered:</p>
 
+  - [Sealed Classes (Second Preview)](http://openjdk.java.net/jeps/397)
+  - [Records](http://openjdk.java.net/jeps/395)
+  - [Pattern Matching for <code>instanceof</code>](http://openjdk.java.net/jeps/394)
   - [Text Blocks](http://openjdk.java.net/jeps/378)
-  - [Local Variable Type Inference](http://openjdk.java.net/jeps/286)
     - [Style Guidelines](guides/lvti-style-guide.html)
     - [FAQ](guides/lvti-faq.html)
-  - [Local-Variable Syntax for Lambda Parameters](http://openjdk.java.net/jeps/323)
   - [Switch Expressions](http://openjdk.java.net/jeps/361)
+  - [Local-Variable Syntax for Lambda Parameters](http://openjdk.java.net/jeps/323)
+  - [Local-Variable Type Inference (<code>var</code>)](http://openjdk.java.net/jeps/286)
 
 On hold:
 

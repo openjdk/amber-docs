@@ -1,6 +1,6 @@
 OUT_DIR = web
 IN_DIR = site
-CSS = style.css
+CSS = etc/style.css
 
 IN_DIR_FILES := $(shell find $(IN_DIR) -type f)
 WILDCARD = $(patsubst $(IN_DIR)/%, %, $(filter %.$(1), $(IN_DIR_FILES)))
@@ -29,6 +29,7 @@ $(COPIED_FILES) : $(OUT_DIR)/% : $(IN_DIR)/%
 # Tweak the options to pandoc.
 PANDOC_OPTIONS = \
 	--standalone \
+	--include-after-body=etc/footer.html \
 	$(if $(call HAS_STYLE, $(1)),,-H "$(CSS)") \
 	$(if $(call HAS_PAGETITLE, $(1)),,--metadata pagetitle="$(basename $(notdir $(1)))") \
 	$(call HAS_PANDOC_FLAGS, $(1))

@@ -10,18 +10,18 @@ of the Java Language._
 
 #### Pattern matching documents
 
-- [Pattern Matching For Java](pattern-matching-for-java.md).  Overview of
+- [Pattern Matching For Java](pattern-matching-for-java.html).  Overview of
   pattern matching concepts, and how they might be surfaced in Java.
-- [Pattern Matching For Java -- Semantics](pattern-match-semantics.md).  More
+- [Pattern Matching For Java -- Semantics](pattern-match-semantics.html).  More
   detailed notes on type checking, matching, and scoping of patterns and binding
   variables.
-- [Extending Switch for Patterns](extending-switch-for-patterns.md).  An early
+- [Extending Switch for Patterns](extending-switch-for-patterns.html).  An early
   exploration of the issues surrounding extending pattern matching to the
   `switch` statement.
-- [Type Patterns in Switch](type-patterns-in-switch.md).  A more up-to-date
+- [Type Patterns in Switch](type-patterns-in-switch.html).  A more up-to-date
   treatment of extending pattern matching to `switch` statements, including
   treatment of nullity and totality.
-- [Pattern Matching in the Java Object model](pattern-match-object-model.md)
+- [Pattern Matching in the Java Object model](pattern-match-object-model.html)
   (this document).  Explores how patterns fit into the Java object model, how
   they fill a hole we may not have realized existed, and how they might affect
   API design going forward.
@@ -726,7 +726,7 @@ expose polymorphism through patterns rather than type hierarchies.  For some
 APIs, this may be a perfectly sensible move.
 
 
-[patternmatch]: pattern-matching-for-java.md
-[patternsem]: pattern-match-semantics.md
+[patternmatch]: pattern-matching-for-java.html
+[patternsem]: pattern-match-semantics.html
 [gof]: https://en.wikipedia.org/wiki/Design_Patterns
-[records]: records-and-sealed-classes.md
+[records]: records-and-sealed-classes.html

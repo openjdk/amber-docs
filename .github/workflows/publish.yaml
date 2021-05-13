@@ -1,0 +1,23 @@
+name: Publish
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: install-pandoc
+        run: sudo apt install pandoc -y --no-install-recommends
+
+      - name: make
+        run: make
+
+      - name: publish
+        uses: peaceiris/actions-gh-pages@068dc23d9710f1ba62e86896f84735d869951305
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web
+          force_orphan: true
+
