@@ -1,12 +1,3 @@
-<style>
-
-.control {
-    color: #bbb;
-    font-style: italic;
-}
-
-</style>
-
 <script>
 function highlightControls() {
     const map = {
@@ -23,7 +14,7 @@ function highlightControls() {
     document.querySelectorAll("code").forEach((code) => {
         const text = code.textContent;
         const escapedText = text.replace(escapes, (match) => map[match]);
-        const mappedText = escapedText.replace(controls, (match) => `<span class="control">${match}</span>`);
+        const mappedText = escapedText.replace(controls, (match) => `<span class="control-character">${match}</span>`);
         code.innerHTML = mappedText;
     });
 }

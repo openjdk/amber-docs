@@ -20,7 +20,7 @@
           padding: .1em .2em;
         font-size: 90%;
         border-radius: 6px;
-	background-color: #e8e8e8;
+	background-color: #f6f8fa;
         box-sizing: border-box;
       }
 
@@ -59,13 +59,18 @@
       PRE {
         margin: 1.5ex 2em;
         padding: 1px 1ex;
-        background: #e8e8e8;
+        background: #f6f8fa;
       }
 
       .sidebar {
         margin: 1.5ex 2em;
         padding: 1px 1ex;
         background: #e8e8e8;
+      }
+
+      .control-character {
+          color: #bbb;
+          font-style: italic;
       }
 
       /* added for ```{.jvm} support */
@@ -78,7 +83,7 @@
       TABLE, TH, TD { border: 1px solid #e8e8e8;
                       padding: 6px 12px; }
       TR:nth-child(2n) {
-          background-color: #f6f6f6;
+          background-color: #f6f8fa;
       }
       TH { font-weight: 600 }
       TABLE { border-collapse: collapse; }

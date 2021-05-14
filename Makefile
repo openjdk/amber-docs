@@ -5,7 +5,7 @@ CSS = etc/style.css
 IN_DIR_FILES := $(shell find $(IN_DIR) -type f)
 WILDCARD = $(patsubst $(IN_DIR)/%, %, $(filter %.$(1), $(IN_DIR_FILES)))
 
-ASSET_EXTS = html jpg jpg gif svg png
+ASSET_EXTS = html jpg jpg gif svg png pdf
 
 MD_SOURCES = $(call WILDCARD,md)
 ASSET_SOURCES = $(foreach X, $(ASSET_EXTS), $(call WILDCARD,$(X)))
@@ -40,6 +40,7 @@ HAS_STYLE = $(shell sed -n < $(1) '/^ *<style[ >]/{p;q;};999q')
 HAS_PAGETITLE = $(shell sed -n < $(1) '1s/^% /<title>/;/^ *<title[ >]/{p;q;};999q')
 # Allow document to embed misc. pandoc flags, such as <meta pandoc-flags="--toc">.
 HAS_PANDOC_FLAGS = $(shell sed -n < $(1) '/^<meta pandoc-flags="\(.*\)">/s//\1/p;999q')
+
 
 $(AUTO_SITE_MAP) : $(GENERATED_FILES) $(COPIED_FILES) Makefile
 	( cd $(OUT_DIR); \
