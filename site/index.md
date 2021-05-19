@@ -25,7 +25,6 @@ Currently in progress:
 
 <p>Delivered:</p>
 
-  - [Sealed Classes (Second Preview)](http://openjdk.java.net/jeps/397)
   - [Records](http://openjdk.java.net/jeps/395)
   - [Pattern Matching for <code>instanceof</code>](http://openjdk.java.net/jeps/394)
   - [Text Blocks](http://openjdk.java.net/jeps/378)
