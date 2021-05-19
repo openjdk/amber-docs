@@ -49,8 +49,8 @@ Withdrawn:
  - [Local Variable Type Inference Style Guide](guides/lvti-style-guide.html) (March 2018)
  - [Local Variable Type Inference FAQ](guides/lvti-faq.html) (Oct 2018)
  - [Programmer's Guide to Text Blocks](guides/text-blocks-guide.html) (Aug 2019)
- - [Pattern Matching for Java](design-notes/pattern-match.html) (Sept 2018)
- - [Pattern Matching for Java -- Semantics](design-notes/pattern-match-semantics.html) (Sept 2018)
+ - [Pattern Matching for Java](design-notes/patterns/pattern-match.html) (Sept 2018)
+ - [Pattern Matching for Java -- Semantics](design-notes/patterns/pattern-match-semantics.html) (Sept 2018)
  - [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes.html) (Feb 2019)
  - [Towards Better Serialization](design-notes/towards-better-serialization.html) (June 2019)
 
