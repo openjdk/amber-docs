@@ -28,11 +28,12 @@ Currently in progress:
   - [395: Records](http://openjdk.java.net/jeps/395)
   - [394: Pattern Matching for <code>instanceof</code>](http://openjdk.java.net/jeps/394)
   - [378: Text Blocks](http://openjdk.java.net/jeps/378)
-    - [Style Guidelines](guides/lvti-style-guide)
-    - [FAQ](guides/lvti-faq)
+    - [Programmer's Guide](guides/text-blocks-guide)
   - [361: Switch Expressions](http://openjdk.java.net/jeps/361)
   - [323: Local-Variable Syntax for Lambda Parameters](http://openjdk.java.net/jeps/323)
   - [286: Local-Variable Type Inference (<code>var</code>)](http://openjdk.java.net/jeps/286)
+    - [Style Guidelines](guides/lvti-style-guide)
+    - [FAQ](guides/lvti-faq)
 
 On hold:
 
