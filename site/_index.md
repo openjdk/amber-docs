@@ -18,31 +18,31 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
 
-  - [Sealed Classes](http://openjdk.java.net/jeps/409)
-  - [Pattern Matching for <code>switch</code> (Preview)](http://openjdk.java.net/jeps/406)
-  - [Record Patterns and Array Patterns (Preview)](http://openjdk.java.net/jeps/405)
+  - [409: Sealed Classes](http://openjdk.java.net/jeps/409)
+  - [406: Pattern Matching for <code>switch</code> (Preview)](http://openjdk.java.net/jeps/406)
+  - [405: Record Patterns and Array Patterns (Preview)](http://openjdk.java.net/jeps/405)
 </ul>
 
 <p>Delivered:</p>
 
-  - [Records](http://openjdk.java.net/jeps/395)
-  - [Pattern Matching for <code>instanceof</code>](http://openjdk.java.net/jeps/394)
-  - [Text Blocks](http://openjdk.java.net/jeps/378)
+  - [395: Records](http://openjdk.java.net/jeps/395)
+  - [394: Pattern Matching for <code>instanceof</code>](http://openjdk.java.net/jeps/394)
+  - [378: Text Blocks](http://openjdk.java.net/jeps/378)
     - [Style Guidelines](guides/lvti-style-guide)
     - [FAQ](guides/lvti-faq)
-  - [Switch Expressions](http://openjdk.java.net/jeps/361)
-  - [Local-Variable Syntax for Lambda Parameters](http://openjdk.java.net/jeps/323)
-  - [Local-Variable Type Inference (<code>var</code>)](http://openjdk.java.net/jeps/286)
+  - [361: Switch Expressions](http://openjdk.java.net/jeps/361)
+  - [323: Local-Variable Syntax for Lambda Parameters](http://openjdk.java.net/jeps/323)
+  - [286: Local-Variable Type Inference (<code>var</code>)](http://openjdk.java.net/jeps/286)
 
 On hold:
 
- - [Enhanced Enums](http://openjdk.java.net/jeps/301) (see [here](http://mail.openjdk.java.net/pipermail/amber-spec-experts/2017-May/000041.html) for explanation)
- - [Lambda Leftovers](http://openjdk.java.net/jeps/302)
- - [Java Compiler Intrinsics for JDK APIs](http://openjdk.java.net/jeps/348)
+ - [301: Enhanced Enums](http://openjdk.java.net/jeps/301) (see [here](http://mail.openjdk.java.net/pipermail/amber-spec-experts/2017-May/000041.html) for explanation)
+ - [302: Lambda Leftovers](http://openjdk.java.net/jeps/302)
+ - [348: Java Compiler Intrinsics for JDK APIs](http://openjdk.java.net/jeps/348)
 
 Withdrawn:
 
- - [Raw String Literals](http://openjdk.java.net/jeps/326), dropped in favor of Text Blocks (see [here](https://mail.openjdk.java.net/pipermail/jdk-dev/2018-December/002402.html) for explanation)
+ - [326: Raw String Literals](http://openjdk.java.net/jeps/326), dropped in favor of Text Blocks (see [here](https://mail.openjdk.java.net/pipermail/jdk-dev/2018-December/002402.html) for explanation)
 
 ## Documents
 
