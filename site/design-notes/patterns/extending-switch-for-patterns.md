@@ -10,18 +10,18 @@ in any specific version of the Java Language._
 
 #### Pattern matching documents
 
-- [Pattern Matching For Java](pattern-matching-for-java.html).  Overview of
+- [Pattern Matching For Java](pattern-matching-for-java).  Overview of
   pattern matching concepts, and how they might be surfaced in Java.
-- [Pattern Matching For Java -- Semantics](pattern-match-semantics.html).  More
+- [Pattern Matching For Java -- Semantics](pattern-match-semantics).  More
   detailed notes on type checking, matching, and scoping of patterns and binding
   variables.
-- [Extending Switch for Patterns](extending-switch-for-patterns.html) (this
+- [Extending Switch for Patterns](extending-switch-for-patterns) (this
   document).  An early exploration of the issues surrounding extending pattern
   matching to the `switch` statement.
-- [Type Patterns in Switch](type-patterns-in-switch.html).  A more up-to-date
+- [Type Patterns in Switch](type-patterns-in-switch).  A more up-to-date
   treatment of extending pattern matching to `switch` statements, including
   treatment of nullity and totality.
-- [Pattern Matching in the Java Object model](pattern-match-object-model.html).
+- [Pattern Matching in the Java Object model](pattern-match-object-model).
   Explores how patterns fit into the Java object model, how they fill a hole we
   may not have realized existed, and how they might affect API design going
   forward.
@@ -384,4 +384,4 @@ are boolean expressions:
 
 
 
-[pattern-match]: pattern-matching-for-java.html
+[pattern-match]: pattern-matching-for-java

@@ -4,7 +4,7 @@
 
 This document explores possible directions for _data classes_ and
 _sealed types_ in the Java Language, and is an update
-to [Data Classes in Java](data-classes-historical-2.html).  This is an
+to [Data Classes in Java](data-classes-historical-2).  This is an
 exploratory document only and does not constitute a plan for any
 specific feature in any specific version of the Java Language.
 

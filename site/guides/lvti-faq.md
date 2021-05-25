@@ -233,6 +233,6 @@ right, or use `var` on the left with an explicit type on the
 right. See the [LVTI Style Guidelines][1], guideline G6, for further
 information.
 
-[1]: lvti-style-guide.html
+[1]: lvti-style-guide
 
 [2]: https://docs.oracle.com/javase/specs/jls/se11/html/jls-4.html#jls-4.1

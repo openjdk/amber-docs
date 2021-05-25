@@ -28,8 +28,8 @@ Currently in progress:
   - [Records](http://openjdk.java.net/jeps/395)
   - [Pattern Matching for <code>instanceof</code>](http://openjdk.java.net/jeps/394)
   - [Text Blocks](http://openjdk.java.net/jeps/378)
-    - [Style Guidelines](guides/lvti-style-guide.html)
-    - [FAQ](guides/lvti-faq.html)
+    - [Style Guidelines](guides/lvti-style-guide)
+    - [FAQ](guides/lvti-faq)
   - [Switch Expressions](http://openjdk.java.net/jeps/361)
   - [Local-Variable Syntax for Lambda Parameters](http://openjdk.java.net/jeps/323)
   - [Local-Variable Type Inference (<code>var</code>)](http://openjdk.java.net/jeps/286)
@@ -46,13 +46,13 @@ Withdrawn:
 
 ## Documents
 
- - [Local Variable Type Inference Style Guide](guides/lvti-style-guide.html) (March 2018)
- - [Local Variable Type Inference FAQ](guides/lvti-faq.html) (Oct 2018)
- - [Programmer's Guide to Text Blocks](guides/text-blocks-guide.html) (Aug 2019)
- - [Pattern Matching for Java](design-notes/patterns/pattern-matching-for-java.html) (Sept 2018)
- - [Pattern Matching for Java -- Semantics](design-notes/patterns/pattern-match-semantics.html) (Sept 2018)
- - [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes.html) (Feb 2019)
- - [Towards Better Serialization](design-notes/towards-better-serialization.html) (June 2019)
+ - [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
+ - [Local Variable Type Inference FAQ](guides/lvti-faq) (Oct 2018)
+ - [Programmer's Guide to Text Blocks](guides/text-blocks-guide) (Aug 2019)
+ - [Pattern Matching for Java](design-notes/patterns/pattern-matching-for-java) (Sept 2018)
+ - [Pattern Matching for Java -- Semantics](design-notes/patterns/pattern-match-semantics) (Sept 2018)
+ - [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes) (Feb 2019)
+ - [Towards Better Serialization](design-notes/towards-better-serialization) (June 2019)
 
 ## Community
 
@@ -62,4 +62,3 @@ Withdrawn:
     - [amber-spec-experts](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-experts) -- For Expert Group members only
     - [amber-spec-observers](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-observers) -- A read-only clone of amber-spec-experts
     - [amber-spec-comments](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-comments) -- For submitting comments on the official specs
-

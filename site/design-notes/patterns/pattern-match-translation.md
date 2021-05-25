@@ -541,6 +541,6 @@ topics include:
    in a separate document.
 
 
-[pattern-match]: pattern-matching-for-java.html
+[pattern-match]: pattern-matching-for-java
 [sym-free]: https://blogs.oracle.com/jrose/entry/symbolic_freedom_in_the_vm
 
