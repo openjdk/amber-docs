@@ -21,7 +21,6 @@ Currently in progress:
   - [409: Sealed Classes](http://openjdk.java.net/jeps/409)
   - [406: Pattern Matching for <code>switch</code> (Preview)](http://openjdk.java.net/jeps/406)
   - [405: Record Patterns and Array Patterns (Preview)](http://openjdk.java.net/jeps/405)
-</ul>
 
 <p>Delivered:</p>
 
