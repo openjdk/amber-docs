@@ -1,26 +1,3 @@
-<script>
-function highlightControls() {
-    const map = {
-      "&": "&#x26;",
-      "<": "&#x3C;",
-      ">": "&#x3E;",
-      "\"": "&#x22;",
-      "'": "&#x27;",
-      "/": "&#x2F;"
-    };
-    const escapes = /[&<>"'\/]/g;
-    const controls = /[\u2409\u240A\u240D\u00B7]+/g;
-
-    document.querySelectorAll("code").forEach((code) => {
-        const text = code.textContent;
-        const escapedText = text.replace(escapes, (match) => map[match]);
-        const mappedText = escapedText.replace(controls, (match) => `<span class="control-character">${match}</span>`);
-        code.innerHTML = mappedText;
-    });
-}
-
-document.addEventListener("DOMContentLoaded", (event) => highlightControls());
-</script>
 
 # Programmer's Guide to Text Blocks
 
