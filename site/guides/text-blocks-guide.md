@@ -873,11 +873,9 @@ that Unicode escapes (`\uNNNN`) are _not_ processed.
 
 "The Walrus and the Carpenter"
 : Lewis Carroll, _Through the Looking-Glass and What Alice Found There,_ 1872.
-<p>
 
 "Jabberwocky"
 : Lewis Carroll, _Mischmasch,_ 1855.
-<p>
 
 "When Lilacs Last in the Dooryard Bloom'd"
 : Walt Whitman, _Sequel to Drum-Taps_, 1865.
