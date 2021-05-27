@@ -729,4 +729,4 @@ APIs, this may be a perfectly sensible move.
 [patternmatch]: pattern-matching-for-java
 [patternsem]: pattern-match-semantics
 [gof]: https://en.wikipedia.org/wiki/Design_Patterns
-[records]: records-and-sealed-classes
+[records]: ../records-and-sealed-classes
