@@ -1,11 +1,11 @@
-# Local Variable Type Inference: Style Guidelines
 
-#### Stuart W. Marks\
-March 2018
+# Local Variable Type Inference
+## Style Guidelines {.subtitle}
+#### Stuart W. Marks <br> March 2018 {.author}
 
 ## Introduction
 
-Java SE 10 introduced type inference for local variables. Previously,
+Java SE 10 introduced [type inference for local variables][jep286]. Previously,
 all local variable declarations required an explicit (manifest) type
 on the left-hand side. With type inference, the explicit type can be
 replaced by the reserved type name `var` for local variable
@@ -118,7 +118,7 @@ that is evocative of the type of the variable, which is now implicit
 in the `var` declaration.
 
 Encoding the variable's type in its name, taken to its logical
-conclusion, results in "Hungarian Notation". Just as with explicit
+conclusion, results in "[Hungarian Notation]". Just as with explicit
 types, this is sometimes helpful, and sometimes just clutter.  In this
 example the name `custList` implies that a `List` is being
 returned. That might not be significant. Instead of the exact type,
@@ -142,7 +142,7 @@ nature of the variable, such as "customers":
 ### G2. Minimize the scope of local variables.
 
 Limiting the scope of local variables is good practice in
-general. This practice is described in *Effective Java (3rd Edition)*,
+general. This practice is described in [*Effective Java (3rd Edition)*][Bloch],
 Item 57. It applies with extra force if `var` is in use.
 
 In the following example, the `add` method clearly adds the special
@@ -507,11 +507,7 @@ hand, applying `var` indiscriminately can make things worse. Used
 properly, `var` can help improve good code, making it shorter and
 clearer without compromising understandability.
 
-## References
 
-[JEP 286: Local-Variable Type Inference](http://openjdk.java.net/jeps/286)
-
-[Wikipedia: Hungarian Notation](https://en.wikipedia.org/wiki/Hungarian_notation)
-
-[Bloch, Joshua. Effective Java, 3rd Edition. Addison-Wesley
-Professional, 2018.](https://www.pearson.com/us/higher-education/program/Bloch-Effective-Java-3rd-Edition/PGM1763855.html)
+[jep286]: https://openjdk.java.net/jeps/286
+[Hungarian Notation]: https://en.wikipedia.org/wiki/Hungarian_notation
+[Bloch]: https://www.pearson.com/us/higher-education/program/Bloch-Effective-Java-3rd-Edition/PGM1763855.html

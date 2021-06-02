@@ -1,6 +1,6 @@
 # Data Classes and Sealed Types for Java
 
-#### Brian Goetz, February 2019
+#### Brian Goetz, February 2019 {.author}
 
 This document explores possible directions for _data classes_ and
 _sealed types_ in the Java Language, and is an update
@@ -38,7 +38,7 @@ encapsulates some complex and unspecified state (including a native
 resource) and exposes an interface contract that likely looks nothing
 like its internal representation.
 
-At the other extreme, its pretty clear that:
+At the other extreme, it's pretty clear that:
 
 ```
     final class Point {
@@ -88,7 +88,7 @@ the only code that is present is the code that actually does something
 non-obvious, which makes reading code easier in two ways: there's less
 to read, and every line says something useful.
 
-#### Meet the elephant
+### Meet the elephant
 
 Unfortunately, such universal consensus is only syntax-deep; almost
 immediately after we finish celebrating the concision, comes the
@@ -129,7 +129,7 @@ All of these personae are united in favor of "data classes" -- but
 have different ideas of what data classes are, and there may not be
 any one solution that makes them all happy.
 
-#### Encapsulation and boundaries
+### Encapsulation and boundaries
 
 While we're painfully aware of the state-related boilerplate we deal
 with every day, the boilerplate is just a symptom of a deeper problem,
@@ -188,7 +188,7 @@ just a guess.  It would be nicer if tools and library code could
 mechnically rely on this correspondence -- without a human having to
 read the specs (if there even is one!) to confirm this expectation.
 
-#### Digression -- enums
+### Digression --- enums
 
 If the problem is that we're modeling something simple with something
 overly general, simplification is going to come from constraint; by
@@ -224,7 +224,7 @@ classes, our first question should be: what constraints will give us
 the semantic and syntactic benefits we want, and, are we willing to
 accept these constraints?
 
-#### Priorities and goals
+### Priorities and goals
 
 While it is superficially tempting to to treat data classes as
 primarily being about boilerplate reduction, we prefer to start with a
@@ -262,7 +262,7 @@ without the need to provide complex mapping mechanisms.  By giving up
 the flexibility to decouple a classes state from its API, we gain all
 of these benefits.
 
-#### Records and sealed types
+### Records and sealed types
 
 We propose to surface data classes in the form of _records_; like an
 `enum`, a `record` is a restricted form of class.  It declares its
@@ -306,7 +306,7 @@ make a similar trade; we give up the flexibility to _decouple the
 classes API from its state description_, in return for getting a
 highly streamlined declaration (and more).
 
-#### Records and pattern matching
+### Records and pattern matching
 
 One of the big advantages of defining data classes in terms of
 coupling their API to a publicly specified state description, rather
@@ -339,7 +339,7 @@ components, and sealed types provide the compiler with exhaustiveness
 information so that a switch that covers all the subtypes need not
 provide a `default` clause.
 
-#### Records and externalization
+### Records and externalization
 
 Data classes are also a natural fit for safe, mechanical
 externalization (serialization, marshaling to and from JSON or XML,
@@ -354,7 +354,7 @@ externalization framework can deconstruct the object using its
 deconstruction pattern, and reconstruct it using its constructor,
 which are already public.
 
-#### Why not "just" do tuples?
+### Why not "just" do tuples?
 
 Some readers will surely be thinking at this point: if we "just" had
 tuples, we wouldn't need data classes.  And while tuples might offer a
@@ -380,7 +380,7 @@ reach for more weakly typed mechanisms is greatly reduced.  (A good
 starting point for thinking about records is that they are _nominal
 tuples_.)
 
-#### Are records the same as value types?
+### Are records the same as value types?
 
 With _value types_ coming down the road through [Project
 Valhalla][valhalla], it is reasonable to ask about the overlap between
@@ -408,7 +408,7 @@ records`.  So while we wouldn't necessarily want to only have one
 mechanism or the other, we certainly want the mechanisms to work
 together.
 
-#### Digression: algebraic data types
+### Digression: algebraic data types
 
 The combination of data classes and sealed types are a form of
 [_algebraic data types_][adt], which refers to the combination of
@@ -440,33 +440,33 @@ obvious equivalents of `Object::equals` and `Object::toString`.)
 Use cases abound for records and sealed hierarchies of records.  Some
 typical examples include:
 
-**Tree nodes.** The `Expr` example earlier shows how records can make
+- **Tree nodes.** The `Expr` example earlier shows how records can make
 short work of tree nodes, such as those representing documents,
 queries, or expressions, and sealing enables developers and compilers
 to reason about when all the cases have been covered.  Pattern
 matching over tree nodes offers a more direct and flexible alternative
 to traversal than the Visitor pattern.
 
-**Multiple return values.** It is often desirable for a method to
+- **Multiple return values.** It is often desirable for a method to
 return more than one thing, whether for reasons of efficiency
 (extracting multiple quantities in a single pass may be more efficient
 than making two passes) or consistency (if operating on a mutable data
 structure, a second pass may be operating on different state.)
 
-For example, say we want to extract both the minimal and maximal value
+  For example, say we want to extract both the minimal and maximal value
 of an array.  Declaring a class to hold two integers may seem
 overkill, but if we can reduce the declaration overhead sufficiently,
 it becomes attractive to use a custom product type to represent these
 related quantities, enabling a more efficient (and readable)
 computation:
 
-```{.java}
-record MinMax(int min, int max);
+  ```{.java}
+  record MinMax(int min, int max);
 
-public MinMax minmax(int[] elements) { ... }
-```
+  public MinMax minmax(int[] elements) { ... }
+  ```
 
-As noted earlier, some users would surely prefer we expose this
+  As noted earlier, some users would surely prefer we expose this
 ability via structural tuples, rather than via a nominal mechanism.
 But having reduced the cost of declaring the `MinMax` type to
 something reasonable, the benefit starts to come into line with the
@@ -477,13 +477,13 @@ does (and, the compiler will prevent you from accidentally assigning a
 `MinMax` to a `Range`, even though both could be modeled as pairs of
 ints.)
 
-**Data transfer objects.**   A _data transfer object_ is an aggregate
+- **Data transfer objects.**   A _data transfer object_ is an aggregate
 whose sole purpose is to package up related values so they can be
 communicated to another activity in a single operation.  Data transfer
 objects typically have no behavior other than storage, retrieval, and
 marshaling of state.
 
-**Joins in stream operations.**  Suppose we have a derived quantity,
+- **Joins in stream operations.**  Suppose we have a derived quantity,
 and want to perform stream operations (filtering, mapping, sorting)
 that operate on the derived quantity.  For example, suppose we want
 to select the `Person` objects whose name (normalized to uppercase)
@@ -491,33 +491,33 @@ has the largest `hashCode()`.  We can use a `record` to temporarily
 attach the derived quantity (or quantities), operate on them, and then
 project back to the desired result, as in:
 
-```{.java}
-List<Person> topThreePeople(List<Person> list) {
-    // local records are OK too!
-    record PersonX(Person person, int hash) {
-        PersonX(Person person) {
-            this(person, person.name().toUpperCase().hashCode());
-        }
-    }
+  ```{.java}
+  List<Person> topThreePeople(List<Person> list) {
+      // local records are OK too!
+      record PersonX(Person person, int hash) {
+          PersonX(Person person) {
+              this(person, person.name().toUpperCase().hashCode());
+          }
+      }
 
-    return list.stream()
-               .map(PersonX::new)
-               .sorted(Comparator.comparingInt(PersonX::hash))
-               .limit(3)
-               .map(PersonX::person)
-               .collect(toList());
-}
-```
+      return list.stream()
+                 .map(PersonX::new)
+                 .sorted(Comparator.comparingInt(PersonX::hash))
+                 .limit(3)
+                 .map(PersonX::person)
+                 .collect(toList());
+  }
+  ```
 
-Here, we start by adjoining the `Person` with the derived quantity,
+  Here, we start by adjoining the `Person` with the derived quantity,
 then we can do ordinary stream operations on the combination, and then
 when we're done, we throw away the wrapper and extract the `Person`.
 
-We could have done this without materializing an extra object, but
+  We could have done this without materializing an extra object, but
 then we would potentially have to compute the hash (and the uppercase
 string) many more times for each element.
 
-**Compound map keys.** Sometimes we want to have a `Map` that is keyed
+- **Compound map keys.** Sometimes we want to have a `Map` that is keyed
 on the conjunction of two distinct domain values.  For example,
 suppose we want to represent the last time a given person was seen in
 a given place: we can easily model this with a `HashMap` whose key
@@ -528,15 +528,15 @@ etc.  Because the record will automatically acquire the desired
 constructor, `equals()`, and `hashCode()` methods, it is ready to be
 used as a compound map key:
 
-```{.java}
-record PersonPlace(Person person, Place place) { }
-Map<PersonPlace, LocalDateTime> lastSeen = ...
-...
-LocalDateTime date = lastSeen.get(new PersonPlace(person, place));
-...
-```
+  ```{.java}
+  record PersonPlace(Person person, Place place) { }
+  Map<PersonPlace, LocalDateTime> lastSeen = ...
+  ...
+  LocalDateTime date = lastSeen.get(new PersonPlace(person, place));
+  ...
+  ```
 
-**Messages.** Records and sums of records are commonly useful for
+- **Messages.** Records and sums of records are commonly useful for
 representing messages in actor-based systems and other
 message-oriented systems (e.g., Kafka.)  The messages exchanged by
 actors are ideally described by products; if an actor responds to a
@@ -544,7 +544,7 @@ set of messages, this is ideally described by a sum of products.  And
 being able to define an entire set of messages under a sum type
 enables more effective type checking for messaging APIs.
 
-**Value wrappers.**  The `Optional` class is an algebraic data type in
+- **Value wrappers.**  The `Optional` class is an algebraic data type in
 disguise; in languages with algebraic data types and pattern matching,
 `Optional<T>` is typically defined as a sum of a `Some(T value)` and a
 `None` type (a degenerate product, one with no components).
@@ -553,7 +553,7 @@ Similarly, an `Either<T,U>` type can be described as a sum of a
 Java, we had neither algebraic data types nor pattern matching, so it
 made sense to expose it using more traditional API idioms.)
 
-**Discriminated entities.** A more sophisticated example is an API
+- **Discriminated entities.** A more sophisticated example is an API
 that needs to return a discriminated entity.  For example, in [JEP
 348][jep348], the Java compiler is extended with a mechanism by which
 invocations of JDK APIs can be transformed at compile time to a more
@@ -564,21 +564,21 @@ how to transform the call (or not).  The options are: transform to an
 `invokedynamic`, transform to a constant, or do nothing.  Using sealed
 types and records, the API would look like:
 
-```{.java}
-interface IntrinsicProcessor {
+  ```{.java}
+  interface IntrinsicProcessor {
 
-    sealed interface Result {
-        record None() implements Result;
-        record Ldc(ConstantDesc constant) implements Result;
-        record Indy(DynamicCallSiteDesc site, Object[] args)
-            implements Result;
-    }
+      sealed interface Result {
+          record None() implements Result;
+          record Ldc(ConstantDesc constant) implements Result;
+          record Indy(DynamicCallSiteDesc site, Object[] args)
+              implements Result;
+      }
 
-    public Result tryIntrinsify(...);
-}
-```
+      public Result tryIntrinsify(...);
+  }
+  ```
 
-In this model, an intrinsic processor receives information about the
+  In this model, an intrinsic processor receives information about the
 call site, and returns either `None` (do no transformation), `Indy`
 (replace the call with the specified `invokedynamic`), or `Ldc`
 (replace the call with the specified constant.)  This sum-of-products
@@ -618,7 +618,7 @@ The representation, and the protocols for construction, deconstruction
 (either a deconstructor pattern, or accessors, or both), equality, and
 display are all derived from the same state description.
 
-#### Customizing records
+### Customizing records
 
 Records, like enums, are classes.  The record declaration can have
 most of the things class declarations can: accessibility modifiers,
@@ -660,44 +660,44 @@ deconstruction semantics as well.
 
 A record that is declared in a nested context is implicitly static.
 
-#### Odds and ends
+### Odds and ends
 
 The above is just a sketch; there's lots of smaller details to work
 out.
 
-**Javadoc.** Since the fields and accessor methods are declared as
+- **Javadoc.** Since the fields and accessor methods are declared as
 part of the class declaration, we will want to adjust the Javadoc
 conventions a bit to accommodate this.  This can be done by permitting
 the `@param` tag on records, which can be propagated to the field and
 accessor documentation.
 
-**Annotations.** Record components constitute a new place to put
+- **Annotations.** Record components constitute a new place to put
 annotations; we'll likely want to extend the `@Target` meta-annotation
 to reflect this.
 
-**Reflection.** Since being a record is a semantic statement,
+- **Reflection.** Since being a record is a semantic statement,
 record-ness -- and the names and types of the state components --
 should be available reflectively.  We may wish to consider a base type
 for records (as `enum` classes have) where additional methods and/or
 specifications can live.
 
-**Serialization.** One of the advantages of records is that we can
+- **Serialization.** One of the advantages of records is that we can
 mechanically derive a safer protocol for marshaling and unmarshaling.
 A sensible way to take advantage of this is for records that implement
 `Serializable` to automatically acquire a `readResolve` method which
 extracts the state and runs it back through the constructor, to
 prevent malicious streams from injecting bad data.
 
-**Extension.** It would be possible to permit records to extend
+- **Extension.** It would be possible to permit records to extend
 _abstract records_, which would allow related records to share certain
 members.  We should hold this possibility in reserve.
 
-**Compatibility.** Since the arity, names, and types of the components
+- **Compatibility.** Since the arity, names, and types of the components
 are propagated directly into the signatures and names of members,
 changes to the state description may not be source- or
 binary-compatible.
 
-**Named invocation.** Because the names of the components form part of
+- **Named invocation.** Because the names of the components form part of
 the record's API, this opens the door to _named invocation_ of
 constructors -- which allows us, in most cases, to forgo the companion
 _builder_ that often goes along with domain classes.  (While it would
@@ -705,7 +705,7 @@ be nice to support this for all classes, records have some special
 properties that make this much less complicated; we might consider
 starting with records and then extending.)
 
-#### Restrictions
+### Restrictions
 
 Careful readers will have noted several restrictions: record fields
 cannot be mutable; no fields other than those in the state description
@@ -717,7 +717,7 @@ in order to broaden its applicability.  But, we should not do so at
 the expense of the conditions that make it work in the first place --
 that we can derive everything from a single state description.
 
-**Extension.** If our mantra is that the record's state description is
+- **Extension.** If our mantra is that the record's state description is
 "the state, the whole state, and nothing but the state", then this
 rules out extending anything (except possibly abstract records),
 because we cannot be sure that there is no state hidden in the
@@ -726,7 +726,7 @@ description is, again, not a complete description of their state.
 (Note that in addition to excluding ordinary extension, this also
 excludes dynamic proxies.)
 
-**Mutability.** The stricture against mutability is more complex,
+- **Mutability.** The stricture against mutability is more complex,
 because in theory one can imagine examples which do not fall afoul of
 the goals.  However, mutability puts pressure on the alignment between
 the state and the API.  For example, it is generally incorrect to base
@@ -743,7 +743,7 @@ single state description.  (And, once we introduce mutability, we need
 to think about thread-safety, which is going to be difficult to
 reconcile with the goals of records.)
 
-As much as it would be nice to automate away the boilerplate of
+  As much as it would be nice to automate away the boilerplate of
 mutable JavaBeans, one need only look at the many such attempts to do
 so (Lombok, Immutables, Joda Beans, etc), and look at how many "knobs"
 they have acquired over the years, to realize that an approach that is
@@ -752,7 +752,7 @@ guaranteed to merely create a new kind of boilerplate.  These classes
 simply have too many degrees of freedom to be captured by a single
 simple description.
 
-Nominal tuples with clearly defined semantics is something that can
+  Nominal tuples with clearly defined semantics is something that can
 make our programs both more concise _and_ more reliable for a lot of
 use cases -- but there are still use cases beyond the limits of what
 they can do for us.  (That doesn't mean that there aren't things we
@@ -761,7 +761,7 @@ not be the delivery vehicle for them.)  So, to be clear: records are
 not intended to replace JavaBeans, or other mutable aggregates -- and
 that's OK.
 
-**Additional fields.** A related tension is whether a record can
+- **Additional fields.** A related tension is whether a record can
 declare fields other than those that are part of the state
 description.  (And again, one can easily imagine examples where this
 is safe.)  On the other hand, this capability again introduces the
@@ -811,7 +811,7 @@ includes, so a list like "All permitted subtypes" might be added
 the parent, or including an annotation that there exist others that
 are not listed.)
 
-#### Exhaustiveness
+### Exhaustiveness
 
 One of the benefits of sealing is that the compiler can enumerate the
 permitted subtypes of a sealed type; this in turn lets us perform
@@ -834,7 +834,7 @@ useful error message ("I know this is a sealed type, but I can't
 provide full exhaustiveness checking here because you can't see all
 the subtypes, so you still need a default.")
 
-#### Inheritance
+### Inheritance
 
 Unless otherwise specified, abstract subtypes of sealed types are
 implicitly sealed, and concrete subtypes are implicitly final.  This
@@ -850,7 +850,7 @@ benefit (much like we do with exceptions today; you can catch
 don't have to.)
 
 An example of where explicit unsealing (and private subtypes) is
-useful can be found in the JEP-334 API:
+useful can be found in the JEP 334 API:
 
 ```{.java}
 sealed interface ConstantDesc
@@ -896,3 +896,4 @@ improve the situation for these use cases as well.
 [uniform]: https://en.wikipedia.org/wiki/Uniform_access_principle
 [adt]: https://en.wikipedia.org/wiki/Algebraic_data_type
 [patterns]: https://openjdk.java.net/jeps/305
+[jep348]: https://openjdk.java.net/jeps/348

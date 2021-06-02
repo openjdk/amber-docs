@@ -1,6 +1,6 @@
 # Towards Better Serialization
 
-**Brian Goetz, June 2019**
+#### Brian Goetz, June 2019 {.author}
 
 This document explores a possible direction for improving
 serialization in the Java Platform.  This is an exploratory document
@@ -10,7 +10,7 @@ specific version of the Java Platform.
 ## Motivation
 
 Java's serialization facility is a bit of a paradox.  On the one hand,
-it was probably critical to Java's success --- Java would probably not
+it was probably critical to Java's success -- Java would probably not
 have risen to dominance without it, as serialization enabled the
 transparent remoting that in turn enabled the success of Java EE.  On
 the other hand, Java's serialization makes nearly every mistake
@@ -31,7 +31,7 @@ The mistakes made by Java's serialization are manifold.  A partial
 list of sins includes:
 
  - **Pretends to be a library feature, but isn't.** Serialization
-pretends to be a library feature --- you opt in by implementing the
+pretends to be a library feature -- you opt in by implementing the
 `Serializable` interface, and serialize with `ObjectOutputStream`.  In
 reality, though, serialization extracts object state and recreates
 objects via privileged, extralinguistic mechanisms, bypassing
@@ -66,7 +66,7 @@ static members when they should be instance members, no one tells you.
 
  - **Woefully imperative.** If you want a customized serial form, you
 can implement the methods `readObject()` and `writeObject()`.  But one
-cannot easily read the code and deduce the serial form --- it's
+cannot easily read the code and deduce the serial form -- it's
 implicit in the bodies of these methods, and it's on you to ensure
 that they're consistent with each other.  Further, if you use these
 methods, it's on you to build in a versioning mechanism from the
@@ -74,7 +74,7 @@ beginning (which is easy to forget), since otherwise this will cause
 pain when you go to evolve your representation or invariants and want
 to maintain serialization compatibility.  And it's also on you to
 repeat (in a syntactically different form) the validity checking the
-constructor does in `readObject` --- and keep the two in sync.
+constructor does in `readObject` -- and keep the two in sync.
 
  - **Tightly coupled to encoding.** The serialization mechanism is
 tightly coupled to its bytestream encoding.  This makes it
@@ -90,7 +90,7 @@ is neither compact, nor efficient, nor human-readable.
 These design choices leads directly to the following serious problems:
 
  - **Cripples library maintainers.** Library designers must think very
-carefully before publishing a serializable class --- as doing so
+carefully before publishing a serializable class -- as doing so
 potentially commits you to maintaining compatibility with all the
 instances that have ever been serialized.  While the default
 serialization scheme has some ability to deal with simple
@@ -130,7 +130,7 @@ serialization completely subverts the integrity of the object model.
 security exploits that target serialization is impressive; no ordinary
 developer can keep them all in their head at once.  Even security
 experts can review serialization code and miss vulnerabilities.  It is
-just too hard to secure serialization for trusted code --- because
+just too hard to secure serialization for trusted code -- because
 serialization operates mostly invisibly, and is controlled by arcane
 low-level mechanisms that do not fit into an intuitive model of how
 classes work.  As a trivial example of what class writers have to
@@ -152,17 +152,17 @@ serialization's need to write final fields after construction.  (Think
 about that for a moment; the memory model is supposed to describe the
 language's _low level interaction with hardware_, and we needed to
 distort it to accomodate serialization!)  A nontrivial fraction of the
-design effort for Lambdas involved interaction with serialization ---
+design effort for Lambdas involved interaction with serialization --
 and the best we could accomplish was a compromise that no one could
 really like all that much.  (This even bubbled up into the syntax,
-requiring the need to express intersection types in casts --- purely to
+requiring the need to express intersection types in casts -- purely to
 accomodate serializability.)  And the same will be true with records,
 and value types, and probably everything else in our future.
 Serialization is an ongoing tax on evolving the language.
 
 ## The underlying mistake
 
-Many of the design errors listed above stem from a common source ---
+Many of the design errors listed above stem from a common source --
 the choice to implement serialization by "magic" rather than giving
 deconstruction and reconstruction a first-class place in the object
 model itself.  Scraping an object's fields is magic; reconstructing
@@ -173,7 +173,7 @@ provides us.
 
 Worse, the magic does its best to remain invisible to the reader.  It
 would be one thing if there were big signs planted near the magic
-warning us "Dark magic here!" --- at least we might stop and think
+warning us "Dark magic here!" -- at least we might stop and think
 about what non-obvious things are going on.  But with invisible magic,
 we continue to think that our primary job is designing a bulletproof
 API and implementing our business logic, when in fact we've left the
@@ -208,7 +208,7 @@ _too much_.  That is, it aims to be able to serialize any object graph
 and reconstitute it, at full fidelity and in full working order, on
 the other side.  But in reality, the vast majority of use cases for
 serialization don't involve serializing _programs_, but merely
-serializing _data_ --- which is a far easier problem.  (This mistake is
+serializing _data_ -- which is a far easier problem.  (This mistake is
 understandable in historical context, since at the time the industry
 believed that distributed objects were going to save us from
 complexity.)  Many of the sins of serialization were committed in the
@@ -253,7 +253,7 @@ intrinsically in tension with others (for example, some might consider
 using JSON to be an advantage for reasons of human readability or
 interoperability; others see it as an inefficient and error-prone
 encoding).  But very few of these alternate libraries attempt to
-address the fundamental programming-model or security concerns --- they
+address the fundamental programming-model or security concerns -- they
 are mostly concerned either with encoding format, efficiency, or
 flexibility.
 
@@ -276,7 +276,7 @@ Specification_](https://docs.oracle.com/en/java/javase/12/docs/specs/serializati
 ### Narrow the requirements
 
 We've noted above that one of the problems with Java Serialization is
-that it tries to do too much --- to ensure that an arbitrary object
+that it tries to do too much -- to ensure that an arbitrary object
 graph can be persisted and reconstituted in perfect operational order.
 But this reflects a view of the world that has not come to pass, and
 modern expectations of a serialization mechanism are generally far
@@ -289,7 +289,7 @@ the goals explicitly to reflect this reality:
 > We should seek to support serialization of _data_, not _objects_.
 
 For example, many modern services are built around exchanging JSON
-documents --- which cannot even represent the notion of object
+documents -- which cannot even represent the notion of object
 identity!  The fact that JSON is considered a viable encoding strategy
 for nearly all services underscores the fact that Java serialization
 is solving a much harder problem than it actually needs to.
@@ -298,7 +298,7 @@ Much of the complexity and risk of Java Serialization stems from the
 desire to transparently serialize logically cyclic data, such as
 collections that contain themselves (which cannot be represented by
 JSON documents at all).  Similarly, many of the potential attacks
-rely on exploiting backreferences --- which comes from the desire to
+rely on exploiting backreferences -- which comes from the desire to
 produce a topologically identical copy.
 
 ### Make serialization explicit
@@ -314,10 +314,10 @@ API.  But Java serialization constitutes an implicit public API, and
 because it is often invisible, it is too easy to forget to secure it.
 
 When we design a class, we're often thinking about its more typical
-clients --- ordinary Java code that will access or extend our class,
+clients -- ordinary Java code that will access or extend our class,
 through the documented, public-facing API.  Let's call this the "front
 door" API or the "user-facing" API.  But classes often have APIs that
-are for a different category of clients --- frameworks such as
+are for a different category of clients -- frameworks such as
 serialization, mocking, or dependency injection.  We commonly expose
 API points intended for use by frameworks, that we do not necessarily
 want to expose to "ordinary" users.  Let's call these the "back door"
@@ -328,7 +328,7 @@ back-door APIs are implicit, and therefore too hard for class authors
 to secure and for clients to reason about.
 
 > It should be as easy to secure the "back door" API as it is the
-> "front door" API --- and ideally we would do so with the same
+> "front door" API -- and ideally we would do so with the same
 > techniques.
 
 At the very least, we want to make it harder to forget to consider
@@ -344,7 +344,7 @@ Another form of convenient, but dangerous, implicitness is
 inheritance.  Because serializability is indicated by implementing an
 interface, making a class or interface `Serializable` puts the
 responsibility for serialization on all your subclasses.  This makes
-it too easy for classes to be serializable without realizing it ---
+it too easy for classes to be serializable without realizing it --
 and therefore at risk for leaving the back door wide open.
 
 ### Bring serialization into the object model
@@ -471,12 +471,12 @@ towards the more explicit mechanism.
 ### Sidebar: pattern matching
 
 It should be clear enough how we might explicitly represent
-reconstruction of an object from its serialized form --- a constructor
-or factory method.  To represent the other direction --- state
-extraction --- we need to borrow some machinery from an upcoming
+reconstruction of an object from its serialized form -- a constructor
+or factory method.  To represent the other direction -- state
+extraction -- we need to borrow some machinery from an upcoming
 language feature: [_pattern matching_][patterns].  Pattern matching
 provides class authors with the ability to implement mediated
-destructuring logic as part of a class's API --- which is exactly what
+destructuring logic as part of a class's API -- which is exactly what
 we need for extracting the serialized form of an instance.
 
 In the following `Point` class, the author has provided a constructor
@@ -554,7 +554,7 @@ are:
    accessed via reflection;
  - The serial form can be decoupled from the in-memory representation;
  - Extraction and reconstruction can be factored from the stream
-   representation --- one can take a serializable object and serialize
+   representation -- one can take a serializable object and serialize
    to byte streams, JSON, XML, etc., using the same basic extraction
    and reconstruction mechanism;
  - We can statically validate that serialization and deserialization
@@ -567,7 +567,7 @@ are:
 The last point is the most important, as it is key to taming the
 security risks inherent in serialization.  While we're used to coding
 constructors and factories defensively, deserialization is when we
-most need that defensiveness --- and when we currently use it the
+most need that defensiveness -- and when we currently use it the
 least!  Deserialization should be able to proceed through the same
 defensive code as objects created through the primary API.
 
@@ -830,7 +830,7 @@ class Foo {
 
 The `open` modifier would permit core reflection to allow the member
 to be dynamically invoked, even though its accessibility is otherwise
-restricted --- whether because the member itself is inaccessible, or
+restricted -- whether because the member itself is inaccessible, or
 the containing class is inaccessible, or the containing package is not
 exported or opened.  (We choose a language keyword here rather than an
 annotation because it actually affects accessibility semantics, rather
@@ -906,7 +906,7 @@ first is the inability to represent cyclic object graphs, such as
 lists that contain each other.  (However, we should note that this
 exclusion does not apply to object graphs whose cyclicity is a merely
 a representational artifact, such as the link nodes in a doubly-linked
-list --- these can be serialized by extracting a more abstract,
+list -- these can be serialized by extracting a more abstract,
 non-cyclic state description (such as the elements themselves) rather
 than the physical representation.)  This is indeed a real restriction;
 on the other hand, JSON is incapable of representing cycles and it is
@@ -919,7 +919,7 @@ that implements `Serializable` or using default serialization.  This
 may be a challenge for inner classes and lambdas, for which declaring
 the appropriate members may not be syntactically possible, and for
 which we might have to make some special accomodation in the language.
-This limitation is also, in some way, a benefit --- it is far more
+This limitation is also, in some way, a benefit -- it is far more
 obvious what is going to happen when an instance is serialized or
 deserialized, since all the code is in one place, and subclasses do
 not inherit the serialization vulnerabilities of their supertypes.

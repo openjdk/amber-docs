@@ -1,8 +1,7 @@
 
 # Programmer's Guide to Text Blocks
 
-#### Jim Laskey and Stuart Marks\
-Version 11 (August 2020)
+#### Jim Laskey and Stuart Marks <br> Version 11 (August 2020) {.author}
 
 [JEP 378](http://openjdk.java.net/jeps/378) introduces _text blocks_
 into Java SE 15 as a Standard feature. While the JEP explains the feature
@@ -94,7 +93,7 @@ Using text blocks removes much of the clutter:
 
 ## Using Text Blocks
 
-#### Preview Feature in Java SE 13 and 14
+### Preview Feature in Java SE 13 and 14
 
 Text blocks existed as a [Preview](http://openjdk.java.net/jeps/12)
 feature of the Java Language in Java SE 13 and 14. In order to use text
@@ -119,7 +118,7 @@ with a main program:
 (Single-file source code programs are described in
 [JEP 330](https://openjdk.java.net/jeps/330).)
 
-#### Standard Feature in Java SE 15 and Beyond
+### Standard Feature in Java SE 15 and Beyond
 
 In Java SE 15 and beyond, the `--enable-preview` and `-source` flags are
 no longer required to use text blocks:
@@ -141,7 +140,7 @@ with a main program, again with no additional flags:
 [JEP 330](https://openjdk.java.net/jeps/330).)
 
 
-#### Text Block Syntax
+### Text Block Syntax
 
 A text block begins with three double-quote characters followed by a
 line terminator. You can't put a text block on a single line, nor can
@@ -186,7 +185,7 @@ equivalent string literal would be:
     String source = "String message = \"Hello, World!\";\n" +
                     "System.out.println(message);\n";
 
-#### That Final New Line
+### That Final New Line
 
 Note that the example above,
 
@@ -210,7 +209,7 @@ last `\n`. However, as described in guideline G12 below,
 a better alternative is to use the `\<line-terminator>` escape sequence
 (see [New Escape Sequences](#new-escape-sequences)).
 
-#### Incidental White Space
+### Incidental White Space
 
 Ideally, a text block would be indented to match the indentation of the
 surrounding code. For example:
@@ -349,7 +348,7 @@ This results in:
         green
         blue
 
-#### Trailing White Space
+### Trailing White Space
 
 Trailing white space on each line in a text block is also considered
 incidental and is stripped away by the Java compiler. This is done so
@@ -393,7 +392,7 @@ analysis.  By contrast, character and string escapes such as `\040`
 are processed after lexical analysis has divided the source file into
 tokens and has identified string literals and text blocks.
 
-#### Detecting Potential Issues with White Space
+### Detecting Potential Issues with White Space
 
 In the preceding examples, all indentation consisted of space
 characters. However, sometimes people use TAB `\t` characters.
@@ -433,7 +432,7 @@ any line within a text block. If you need to preserve trailing white
 space, use one of the escaping or replacement techniques described in
 the section above.
 
-#### Normalization Of Line Terminators
+### Normalization Of Line Terminators
 
 One of the complications of a multi-line string literal is that the line
 terminator (`\n`, `\r`, or `\r\n`) used in the source file varies from
@@ -461,7 +460,7 @@ is equivalent to this string literal:
 If the platform line terminator is required then
 `String::replaceAll("\n", System.lineSeparator())` can be used.
 
-#### Translation Of Escape Sequences
+### Translation Of Escape Sequences
 
 As with string literals, text blocks recognize the escape sequences,
 `\b`, `\f`, `\n`, `\t`, `\r`, `\"`, `\'`, `\\`, and octal
@@ -515,7 +514,7 @@ space ("`·`" is used to show trailing space). The result is:
 **Note:** As noted previously, the Unicode escape sequence
 `\u0020` _cannot_ be used as a substitute for `\040`.
 
-#### New Escape Sequences
+### New Escape Sequences
 
 The `\<line-terminator>` escape sequence explicitly suppresses the inclusion of
 an implicit new line character.
@@ -838,7 +837,7 @@ text blocks feature. (Note that these methods are marked
 deprecated, for removal, in Java SE 13 and 14, to indicate that they are part of a
 preview feature.)
 
-#### `String formatted(Object... args)`
+### `String formatted(Object... args)`
 
 This method is equivalent to `String.format(this, args)`. The
 advantage is that, as an instance method, it can be chained off the
@@ -851,7 +850,7 @@ end of a text block:
         Salary: $%.2f
         """.formatted(name, phone, address, salary);
 
-#### `String stripIndent()`
+### `String stripIndent()`
 
 The `stripIndent` method removes incidental white space from a
 multi-line string, using the same algorithm used by the Java
@@ -859,7 +858,7 @@ compiler. This is useful if you have a program that reads text as
 input data and you want to strip indentation in the same manner as
 is done for text blocks.
 
-#### `String translateEscapes()`
+### `String translateEscapes()`
 
 The `translateEscapes` method performs the translation of escape
 sequences (`\b`, `\f`, `\n`, `\t`, `\r`, `\"`, `\'`, `\\`, `\s`,

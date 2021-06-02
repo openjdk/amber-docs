@@ -58,7 +58,7 @@ Withdrawn:
 
   - [Members](http://openjdk.java.net/census#amber)
   - Mailing Lists
-    - [amber-dev](http://mail.openjdk.java.net/mailman/listinfo/amber-dev) -- For technical discussion related to Project Amber
-    - [amber-spec-experts](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-experts) -- For Expert Group members only
-    - [amber-spec-observers](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-observers) -- A read-only clone of amber-spec-experts
-    - [amber-spec-comments](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-comments) -- For submitting comments on the official specs
+    - [amber-dev](http://mail.openjdk.java.net/mailman/listinfo/amber-dev) --- For technical discussion related to Project Amber
+    - [amber-spec-experts](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-experts) --- For Expert Group members only
+    - [amber-spec-observers](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-observers) --- A read-only clone of amber-spec-experts
+    - [amber-spec-comments](http://mail.openjdk.java.net/mailman/listinfo/amber-spec-comments) --- For submitting comments on the official specs

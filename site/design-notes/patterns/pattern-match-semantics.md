@@ -1,5 +1,5 @@
-# Pattern Matching for Java -- Semantics
-#### Gavin Bierman and Brian Goetz (Updated August 2020)
+# Pattern Matching for Java --- Semantics
+#### Gavin Bierman and Brian Goetz (Updated August 2020) {.author}
 
 This document explores a possible direction for supporting _pattern
 matching_ in the Java Language.  _This is an exploratory document only
@@ -9,7 +9,7 @@ reference other features under exploration; this is purely for
 illustrative purposes, and does not constitute any sort of plan or
 commitment to deliver any of these features.
 
-#### Pattern matching documents
+### Pattern matching documents
 
  - [Pattern Matching For Java](pattern-matching-for-java).  Overview of
    pattern matching concepts, and how they might be surfaced in Java.
@@ -50,7 +50,7 @@ In any pattern match, there is always a pattern and a _match target_.  For
 in the switch header.  The match target has both a static and dynamic type; both
 may be used in determining whether the pattern matches.
 
-#### Type checking
+### Type checking
 
 Certain pattern matches can be rejected at compile time based strictly on static
 checks, such as:
@@ -132,7 +132,7 @@ a primitive type `P`, then the constant is interpreted as being of
 type `P`.  This means that we can speak of every constant pattern
 having an unambiguous type.
 
-#### Matching
+### Matching
 
 Some patterns are _total_ on certain target types, which means no dynamic type
 test is required to determine matching.  The "ignore" and "var" patterns
@@ -165,7 +165,7 @@ deconstructor `D` has a single binding variables of type `T`, then `x` matches
 such a match, the target of `D(P)` is `x`, but the target of `P` is the
 synthetic variable `alpha`.
 
-#### Binding variables
+### Binding variables
 
 Some patterns define variables which will be bound to components extracted from
 the target if the match succeeds.  These variables have types defined as
@@ -315,7 +315,7 @@ in the last clause, we can merge these bindings.  If we could not, we
 would have to restructure the code, likely with significant
 duplication, to achieve the same effect.
 
-#### Scoping and statements
+### Scoping and statements
 
 We have defined which expressions produce bindings, but we have not
 yet tied their scopes to statements.  The obvious extension of the
@@ -431,7 +431,7 @@ examples, and there were no surprises, because they were already
 familiar with when a variable is guaranteed to have a value, and when
 not.)
 
-#### Shadowing
+### Shadowing
 
 Because the scoping of pattern bindings is not exactly the same as for local
 variables, we must describe the interaction between pattern bindings and other
@@ -554,7 +554,7 @@ means no `case null` (which must always be first) and no total pattern (which
 must always be last).  Similarly, we would like to be able to refactor chains
 of `instanceof` and `switch` to each other.  
 
-#### Nullity -- some false starts
+### Nullity --- some false starts
 
 Our path for determining the semantics of various patterns with respect to null
 has been a fairly winding one.  While it is impractical to rehash the entire

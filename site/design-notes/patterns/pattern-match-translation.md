@@ -1,6 +1,6 @@
-# Pattern Matching for Java -- Runtime and Translation
+# Pattern Matching for Java --- Runtime and Translation
 
-#### Brian Goetz and John Rose, June 2017
+#### Brian Goetz and John Rose, June 2017 {.author}
 
 This document explores compiler translation strategies and runtime
 support for supporting [_pattern matching_][pattern-match] in the Java
@@ -22,7 +22,7 @@ match, or for the implementation of a pattern?  (There is also the
 question of how one might declare a pattern in source code; this is a
 topic for a separate document.)
 
-#### What is a pattern?
+### What is a pattern?
 
 A _pattern_ is a combination of a _predicate_ that can be applied to a
 target, and a set of _binding variables_ that are produced if that
@@ -43,7 +43,7 @@ constructor; where methods and constructors take _N_ arguments and
 produce one result, a pattern takes one argument and produces _N_
 results.
 
-#### Encoding patterns as methods
+### Encoding patterns as methods
 
 It is easy -- though neither performant nor consequence-free -- to
 model patterns as ordinary methods.  Scala models patterns using
@@ -75,7 +75,7 @@ pattern match operations can proceed without boxing, in a manner
 highly optimizable by the JIT, and, as a bonus, in a way that can be
 used across JVM languages.
 
-#### Further performance considerations
+### Further performance considerations
 
 The most common case of a pattern is that there is no significant
 shared computation between testing to see if the pattern applies to
@@ -142,7 +142,7 @@ if ((boolean) predicate.invoke(target)) {
 }
 ```
 
-#### Intermediate carriers
+### Intermediate carriers
 
 As mentioned, there is a minority of cases where an intermediate
 carrier is needed to hold the results of preprocessing the target
@@ -178,7 +178,7 @@ class declaring the pattern, but must be subject to some migration
 compatibility constraints, since existing client code will embed the
 carrier type in call sites.
 
-#### Combinators
+### Combinators
 
 This strategy also allows us to move much of the work of implementing
 pattern matching into the runtime (without sacrificing efficiency),
@@ -241,7 +241,7 @@ overloaded patterns:
     -- or --
     case File(URI u): ...
 
-#### Method naming
+### Method naming
 
 Even if we could easily represent patterns as methods in a class file,
 we can easily fall afoul of overloading constraints.  If we took the
@@ -293,7 +293,7 @@ Deconstructor_attribute {
 }
 ```
 
-#### Additional optimizations
+### Additional optimizations
 
 It may be desirable for a `__Pattern` to convey, at run time, that it
 is carrier-free; this enables combinators to optimize away boxes for
@@ -311,14 +311,14 @@ handles used for pattern matching are grounded in chains of constants,
 and so will routinely inline away all the intermediate data-shuffling
 code and carrier management code.
 
-#### Data classes
+### Data classes
 
 Even in the absence of a language syntax for declaring member
 patterns, the _data classes_ feature currently under consideration
 lends itself cleanly to automatically exposing a pattern which matches
 the class signature (and the constructor signature).
 
-#### Reflection
+### Reflection
 
 As patterns are class members, we'll need reflective support for
 discovering and invoking patterns.  This is a straightforward
@@ -529,6 +529,7 @@ topics include:
    translation strategy, and migration compatibility before moving on
    to the far more subjective subject of defining a language syntax
    for describing patterns.
+
  - Switch classifiers.  While some languages translate pattern
    switches into chains of if-else, it is often possible to do better,
    by performing a pre-computation (e.g., hashing) on the target, and

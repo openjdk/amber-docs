@@ -1,14 +1,13 @@
 # Pattern Matching in the Java Object Model
 
-#### Brian Goetz and Gavin Bierman
-#### December 2020
+#### Brian Goetz and Gavin Bierman <br> December 2020 {.author}
 
 This document describes a possible approach for how _pattern matching_ might be
 integrated more deeply into the language.  _This is an exploratory document only
 and does not constitute a plan for any specific feature in any specific version
 of the Java Language._
 
-#### Pattern matching documents
+### Pattern matching documents
 
 - [Pattern Matching For Java](pattern-matching-for-java).  Overview of
   pattern matching concepts, and how they might be surfaced in Java.
@@ -35,7 +34,7 @@ on their own to want to add pattern matching to Java, but we believe there is
 also a deeper reason to go there: that it fills in a hole in the object model,
 and one we might not have even realized we were missing.
 
-#### Recap -- what is pattern matching?
+### Recap -- what is pattern matching?
 
 Readers who are unfamiliar with pattern matching should first read the
 above-referenced documents, but to summarize: pattern matching fuses three
@@ -51,7 +50,7 @@ expresses all three of these things in one go -- it asks if the target is a
 `Point`; if it is, casts it to `Point` and extracts its `x` and `y` coordinates;
 and binds these to the variables `x` and `y`.
 
-#### Aggregation and destructuring
+### Aggregation and destructuring
 
 Object-oriented languages provide many facilities for _aggregation_; the [Gang
 of Four][gof] book defines several patterns for object creation (e.g., Factory,
@@ -83,7 +82,7 @@ approach, clients must be aware of how factories map their parameters to
 abstract properties, which is complex and error-prone.  _Destructuring_ provides
 this missing ability to recover the specific from the abstract more directly.
 
-> Destructuring is the dual of aggregation.
+> _Destructuring is the dual of aggregation._
 
 Java provides direct linguistic support for aggregation, in the form of
 _constructors_ that take a description of an object's initial state and
@@ -108,9 +107,9 @@ switch (shape) {
 }
 ```
 
-> Enabling API designers to provide complementary destructuring operations for
+> _Enabling API designers to provide complementary destructuring operations for
 their aggregation operations enables more reversible APIs while still allowing
-the API to mediate access to encapsulated state.
+the API to mediate access to encapsulated state._
 
 Of course, there may be some aggregates that don't want to give up their state,
 and that's fine.  The goal is not to force transparency on all classes, but
@@ -118,7 +117,7 @@ instead to give API designers the tools with which to expose destructuring
 operations that are structurally similar to its aggregation operations, should
 they so desire.  Many, but not all, APIs would benefit from this.
 
-#### Object creation in Java
+### Object creation in Java
 
 The most common idioms for creating objects in Java are constructors, factories,
 and builders.  Constructors are a language feature; factories and builders are
@@ -176,7 +175,7 @@ case Optional.of(var x): ...
 (with bonus points if we can make the combination of these two patterns _total_
 on non-null instances of `Optional`.)
 
-#### Composition
+### Composition
 
 Another aspect in which we would like destructuring to mirror aggregation is in
 _composition_.  Suppose, in our `Shape` example, we put a unit-sized red ball in
@@ -215,7 +214,7 @@ if (os instanceof Optional.of(Shape.redBall(var size))
 This will match an `Optional` that contains a red ball of unit radius,
 regardless of how it was created.  
 
-> First-class destructuring leads to composable APIs.
+> _First-class destructuring leads to composable APIs._
 
 Method invocations compose from the inside out; pattern matching, which works
 like a method invocation in reverse, composes from the outside in.  A nested
@@ -245,7 +244,7 @@ if (os instanceof Optional.of(Shape.ofRedBall(== 1))) { ... }
 
 where `== c` is a constant pattern that matches the constant `c`.  
 
-#### Isn't this just multiple return?
+### Isn't this just multiple return?
 
 It may appear at first that patterns -- which can "return" multiple values to
 their "callers" -- are really just methods with multiple return values, and
@@ -266,7 +265,7 @@ a variable is assigned; we would have to make up the difference with explicit
 control flow logic (e.g., `if`), that grows more complex and error-prone the
 more deeply we try to combine conditions.
 
-#### Patterns as API points
+### Patterns as API points
 
 One does not need to look very far to see the amount of work we expend working
 around the lack of a first-class destructuring mechanism; we're so used to doing
@@ -296,9 +295,9 @@ if (c instanceof Class.arrayClass(var componentType)) { ... }
 Now the library need expose only one API point, the client can't misuse it, and
 the act-before-check bug is impossible.
 
-> First-class destructuring leads to APIs that are harder to misuse.
+> _First-class destructuring leads to APIs that are harder to misuse._
 
-#### Data-driven polymorphism
+### Data-driven polymorphism
 
 Java offers several mechanisms for polymorphism; _parametric polymorphism_
 (generics), where we can share code across a family of instantiations that vary
@@ -343,9 +342,9 @@ mapping between target state and the pattern's binding variables -- and the
 natural place to put that code is in the same class as the constructor or
 factory.
 
-> Patterns are executable class members.
+> _Patterns are executable class members._
 
-#### Anatomy of a pattern
+### Anatomy of a pattern
 
 In a pattern match like:
 
@@ -360,7 +359,7 @@ the class `Point`.  But we can have patterns with more sophisticated
 applicability tests, such as "does this `Optional` contain a value" or "does
 this `Map` contain a mapping for a given key."
 
-#### Deconstruction patterns
+### Deconstruction patterns
 
 A simple form of pattern is the dual of construction.  A constructor takes zero
 or more state elements and produces an aggregate; the reverse starts with an
@@ -413,7 +412,7 @@ The duality between constructor and deconstructor is manifest in multiple ways:
     instance and static behavior -- they are instance members, but are invoked
     statically and not inherited.  Deconstructors are the same.
 
-#### Method patterns
+### Method patterns
 
 Since patterns are class members, let's enumerate some of the degrees of freedom
 that methods have, and ask if they make sense for patterns as well.  (The final
@@ -421,7 +420,7 @@ design may or may not incorporate all of these aspects, but the intent of this
 section is to show that the tools we use for modeling existing class members
 extend equally well to patterns.)
 
-**Does it make sense to have accessibility modifiers on pattern declarations?**
+- **Does it make sense to have accessibility modifiers on pattern declarations?**
 Yes!  For example, we routinely declare protected constructors for use by
 subclasses in implementing their own constructors.  In exactly the same way,
 protected deconstructors can be used by subclasses in implementing their own
@@ -429,12 +428,12 @@ deconstructors.  And, just as we use private or package-private constructors to
 restrict who can instantiate an object, we can use private or package-private
 deconstructors to restrict who can take an instance apart and access its state.
 
-**Does pattern overloading make sense?**  Yes!  Just as we may want to provide
+- **Does pattern overloading make sense?**  Yes!  Just as we may want to provide
 multiple overloads of a constructor, each with different descriptions of an
 object's state, we may want to provide corresponding overloads of deconstructors
 to mirror the state descriptions accepted by the various constructors.
 
-**Do static patterns make sense?**  Yes!  Just as some APIs expose static
+- **Do static patterns make sense?**  Yes!  Just as some APIs expose static
 factories rather than constructors, it also makes sense to expose static
 patterns as the dual of these static factories.  For example, the factory method
 `Optional.of(t)` takes a `T` and wraps it in an `Optional`; a corresponding
@@ -442,7 +441,7 @@ static pattern would take an `Optional<T>` and deconstruct it, conditionally,
 giving up the contained value, and fail to match when the target `Optional` is
 empty.
 
-Static methods have another advantage, which is that they can be declared
+  Static methods have another advantage, which is that they can be declared
 outside of the relevant class -- and the same is true of static patterns.  Just
 as a class can expose a static factory for an unrelated class, a class can also
 expose a static pattern for another class (as long as the relevant state is
@@ -452,18 +451,18 @@ could still be provided by an unrelated library.  Similarly, APIs that use
 "sidecar" classes like `Collections` to hold factories, can put patterns there
 as well.
 
-**Do generic patterns make sense?**  Yes!  Static factories are often generic
+- **Do generic patterns make sense?**  Yes!  Static factories are often generic
 methods, such as `Optional::of`; these generic type parameters can be used to
 express type constraints on the signature.  The same is true for patterns.
 
-**Do instance patterns make sense?**  Yes!  Just as instance methods allow a
+- **Do instance patterns make sense?**  Yes!  Just as instance methods allow a
 supertype to define the API and for subtypes to define the implementation, the
 same can be done with patterns.  Like deconstruction patterns, instance patterns
 implicitly use the receiver as the target to be matched.  A pattern on `Map` for
 "does the map contain this key" would be an instance pattern, for example -- and
 each `Map` implementation might want to provide its own implementation for this.
 
-An API idiom that might make use of instance patterns are the dual of
+  An API idiom that might make use of instance patterns are the dual of
 _builders_.  Builders accept a sequence of calls to add content or set
 properties on the object being built.  To deconstruct an object that has been
 built in this manner, we can define an _unbuilder_, which could iterate through
@@ -472,31 +471,31 @@ to the builder methods) for "does the current item have this structure".  This
 allows the API developer to expose a rich deconstruction API without having to
 make the structure directly accessible, or copy the data to another format.
 
-**Do abstract patterns make sense?**  Yes!  An interface such as `Map` may
+- **Do abstract patterns make sense?**  Yes!  An interface such as `Map` may
 want to expose a pattern which matches a `Map` which has a certain key, and if
 so, binding the corresponding value, and leave the implementation to concrete
 subtypes.  
 
-**Does overriding patterns make sense?**  Yes!  A skeletal implementation
+- **Does overriding patterns make sense?**  Yes!  A skeletal implementation
 such as `AbstractMap` could provide a least-common-denominator implementation
 of a pattern, allowing concrete subtypes to override it.
 
-**Do varargs patterns make sense?**  Yes!  Consider a method like
+- **Do varargs patterns make sense?**  Yes!  Consider a method like
 `String::format`, which takes a format string and a varargs of `Object...`
 arguments to be substituted into the string:
 
-    String s = String.format("%s is %d years old", name, age);
+      String s = String.format("%s is %d years old", name, age);
 
-To reverse the encoding from data to string, we might want to expose a
+  To reverse the encoding from data to string, we might want to expose a
 complementary pattern, which exposes an `Object...` of extracted values --
 which can be refined further by pattern composition:
 
-    if (s instanceof String.format("%s is %d years old",
-                                   String name, Integer.valueOf(int age))) {
-        ...
-    }
+      if (s instanceof String.format("%s is %d years old",
+                                     String name, Integer.valueOf(int age))) {
+          ...
+      }
 
-**Does it make sense for patterns to delegate to other patterns?**  Yes!  Just
+- **Does it make sense for patterns to delegate to other patterns?**  Yes!  Just
 as constructors delegate to other constructors via `this()` or `super()`, we
 expect that patterns will also want to delegate to other patterns to bind a
 subset of their binding variables -- and we want it to be easy to do so.
@@ -505,13 +504,13 @@ It should not be surprising that all the degrees of freedom that make sense for
 constructors and methods, also make sense for patterns -- because they describe
 complementary operations.
 
-#### Additional degrees of freedom
+### Additional degrees of freedom
 
 There are also some characteristics that are applicable to patterns but not to
 constructors or methods, and these influence how we might declare patterns
 in source code.  
 
-**Targets and applicability.**  Patterns have a _target_ operand, which is the
+- **Targets and applicability.**  Patterns have a _target_ operand, which is the
 instance against which the pattern will be matched.  They also have a static
 _target type_; if the static type of the operand is not cast-convertible to the
 target type, the pattern cannot match.  For a type pattern `T t` or a
@@ -521,7 +520,7 @@ instance patterns, the target type is the receiver.  (For static patterns, the
 target type must be explicitly specified somehow as part of its declaration,
 along with some way of denoting a reference to the target.)
 
-**Totality vs partiality.**  Some patterns are _total_ on their target type,
+- **Totality vs partiality.**  Some patterns are _total_ on their target type,
 meaning that all (non-null) instances of that type will match the pattern; type
 patterns and deconstruction patterns are total in this way.  Others are
 _partial_, where not only must the target be of a certain type, but it also must
@@ -535,26 +534,26 @@ this be throwing an exception, returning a sentinel, or some other mechanism.
 (For simplicity, we may decide that deconstruction patterns are always total and
 other patterns are always partial.)
 
-**Input and output arguments.**  The patterns we've seen so far have a target
+- **Input and output arguments.**  The patterns we've seen so far have a target
 and zero or more binding variables, which can be thought of as outputs.  Some
 patterns (such as "the target is a `Map` containing a mapping whose key is X")
 may also need one or more _inputs_.  This puts some stress on the syntactic
 expression of both the declaration and the use of a pattern, as it should be
 obvious on both sides which arguments are inputs and which are outputs.
 
-**Exhaustiveness.**  In some cases, groups of patterns (such as `Optional::of`
+- **Exhaustiveness.**  In some cases, groups of patterns (such as `Optional::of`
 and `Optional::empty`) are total _in the aggregate_ on a given type.  It would
 be good if we could reflect this in the declaration, so that the compiler could
 see that the following switch is exhaustive:
 
-```
-Optional<Foo> o = ...;
-switch (o) {
-    case Optional.empty(): ...
-    case Optional.of(var foo): ...
-    // Ideally, no default would be needed
-}
-```
+  ```
+  Optional<Foo> o = ...;
+  switch (o) {
+      case Optional.empty(): ...
+      case Optional.of(var foo): ...
+      // Ideally, no default would be needed
+  }
+  ```
 
 ## Combining patterns
 
@@ -609,7 +608,7 @@ through algebraic combinators) is that the compound pattern is all-or-nothing;
 either the whole thing matches and all the bindings are defined, or none of them
 are.  
 
-#### A possible approach for parsing APIs
+### A possible approach for parsing APIs
 
 The techniques outlined so far pave the way for vastly improving APIs for
 decomposing aggregates like JSON documents.  Taking an example from the JSONP
@@ -672,7 +671,7 @@ This code looks more like the document we are trying to parse, and also has the
 advantage that either the whole expression matches and all the bindings are
 defined, or none of them are.  
 
-#### Down the road: structured patterns?
+### Down the road: structured patterns?
 
 For each of the idioms for aggregation, we have seen that we can construct a
 pattern which serves as its dual.  If, in some future version of Java, we added
@@ -714,7 +713,7 @@ if (doc instanceof
     }) { ... }
 ```
 
-#### Flatter APIs
+### Flatter APIs
 
 One possible consequence of having patterns in our API toolbox is that APIs may
 become "flatter".  In the `Shape` example above, its conceivable that  one might

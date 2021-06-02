@@ -1,5 +1,5 @@
 # Type patterns in switch
-#### Brian Goetz, Sept 2020
+#### Brian Goetz, Sept 2020 {.author}
 
 This document describes a possible approach for the next phase of  _pattern
 matching_ -- adding type patterns to the `switch` statement.  This builds on the
@@ -7,7 +7,7 @@ work of [JEP 375][jep375].  _This is an exploratory document only and does not
 constitute a plan for any specific feature in any specific version of the Java
 Language._
 
-#### Pattern matching documents
+### Pattern matching documents
 
 - [Pattern Matching For Java](pattern-matching-for-java).  Overview of
   pattern matching concepts, and how they might be surfaced in Java.
@@ -44,7 +44,7 @@ Unfortunately, `switch` is one of the most complex, irregular constructs we have
 in Java, so we must teach it some new tricks while avoiding some existing traps.
 Such tricks and traps may include:
 
-**Typing.**  Currently, the operand of a `switch` may only be one of the
+- **Typing.**  Currently, the operand of a `switch` may only be one of the
 integral primitive types, the box type of an integral primitive, `String`, or an
 `enum` type.  (Further, the type affects the interpretation of case labels;  if
 the `switch` operand is an `enum` type, the `case` labels must be _unqualified_
@@ -54,7 +54,7 @@ that type, but it may leave a seam of "legacy" vs "pattern" switch, especially
 if we do not adopt bare constant literals as the denotation of constant
 patterns.  
 
-**Parsing.**  The grammar currently specifies that the operand of a `case` label
+- **Parsing.**  The grammar currently specifies that the operand of a `case` label
 is a `CaseConstant`, which casts a wide syntactic net, later narrowed with
 post-checks after attribution.  This means that, since parsing is done before we
 know the type of the operand, we must be watchful for ambiguities between
@@ -62,7 +62,7 @@ patterns and expressions (and possibly refine the production for `case` labels.)
 Literals are an obvious source of ambiguity (if we choose to denote constant
 patterns with literals); deconstruction patterns with no arguments are another.
 
-**Nullity.**  In the limited forms where `switch` can be used on reference types
+- **Nullity.**  In the limited forms where `switch` can be used on reference types
 today (enums, strings, and primitive boxes), `switch`  appears to be hostile to
 `null`.  However, this null-hostility does not make sense when extended to
 richer forms of patterns, so we will need to refine the semantics to support the
@@ -70,26 +70,26 @@ legacy cases without polluting the new ones.  (It is always tempting to
 preemptively say "sorry, nulls not allowed", but to not refine null handling
 here will show up as sharp edges elsewhere, such as refactoring anomalies.)
 
-**Exhaustiveness.**  For switches over the permitted subtypes of sealed types,
+- **Exhaustiveness.**  For switches over the permitted subtypes of sealed types,
 we will want to be able to do exhaustiveness analysis, and for sufficiently
 exhaustive pattern sets, allow the user to omit a catch-all case such as
 `default`.  (When we get to nested patterns, we will want to do this for nested
 patterns too --  if `Circle`  and `Rect` are exhaustive on `Shape`, then
 `Box(Circle c)` and `Box(Rect r)` should be exhaustive on `Box<Shape>`.)
 
-**Fallthrough.**  Fallthrough is everyone's least favorite feature of `switch`,
+- **Fallthrough.**  Fallthrough is everyone's least favorite feature of `switch`,
 but it exists for a reason.  (The mistake was making fallthrough the default
 behavior, but that ship has sailed.)  In the absence of an OR pattern
 combinator, one might find fallthrough in switch useful in conjunction with
 patterns:
 
-```
-case Box(int x):
-case Bag(int x):
-    // use x
-```
+  ```
+  case Box(int x):
+  case Bag(int x):
+      // use x
+  ```
 
-However, it is likely that we will, at least initially, disallow falling out
+  However, it is likely that we will, at least initially, disallow falling out
 of, or into, a case label with binding variables.
 
 As we did with _expression switches_ in Java 12, rather than invent a new
@@ -145,10 +145,12 @@ These semantics have been carefully chosen to support a number of goals:
    to null handling.  Similarly, a switch whose case labels are a series of
    nested patterns `D(P)`, `D(Q)`, `D(R)` must have a simple relationship with a
    `case D d` with a nested switch whose cases are `P`, `Q`, and `R`.
+
  - Consistent meaning of `var`.  The pattern `var x` and the type pattern `T x`
    where `T` is arrived at by the obvious type inference should be equivalent;
    the choice to use `var` or a manifest type should be purely one of developer
    preference and not affect the semantics.
+
  - Generalization of `enum` switches to sealed classes.  Expression switches
    over `enum` types get special treatment; if all the constants of the `enum`
    are covered, the compiler will insert a `default` clause that throws on
@@ -156,6 +158,7 @@ These semantics have been carefully chosen to support a number of goals:
    code not recompiled.)  We want to generalize this behavior to type patterns
    covering all the permitted subtypes of a sealed class, and eventually when a
    suitably total set of patterns is wrapped in a deconstruction pattern.
+
  - Rehabilitation of null handling.  Legacy switches are quite limited; they
    only work over a small set of types, and can only have constant case labels.
    Moreover, the set of reference types supported by legacy switches are special
@@ -180,7 +183,7 @@ null-hostility to new reference-type switches, and possibly having an explicit
 way for statement switches to opt into the same totality treatment that
 expression switches get, rather than a single uniform rule.
 
-#### Translation
+### Translation
 
 Switches on primitives and their wrapper types are translated using the
 `tableswitch` or `lookupswitch` bytecodes; switches on strings and enums are
@@ -221,7 +224,7 @@ these in the compiler is complex, and the dynamic approach offers the
 opportunity for performance improvement in the future without having to
 recompile code.
 
-#### Guards
+### Guards
 
 No matter how rich our patterns are, it is often the case that we will want to
 provide additional filtering on the results of a pattern.  If we are doing so in
@@ -271,7 +274,7 @@ most reasonable forms of declarative guards, but users are likely to prefer the
 declarative version, which more cleanly separates the dispatch criteria from the
 consequences.
 
-#### Do we need constant patterns?
+### Do we need constant patterns?
 
 Originally, we envisioned denoting constant patterns with literals, since
 existing case labels use literals:
@@ -303,7 +306,7 @@ not patterns.)  We can consider adding them later, perhaps with a different
 syntax (such as `Box(const 0)` or `Box(== 0)`) to distinguish them from
 expressions.
 
-#### Missing primitive types
+### Missing primitive types
 
 The set of primitives we can use today in `switch` is limited to the integral
 numeric primitive types; this includes `char` but leaves out `float`, `double`
@@ -380,7 +383,7 @@ deconstructor is an instance member, like a constructor, and we cannot invoke an
 instance member with a null receiver), but if `D(var t)` matches its target,
 then `t` may well be null.
 
-#### Switch totality
+### Switch totality
 
 Just as some patterns are total on some types, some switches are also total on
 some types.  For a `switch`, totality means that some action is taken for every
@@ -426,7 +429,7 @@ and the compiler inserts code to handle the silly values.  (If in some situation
 we think they are not silly, we are free to add explicit `case null` or
 `default` clauses to handle them.)
 
-#### Refining totality
+### Refining totality
 
 With this notion of remainder, we can define some rules for when a set of
 patterns is total on a type, and characterize the remainder.  We will define
@@ -504,7 +507,7 @@ some of these synthetic cases may never be reached.
 
 Guarded patterns should be ignored entirely for purposes of computing totality.
 
-#### Patching the legacy holes
+### Patching the legacy holes
 
 We have so far described a `switch` construct where `null` is just an ordinary
 value and where some patterns match `null`.  For total switches where `null` is
@@ -522,7 +525,7 @@ This means switches on these types continue to be preemptively null-hostile as
 before, but we add the ability to handle the null explicitly, and for switches
 on other types, the more general rules outlined here apply.
 
-#### Looking ahead: pattern assignment
+### Looking ahead: pattern assignment
 
 We used totality of pattern sets to determine whether a switch was total.  We
 can use the same machinery to unify pattern assignment with local variable
@@ -546,7 +549,7 @@ Point(var x, var y) = aPoint;
 
 and treat `null` as dynamically rejected remainder.
 
-#### Total patterns in instanceof
+### Total patterns in instanceof
 
 Our decision to use `instanceof` for pattern matching rather than creating a new
 `match` operator leaves us with one sharp edge.  There are two forms for
@@ -584,7 +587,7 @@ the same thing.  (More generally, we are saying that `instanceof` should always
 be asking a question.)  If the question is a silly one to ask, and the ability
 to ask it creates confusion, then outlawing it solves the problem.
 
-#### Refactoring switches
+### Refactoring switches
 
 These semantics allow us to freely refactor between switch statements and chains
 of  `if (x instanceof P) ... else if (x instanceof Q)` without fear of subtle
@@ -634,7 +637,7 @@ case D(var x):
     }
 ```
 
-#### Some intuitions about totality and nullity
+### Some intuitions about totality and nullity
 
 The interaction of totality and nullity, and the minor divergence between what
 it means to match and what `instanceof` does, may be surprising at first.

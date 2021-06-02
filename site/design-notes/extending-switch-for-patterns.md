@@ -1,6 +1,6 @@
 # Extending switch for pattern matching
 
-#### Gavin Bierman and Brian Goetz, April 2017
+#### Gavin Bierman and Brian Goetz, April 2017 {.author}
 
 This document explores a possible direction for enhancements to
 `switch` in the Java language, motivated by the desire to
@@ -8,7 +8,7 @@ support [_pattern matching_][pattern-match].  _This is an exploratory
 document only and does not constitute a plan for any specific feature
 in any specific version of the Java Language._
 
-#### Pattern matching documents
+### Pattern matching documents
 
 - [Pattern Matching For Java](patterns/pattern-matching-for-java).  Overview of
   pattern matching concepts, and how they might be surfaced in Java.
@@ -91,7 +91,7 @@ unique name for each binding variable, just because the variable has
 been hoisted into a broader scope, will be unpopular (and as it turns
 out, unnecessary.)
 
-#### Natural scoping for binding variables
+### Natural scoping for binding variables
 
 The following example illustrates the that "natural" scope of a
 binding variables is complex and not necessarily contiguous:
@@ -241,7 +241,7 @@ We might consider prohibiting fallthrough but allowing OR patterns (in
 which case we'd probably require that all OR patterns declare exactly
 the same set of binding variables.)
 
-#### Guards, compound patterns, and continue
+### Guards, compound patterns, and continue
 
 Nested patterns, such as:
 
@@ -269,7 +269,7 @@ label:
 `continue`, so we are likely to have to implement all these mechanisms
 internally anyway.)
 
-#### Dead code
+### Dead code
 
 In some cases, the compiler may be able to prove that a case is
 unreachable, such as:
@@ -325,7 +325,7 @@ A switch expression is a _poly expression_, and pushes its target type
 down into the switch arms (just as we do with conditional
 expressions.)
 
-#### Mixing statements and expressions
+### Mixing statements and expressions
 
 While the common case with a switch expression is that the RHS of a
 case label is a single expression, occasionally the result may not be
@@ -349,7 +349,7 @@ of block expression for use in expression `switch` by coopting the
 There is some potential ambiguity between label-break and result-break
 here, but working these out is practical.
 
-#### Throw expressions
+### Throw expressions
 
 It is not uncommon that one or more arms of a switch expression will
 result in a transfer-of-control operation, such as:
@@ -364,7 +364,7 @@ Even though `throw` is a statement, not an expression, the intent here
 is clear, so we want to allow `throw` (and possibly other
 transfer-of-control operations) in this context.
 
-#### Targetless switch
+### Targetless switch
 
 In the theme of elevating `switch` as the generalization of the
 ternary conditional operator, we may also wish to allow a simplified
