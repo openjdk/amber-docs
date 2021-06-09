@@ -2,14 +2,14 @@
 
 The goal of Project Amber is to explore and incubate smaller,
 productivity-oriented Java language features that have been accepted
-as candidate JEPs under
+as candidate JEPs in
 the [OpenJDK JEP Process](http://openjdk.java.net/jeps/1). This
 Project is sponsored by
 the [Compiler Group](http://openjdk.java.net/groups/compiler).
 
 Most Project Amber features go through at least two rounds
-of [_Preview_](http://openjdk.java.net/jeps/12) before becoming an
-official part of Java SE.  For a given feature, there are separate
+of [_preview_](http://openjdk.java.net/jeps/12) before becoming an
+official part of the Java Platform.  For a given feature, there are separate
 JEPs for each round of preview and for final standardization.  This
 page links only to the most recent JEP for a feature. Such JEPs may
 have links to earlier JEPs for the feature, as appropriate.
@@ -46,13 +46,26 @@ Withdrawn:
 
 ## Documents
 
- - [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
- - [Local Variable Type Inference FAQ](guides/lvti-faq) (Oct 2018)
- - [Programmer's Guide to Text Blocks](guides/text-blocks-guide) (Aug 2019)
- - [Pattern Matching for Java](design-notes/patterns/pattern-matching-for-java) (Sept 2018)
- - [Pattern Matching for Java -- Semantics](design-notes/patterns/pattern-match-semantics) (Sept 2018)
- - [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes) (Feb 2019)
- - [Towards Better Serialization](design-notes/towards-better-serialization) (June 2019)
+  - Guides
+    - [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
+    - [Local Variable Type Inference FAQ](guides/lvti-faq) (Oct 2018)
+    - [Programmer's Guide to Text Blocks](guides/text-blocks-guide) (Aug 2019)
+
+  - Design notes
+    - [Symbolic References for Constants](design-notes/constables) (March 2018)
+    - [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes) (February 2019)
+    - [Towards Better Serialization](design-notes/towards-better-serialization) (June 2019)
+    - Pattern matching
+      - [Pattern Matching for Java](design-notes/patterns/pattern-matching-for-java) (September 2018)
+      - [Pattern Matching in the Java Object Model](design-notes/patterns/pattern-match-object-model) (December 2020)
+      - [Pattern Matching for Java -- Semantics](design-notes/patterns/pattern-match-semantics) (August 2020)
+      - [Pattern Matching for Java -- Runtime and Translation](design-notes/patterns/pattern-match-translation) (June 2017)
+      - [Extending `switch` for Pattern Matching](design-notes/patterns/extending-switch-for-patterns) (April 2017)
+      - [Type Patterns in `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
+
+  - Historical notes
+    - [Data Classes for Java](design-notes/data-classes-historical-1) (October 2017)
+    - [Data Classes for Java](design-notes/data-classes-historical-2) (February 2018)
 
 ## Community
 
