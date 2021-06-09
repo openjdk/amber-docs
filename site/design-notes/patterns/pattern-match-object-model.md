@@ -1,6 +1,7 @@
 # Pattern Matching in the Java Object Model
 
-#### Brian Goetz and Gavin Bierman <br> December 2020 {.author}
+#### Brian Goetz and Gavin Bierman {.author}
+#### December 2020 {.date}
 
 This document describes a possible approach for how _pattern matching_ might be
 integrated more deeply into the language.  _This is an exploratory document only

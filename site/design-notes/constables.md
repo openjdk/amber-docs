@@ -1,5 +1,6 @@
 # Symbolic References for Constants
-#### Brian Goetz, March 2018 {.author}
+#### Brian Goetz {.author}
+#### March 2018 {.date}
 
 [JEP 303][jep303] exposes compiler intrinsics so that Java source code
 can deterministically generate `ldc` and `invokedynamic` bytecodes.

@@ -1,6 +1,7 @@
 # Towards Better Serialization
 
-#### Brian Goetz, June 2019 {.author}
+#### Brian Goetz {.author}
+#### June 2019 {.date}
 
 This document explores a possible direction for improving
 serialization in the Java Platform.  This is an exploratory document

@@ -1,7 +1,8 @@
 
 # Local Variable Type Inference
 ## Frequently Asked Questions {.subtitle}
-#### Brian Goetz and Stuart Marks <br> August 2019 {.author}
+#### Brian Goetz and Stuart Marks {.author}
+#### August 2019 {.date}
 
 ## Why have `var` in Java?
 

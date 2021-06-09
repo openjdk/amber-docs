@@ -1,5 +1,6 @@
 # Type patterns in switch
-#### Brian Goetz, Sept 2020 {.author}
+#### Brian Goetz {.author}
+#### September 2020 {.date}
 
 This document describes a possible approach for the next phase of  _pattern
 matching_ -- adding type patterns to the `switch` statement.  This builds on the

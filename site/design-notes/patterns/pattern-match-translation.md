@@ -1,6 +1,7 @@
 # Pattern Matching for Java --- Runtime and Translation
 
-#### Brian Goetz and John Rose, June 2017 {.author}
+#### Brian Goetz and John Rose {.author}
+#### June 2017 {.date}
 
 This document explores compiler translation strategies and runtime
 support for supporting [_pattern matching_][pattern-match] in the Java

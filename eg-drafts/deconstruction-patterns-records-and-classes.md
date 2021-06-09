@@ -1,5 +1,6 @@
 # Deconstruction patterns for records and classes
-#### Brian Goetz, Aug 2020 {.author}
+#### Brian Goetz {.author}
+#### August 2020 {.date}
 
 > This document describes a possible approach for a future phase of _pattern
 matching_ -- adding deconstruction patterns for records and classes.  This

@@ -1,7 +1,8 @@
 
 # Programmer's Guide to Text Blocks
 
-#### Jim Laskey and Stuart Marks <br> Version 11 (August 2020) {.author}
+#### Jim Laskey and Stuart Marks {.author}
+#### Version 11 (August 2020) {.date}
 
 [JEP 378](http://openjdk.java.net/jeps/378) introduces _text blocks_
 into Java SE 15 as a Standard feature. While the JEP explains the feature

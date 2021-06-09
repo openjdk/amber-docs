@@ -1,7 +1,8 @@
 
 # Local Variable Type Inference
 ## Style Guidelines {.subtitle}
-#### Stuart W. Marks <br> March 2018 {.author}
+#### Stuart W. Marks {.author}
+#### March 2018 {.date}
 
 ## Introduction
 

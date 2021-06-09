@@ -1,6 +1,7 @@
 # Pattern Matching for Java
 
-#### Gavin Bierman and Brian Goetz, September 2018 {.author}
+#### Gavin Bierman and Brian Goetz {.author}
+#### September 2018 {.date}
 
 This document explores a possible direction for supporting _pattern
 matching_ in the Java Language.  _This is an exploratory document only

@@ -1,6 +1,7 @@
 # Extending switch for pattern matching
 
-#### Gavin Bierman and Brian Goetz, April 2017 {.author}
+#### Gavin Bierman and Brian Goetz {.author}
+#### April 2017 {.date}
 
 This document explores a possible direction for enhancements to
 `switch` in the Java language, motivated by the desire to

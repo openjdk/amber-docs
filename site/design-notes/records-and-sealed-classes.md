@@ -1,6 +1,7 @@
 # Data Classes and Sealed Types for Java
 
-#### Brian Goetz, February 2019 {.author}
+#### Brian Goetz {.author}
+#### February 2019 {.date}
 
 This document explores possible directions for _data classes_ and
 _sealed types_ in the Java Language, and is an update
