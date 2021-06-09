@@ -407,11 +407,11 @@ spaces when displayed on some particular system.
 It follows that mixing white space characters can have inconsistent and
 unintended effects. Consider the following example, in which some lines
 are indented with spaces and some with tabs (which are visualized with
-`␉`):
+`↦`):
 
         String colors = """
     ····················red
-    ␉   ␉   ␉   ␉   ␉   green
+    ↦   ↦   ↦   ↦   ↦   green
     ····················blue""";
 
 In this case, stripping of incidental indentation would be uneven since
@@ -445,13 +445,13 @@ results.
 
 To avoid these problems, the Java compiler normalizes all line terminators
 in a text block to be `\n`, regardless of what line terminators actually
-appear in the source file. The following text block (where `␊` and
-`␍` represent `\n` and `\r`):
+appear in the source file. The following text block (where `↓` and
+`←` represent `\n` and `\r`):
 
     String colors = """
-        red␊
-        green␍
-        blue␍␊
+        red↓
+        green←
+        blue←↓
         """;
 
 is equivalent to this string literal:
@@ -468,21 +468,21 @@ As with string literals, text blocks recognize the escape sequences,
 escapes. Unlike string literals, escapes sequences are often not
 required. Under most circumstances, the actual characters `\n`, `\t`,
 `\"`, and `\'` can be used instead of escape sequences. The following
-text block (where `␉` and `␊` represent  `\t` and `\n`):
+text block (where `↦` and `↓` represent  `\t` and `\n`):
 
     String s = """
-        Color␉   Shape␊
-        Red␉ ␉   Circle␊
-        Green␉   Square␊
-        Blue␉␉   Triangle␊
+        Color↦   Shape↓
+        Red↦ ↦   Circle↓
+        Green↦   Square↓
+        Blue↦↦   Triangle↓
         """;
 
 results in:
 
-    Color␉  Shape␊
-    Red␉ ␉  Circle␊
-    Green␉  Square␊
-    Blue␉␉  Triangle␊
+    Color↦  Shape↓
+    Red↦ ↦  Circle↓
+    Green↦  Square↓
+    Blue↦↦  Triangle↓
 
 Escaping is required when three or more double quotes occur
 consecutively.
@@ -669,7 +669,7 @@ indentation._**
     // ORIGINAL
         String colors = """
     ········red
-    ␉       green
+    ↦       green
     ········blue""";    // result: "·······red\ngreen\n·······blue"
 
     // PROBABLY WHAT WAS INTENDED

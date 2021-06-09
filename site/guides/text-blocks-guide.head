@@ -1,0 +1,15 @@
+<head>
+  <style>
+    .control { color: #e76f00; font-weight: bold; }
+  </style>
+  <script>
+    function highlightControls() {
+      const controls = /[\u21a6\u2190\u2193\u00B7]+/g;
+      document.querySelectorAll("code").forEach((code) => {
+        code.innerHTML = code.textContent
+              .replace(controls, (match) => `<span class="control">${match}</span>`);
+      });
+    }
+    document.addEventListener("DOMContentLoaded", (event) => highlightControls());
+  </script>
+</head>
