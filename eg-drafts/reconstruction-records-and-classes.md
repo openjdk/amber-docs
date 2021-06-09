@@ -1,4 +1,4 @@
-# Functional transformation of immutable objects
+# Functional Transformation of Immutable Objects
 #### Brian Goetz {.author}
 #### August 2020 {.date}
 

@@ -1,4 +1,4 @@
-# Extending switch for pattern matching
+# Extending `switch` for Pattern Matching
 
 #### Gavin Bierman and Brian Goetz {.author}
 #### April 2017 {.date}

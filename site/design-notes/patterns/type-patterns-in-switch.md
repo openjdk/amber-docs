@@ -1,4 +1,4 @@
-# Type patterns in switch
+# Type Patterns in `switch`
 #### Brian Goetz {.author}
 #### September 2020 {.date}
 

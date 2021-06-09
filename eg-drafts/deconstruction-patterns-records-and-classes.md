@@ -1,4 +1,4 @@
-# Deconstruction patterns for records and classes
+# Deconstruction Patterns for Records and Classes
 #### Brian Goetz {.author}
 #### August 2020 {.date}
 
