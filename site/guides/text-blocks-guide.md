@@ -206,7 +206,7 @@ multi-line string without that final `\n`?
 
 This text block is equivalent to `"red\ngreen\nblue"`. Thus, placing
 the closing delimiter on the last visible line effectively drops the
-last `\n`. However, as described in guideline G12 below,
+last `\n`. However, as described in [guideline G12](#G12) below,
 a better alternative is to use the `\<line-terminator>` escape sequence
 (see [New Escape Sequences](#new-escape-sequences)).
 
@@ -551,8 +551,7 @@ guarantees that each line is exactly six characters long.
 
 ## Style Guidelines For Text Blocks
 
-**_G1. You should use a text block when it improves the clarity of the
-code, particularly with multi-line strings._**
+### G1. You should use a text block when it improves the clarity of the code, particularly with multi-line strings. {#G1}
 
     // ORIGINAL
     String message = "'The time has come,' the Walrus said,\n" +
@@ -572,9 +571,7 @@ code, particularly with multi-line strings._**
         And whether pigs have wings.'
         """;
 
-**_G2. If a string fits on a single line, without concatenation and
-escaped newlines, you should probably continue to use a string
-literal._**
+### G2. If a string fits on a single line, without concatenation and escaped newlines, you should probably continue to use a string literal. {#G2}
 
     // ORIGINAL - is a text block helpful here?
     String name = """
@@ -583,7 +580,7 @@ literal._**
     // BETTER - a string literal works fine
     String name = "Pat Q. Smith";
 
-**_G3. Use embedded escape sequences when they maintain readability._**
+### G3. Use embedded escape sequences when they maintain readability. {#G3}
 
     var data = """
         Name | Address | City
@@ -591,9 +588,7 @@ literal._**
         Jon Brown | 1000 Golden Place\nSuite 5 | Santa Ana
         """;
 
-**_G4. For most multi-line strings, place the opening delimiter at the
-right end of the previous line, and place the closing delimiter on its
-own line, at the left margin of the text block._**
+### G4. For most multi-line strings, place the opening delimiter at the right end of the previous line, and place the closing delimiter on its own line, at the left margin of the text block. {#G4}
 
     String string = """
         red
@@ -601,9 +596,7 @@ own line, at the left margin of the text block._**
         blue
         """;
 
-**_G5. Avoid aligning the opening and closing delimiters and the text
-block's left margin. This requires reindentation of the text block if
-the variable name or modifiers are changed._**
+### G5. Avoid aligning the opening and closing delimiters and the text block's left margin. This requires reindentation of the text block if the variable name or modifiers are changed. {#G5}
 
     // ORIGINAL
     String string = """
@@ -633,9 +626,7 @@ the variable name or modifiers are changed._**
         blue
         """;
 
-**_G6. Avoid in-line text blocks within complex expressions, as doing so
-can distort readability. Consider refactoring to a local variable or to
-a static final field._**
+### G6. Avoid in-line text blocks within complex expressions, as doing so can distort readability. Consider refactoring to a local variable or to a static final field. {#G6}
 
     // ORIGINAL
     String poem = new String(Files.readAllBytes(Paths.get("jabberwocky.txt")));
@@ -662,9 +653,7 @@ a static final field._**
                                  .match(verse -> !firstLastVerse.equals(verse))
                                  .collect(Collectors.joining("\n\n"));
 
-**_G7. Either use only spaces or only tabs for the indentation of a text
-block. Mixing white space will lead to a result with irregular
-indentation._**
+### G7. Either use only spaces or only tabs for the indentation of a text block. Mixing white space will lead to a result with irregular indentation. {#G7}
 
     // ORIGINAL
         String colors = """
@@ -678,9 +667,7 @@ indentation._**
     ········green
     ········blue""";    // result: "red\ngreen\nblue"
 
-**_G8. When a text block contains sequences of three or more double
-quotes, escape the first double quote of every run of three double
-quotes._**
+### G8. When a text block contains sequences of three or more double quotes, escape the first double quote of every run of three double quotes. {#G8}
 
     // ORIGINAL
     String code = """
@@ -698,8 +685,7 @@ quotes._**
             \""";
         """;
 
-**_G9. Most text blocks should be indented to align with neighbouring
-Java code._**
+### G9. Most text blocks should be indented to align with neighbouring Java code. {#G9}
 
         // ORIGINAL - odd indentation
         void printPoem() {
@@ -723,8 +709,7 @@ Java code._**
             System.out.print(poem);
         }
 
-**_G10. It is recommended to fully left justify a wide string in order to
-avoid horizontal scrolling or line wrapping._**
+### G10. It is recommended to fully left justify a wide string in order to avoid horizontal scrolling or line wrapping. {#G10}
 
     // ORIGINAL
 
@@ -764,11 +749,7 @@ avoid horizontal scrolling or line wrapping._**
         }
     }
 
-**_G11. Similarly, it is also reasonable to fully left justify a text
-block when a high line count causes the closing delimiter is likely to
-vertically scroll out of view. This allows the reader to track
-indentation with the left margin when the closing delimiter is out of
-view._**
+### G11. Similarly, it is also reasonable to fully left justify a text block when a high line count causes the closing delimiter is likely to vertically scroll out of view. This allows the reader to track indentation with the left margin when the closing delimiter is out of view. {#G11}
 
     // ORIGINAL
 
@@ -811,9 +792,7 @@ view._**
     zzzs
     """;
 
-**_G12. The `\<line-terminator>` escape sequence should be used when a text
-block's final new line needs to be excluded. This better frames the text block
-and allows the closing delimiter to manage indentation._**
+### G12. The `\<line-terminator>` escape sequence should be used when a text block's final new line needs to be excluded. This better frames the text block and allows the closing delimiter to manage indentation. {#G12}
 
     // ORIGINAL
 

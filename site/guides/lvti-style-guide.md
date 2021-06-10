@@ -32,7 +32,7 @@ guidelines for the effective use of `var`.
 
 ## Principles
 
-### P1. Reading code is more important than writing code.
+### P1. Reading code is more important than writing code. {#P1}
 
 Code is read much more often than it is written. Further, when writing
 code, we usually have the whole context in our head, and take our
@@ -50,7 +50,7 @@ that's necessary to input or to edit a program. While concision may be
 a nice bonus for the author, focusing on it misses the main goal,
 which is to improve the understandability of the resulting program.
 
-### P2. Code should be clear from local reasoning.
+### P2. Code should be clear from local reasoning. {#P2}
 
 The reader should be able to look at a `var` declaration, along with
 uses of the declared variable, and understand almost immediately
@@ -60,7 +60,7 @@ using only the context from a snippet or a patch. If understanding a
 around the code, it might not be a good situation in which to use
 `var`. Then again, it might indicate a problem with the code itself.
 
-### P3. Code readability shouldn't depend on IDEs.
+### P3. Code readability shouldn't depend on IDEs. {#P3}
 
 Code is often written and read within an IDE, so it's tempting to rely
 heavily on code analysis features of IDEs. For type declarations, why
@@ -83,7 +83,7 @@ but it disrupts the flow of reading.
 Code should be self-revealing. It should be understandable on its
 face, without the need for assistance from tools.
 
-### P4. Explicit types are a tradeoff.
+### P4. Explicit types are a tradeoff. {#P4}
 
 Java has historically required local variable declarations to include
 the type explicitly. While explicit types can be very helpful, they
@@ -100,7 +100,7 @@ these channels.
 
 ## Guidelines
 
-### G1. Choose variable names that provide useful information.
+### G1. Choose variable names that provide useful information. {#G1}
 
 This is good practice in general, but it's much more
 important in the context of `var`. In a `var` declaration, information
@@ -140,7 +140,7 @@ nature of the variable, such as "customers":
                         .findAny();
     }
 
-### G2. Minimize the scope of local variables.
+### G2. Minimize the scope of local variables. {#G2}
 
 Limiting the scope of local variables is good practice in
 general. This practice is described in [*Effective Java (3rd Edition)*][Bloch],
@@ -194,7 +194,7 @@ simply avoiding `var` in these cases, one should change the code to
 reduce the scope of the local variables, and only then declare them
 with `var`.
 
-### G3. Consider `var` when the initializer provides sufficient information to the reader.
+### G3. Consider `var` when the initializer provides sufficient information to the reader. {#G3}
 
 Local variables are often initialized with constructors. The name of
 the class being constructed is often repeated as the explicit type on
@@ -221,7 +221,7 @@ constructor, and when its name contains enough type information:
 
 In these cases, the methods' names strongly imply a particular return type, which is then used for inferring the type of the variable.
 
-### G4. Use `var` to break up chained or nested expressions with local variables.
+### G4. Use `var` to break up chained or nested expressions with local variables. {#G4}
 
 Consider code that takes a collection of strings and finds the string
 that occurs most often. This might look like the following:
@@ -270,7 +270,7 @@ other situations, the correct use of `var` might involve both taking
 something out (explicit types) and adding something back (better
 variable names, better structuring of code).
 
-### G5. Don't worry too much about "programming to the interface" with local variables.
+### G5. Don't worry too much about "programming to the interface" with local variables. {#G5}
 
 A common idiom in Java programming is to construct an instance of a
 concrete type but to assign it to a variable of an interface
@@ -310,7 +310,7 @@ affect the correctness of the program. This further reduces the impact
 of the inferred type being a concrete implementation rather than an
 interface.
 
-### G6. Take care when using `var` with diamond or generic methods.
+### G6. Take care when using `var` with diamond or generic methods. {#G6}
 
 Both `var` and the "diamond" feature allow you to omit explicit type
 information when it can be derived from information already
@@ -366,7 +366,7 @@ information so that the inferred type matches your intent. Otherwise,
 avoid using both `var` with diamond or a generic method in the same
 declaration.
 
-### G7. Take care when using `var` with literals.
+### G7. Take care when using `var` with literals. {#G7}
 
 Primitive literals can be used as initializers for `var`
 declarations. It's unlikely that using `var` in these cases will
