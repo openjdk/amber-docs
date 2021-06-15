@@ -4,6 +4,8 @@
 #### Jim Laskey and Stuart Marks {.author}
 #### Version 11 (August 2020) {.date}
 
+<div class="table-of-contents"/>
+
 [JEP 378](http://openjdk.java.net/jeps/378) introduces _text blocks_
 into Java SE 15 as a Standard feature. While the JEP explains the feature
 in great detail, it's not always apparent how the feature can and should
@@ -515,7 +517,7 @@ space ("`·`" is used to show trailing space). The result is:
 **Note:** As noted previously, the Unicode escape sequence
 `\u0020` _cannot_ be used as a substitute for `\040`.
 
-### New Escape Sequences
+### New&nbsp;Escape Sequences
 
 The `\<line-terminator>` escape sequence explicitly suppresses the inclusion of
 an implicit new line character.
@@ -549,7 +551,7 @@ guarantees that each line is exactly six characters long.
         """;
 
 
-## Style Guidelines For Text Blocks
+## Style Guidelines for Text Blocks {toc=omit-children}
 
 ### G1. You should use a text block when it improves the clarity of the code, particularly with multi-line strings. {#G1}
 
@@ -838,7 +840,7 @@ compiler. This is useful if you have a program that reads text as
 input data and you want to strip indentation in the same manner as
 is done for text blocks.
 
-### `String translateEscapes()`
+### `String&nbsp;translateEscapes()`
 
 The `translateEscapes` method performs the translation of escape
 sequences (`\b`, `\f`, `\n`, `\t`, `\r`, `\"`, `\'`, `\\`, `\s`,
