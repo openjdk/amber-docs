@@ -4,13 +4,15 @@
 #### Jim Laskey and Stuart Marks {.author}
 #### Version 11 (August 2020) {.date}
 
-<div class="table-of-contents"/>
-
 [JEP 378](http://openjdk.java.net/jeps/378) introduces _text blocks_
 into Java SE 15 as a Standard feature. While the JEP explains the feature
 in great detail, it's not always apparent how the feature can and should
 be used. This guide assembles practical usage advice for text blocks,
 along with some style guidelines.
+
+#### Contents
+
+<div class="table-of-contents"/>
 
 ## Introduction
 
