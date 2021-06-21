@@ -122,64 +122,68 @@ all current expression forms) make available no new bindings.  We also
 define a set of binding variables to additionally be in scope for
 certain expressions or statements via the "include in" clauses below.
 
-If _e_ is `x matches P`:
+- If _e_ is `x matches P`:
 
-    e.T = { binding variables from P }
-    e.F = { }
+      e.T = { binding variables from P }
+      e.F = { }
 
-If e is `x && y`:
+- If e is `x && y`:
 
-    e.T = union(x.T, y.T)
-    e.F = intersection(x.F, y.F)
-    include x.T in y
+      e.T = union(x.T, y.T)
+      e.F = intersection(x.F, y.F)
+      include x.T in y
 
-If e is `x || y`:
+- If e is `x || y`:
 
-    e.T = intersection(x.T, y.T)
-    e.F = union(x.F, y.F)
-    include x.F in y
+      e.T = intersection(x.T, y.T)
+      e.F = union(x.F, y.F)
+      include x.F in y
 
-If e is `x ? y : z`:
+- If e is `x ? y : z`:
 
-    e.T = union(intersect(y.T, z.T), intersect(x.T, z.T), intersect(x.F, y.T))
-    e.F = union(intersect(y.F, z.F), intersect(x.T, z.F), intersect(x.F, y.F))
-    include x.T in y
-    include x.F in z
+      e.T = union(intersect(y.T, z.T),
+                  intersect(x.T, z.T),
+                  intersect(x.F, y.T))
+      e.F = union(intersect(y.F, z.F),
+                  intersect(x.T, z.F),
+                  intersect(x.F, y.F))
+      include x.T in y
+      include x.F in z
 
-If e is `(x)`:
+- If e is `(x)`:
 
-    e.T = x.T
-    e.F = x.F
+      e.T = x.T
+      e.F = x.F
 
-If e is `!x`:
+- If e is `!x`:
 
-    e.T = x.F
-    e.F = x.T
+      e.T = x.F
+      e.F = x.T
 
 We can do the same for statement forms:
 
-For `if (x) y else z`:
+- For `if (x) y else z`:
 
-    include x.T in y
-    include x.F in z
+      include x.T in y
+      include x.F in z
 
-For `if (x) return/throw; z`
+- For `if (x) return/throw; z`
 
-    include x.T in return/throw
-    include x.F in z
+      include x.T in return/throw
+      include x.F in z
 
-For `while (x) y`:
+- For `while (x) y`:
 
-    include x.T in y
+      include x.T in y
 
-For `for (a; b; c) d`:
+- For `for (a; b; c) d`:
 
-    include b.T in c
-    include b.T in d
+      include b.T in c
+      include b.T in d
 
-For `switch (x) { ... case P: y; case Q: ... }`
+- For `switch (x) { ... case P: y; case Q: ... }`
 
-    include binding variables from P in y
+      include binding variables from P in y
 
 Further, union and intersection should be limited to avoid conflicts.
 The `union` function should be a disjoint union: it is an error if any
