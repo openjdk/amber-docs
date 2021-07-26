@@ -87,7 +87,7 @@ this missing ability to recover the specific from the abstract more directly.
 
 Java provides direct linguistic support for aggregation, in the form of
 _constructors_ that take a description of an object's initial state and
-aggregates it into an instance, but does not directly provided the reverse.
+aggregate it into an instance, but does not directly provide the reverse.
 Instead, we leave that problem to APIs, which may expose accessors for
 individual state components, and those accessors may or may not map to the
 arguments presented to constructors or factories.  But this is a poor
@@ -96,7 +96,7 @@ and for destructuring often operate at different levels of granularity, and look
 structurally different -- and these differences provide places for bugs to hide.
 Whatever tools the language offers us for aggregation (e.g., constructors,
 factories, builders), it should also offer us complementary destructuring,
-ideally that is syntactically similar in declaration and use, and operate at the
+ideally that is syntactically similar in declaration and use, and operates at the
 same level of abstraction.  For example, if our `Shape` library provided
 factories like the above, it could provide destructuring patterns that are
 similar in name and structure:
@@ -240,7 +240,7 @@ be handled as a nested _constant pattern_, should we decide to support them.
 This might look like (illustrative syntax only):
 
 ```
-if (os instanceof Optional.of(Shape.ofRedBall(== 1))) { ... }
+if (os instanceof Optional.of(Shape.redBall(== 1))) { ... }
 ```
 
 where `== c` is a constant pattern that matches the constant `c`.  
