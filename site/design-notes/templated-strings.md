@@ -120,7 +120,7 @@ We can express template processing as _instance behavior_ on a policy object:
 String s = STR."Hello \{name}, I am \{age} years old.";
 ```
 
-where `STR` is a static field of `TemplatePolicy` which captures the obvious
+where `STR` is a static instance of `TemplatePolicy` which captures the obvious
 policy.
 
 The escape sequence `\{` is currently unused (and therefore currently illegal in
