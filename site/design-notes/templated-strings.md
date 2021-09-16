@@ -66,7 +66,8 @@ interpreted by other languages. We would like to do better.
 #### What's wrong with string interpolation?
 
 The only case handled by most other languages that support string interpolation
-is the simplest one -- uninterpreted concatenation.
+is the simplest one -- uninterpreted concatenation. Picking an example at
+random:
 
 ```
 // Scala
