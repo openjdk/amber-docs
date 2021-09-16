@@ -42,7 +42,7 @@ However, there are reasons we've been hesitant to do such a feature, including:
     locale-sensitive numeric formatting, etc.  This is asking users to choose
     between convenience and expressiveness.
 
-The version of this feature implemented by many popular languages offer the
+The versions of this feature implemented by many popular languages offer the
 desired convenience in the simple cases, but fall afoul of many of these
 downsides.  We may want the convenience of string interpolation, but we also
 want safety and flexibility across a range of domains.
@@ -101,7 +101,7 @@ transformed, and combined should remain in the hands of ordinary library code.
 Users should be able to select the templating policy they want, and be able to
 capture templating policies in libraries for reuse.
 
-A templating policy might be describe an an interface like:
+A templating policy might be described by an interface like:
 
 ```
 interface TemplatePolicy<T> {
@@ -148,7 +148,7 @@ management, leading-zero fills, hex conversion, locale-specific presentation,
 etc.  Making straight interpolation easier but no improvement for formatting
 libraries leaves users with an unpleasant choice of convenience or rich
 formatting.  If we wanted to format the number `age` using the various modifiers
-supported by the `%d` format specifier, we don't want to abandon the convenience
+supported by the `%d` format specifier, we wouldn't want to abandon the convenience
 of the straightforward expression.
 
 On the other hand, it would be folly to bake the `String::format` descriptor
@@ -156,7 +156,7 @@ language into the Java language; representation and interpretation of the format
 specifiers should be under the control of the template policy.  But we can
 encapsulate this in a library that implements this set of format specifiers, and
 exposes a constant policy object.  Here, `FMT` is a policy object that
-interprets a set of format specifies that are similar to `printf` /
+interprets a set of format specifiers that are similar to `printf` /
 `String::format`, using the convention that the format specifier goes right
 before the "hole":
 
@@ -225,7 +225,7 @@ object, because the `Connection` comes from the JDBC driver for the specific
 database we're talking to.
 
 While there are many API choices that JDBC might select, one might be to make
-`Connection` implement also be a policy object; then we could ask the connection
+`Connection` also be a policy object; then we could ask the connection
 to format the query directly:
 
 ```
@@ -339,7 +339,7 @@ interface TemplatingPolicy<T, E extends Exception> {
 
 (We've also snuck in another parameter, that allows policies to declare that
 they throw checked exceptions that callers would have to deal with, such as
-`SqlException`, though most will likely instantiate `E` with
+`SQLException`, though most will likely instantiate `E` with
 `RuntimeException`.)
 
 ## Restrictions
