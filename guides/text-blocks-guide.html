@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>text-blocks-guide</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<script>
+function highlightControls() {
+    const map = {
+      "&": "&#x26;",
+      "<": "&#x3C;",
+      ">": "&#x3E;",
+      "\"": "&#x22;",
+      "'": "&#x27;",
+      "/": "&#x2F;"
+    };
+    const escapes = /[&<>"'\/]/g;
+    const controls = /[\u2409\u240A\u240D\u00B7]+/g;
+
+    document.querySelectorAll("code").forEach((code) => {
+        const text = code.textContent;
+        const escapedText = text.replace(escapes, (match) => map[match]);
+        const mappedText = escapedText.replace(controls, (match) => `<span class="control-character">${match}</span>`);
+        code.innerHTML = mappedText;
+    });
+}
+
+document.addEventListener("DOMContentLoaded", (event) => highlightControls());
+</script>
+<h1 id="programmers-guide-to-text-blocks">Programmer’s Guide to Text Blocks</h1>
+<h4 id="jim-laskey-and-stuart-marks">Jim Laskey and Stuart Marks<br />
+</h4>
+<p>Version 11 (August 2020)</p>
+<p><a href="http://openjdk.java.net/jeps/378">JEP 378</a> introduces <em>text blocks</em> into Java SE 15 as a Standard feature. While the JEP explains the feature in great detail, it’s not always apparent how the feature can and should be used. This guide assembles practical usage advice for text blocks, along with some style guidelines.</p>
+<h2 id="introduction">Introduction</h2>
+<p>A text block’s <em>principalis munus</em> is to provide clarity by way of minimizing the Java syntax required to render a string that spans multiple lines.</p>
+<p>In earlier releases of the JDK, embedding multi-line code snippets required a tangled mess of explicit line terminators, string concatenations, and delimiters. Text blocks eliminate most of these obstructions, allowing you to embed code snippets and text sequences more or less as-is.</p>
+<p>A text block is an alternative form of Java string representation that can be used anywhere a traditional double-quoted string literal can be used. For example:</p>
+<pre><code>// Using a literal string
+String dqName = &quot;Pat Q. Smith&quot;;
+
+// Using a text block
+String tbName = &quot;&quot;&quot;
+                Pat Q. Smith&quot;&quot;&quot;;</code></pre>
+<p>The object produced from a text block is a <code>java.lang.String</code> with the same characteristics as a traditional double-quoted string. This includes object representation and interning. Continuing with <code>dqName</code> and <code>tbName</code> from the examples above,</p>
+<pre><code>// Both dqName and tbName are strings of equal value
+dqName.equals(tbName)    // true
+
+// Both dqName and tbName intern to the same string
+dqName == tbName         // true</code></pre>
+<p>Text blocks can be used anywhere a string literal can be used. For example, text blocks may be intermixed with string literals in a string concatenation expression:</p>
+<pre><code>String str = &quot;The old&quot;;
+String tb = &quot;&quot;&quot;
+            the new&quot;&quot;&quot;;
+String together = str + &quot; and &quot; + tb + &quot;.&quot;;</code></pre>
+<p>Text blocks may be used as a method argument:</p>
+<pre><code>System.out.println(&quot;&quot;&quot;
+    This is the first line
+    This is the second line
+    This is the third line
+    &quot;&quot;&quot;);</code></pre>
+<p>String methods may be applied to a text block:</p>
+<pre><code>&quot;&quot;&quot;
+John Q. Smith&quot;&quot;&quot;.substring(8).equals(&quot;Smith&quot;)    // true</code></pre>
+<p>A text block can be used in place of a string literal to improve the readability and clarity of the code. This primarily occurs when a string literal is used to represent a multi-line string. In this case there is considerable clutter from quotation marks, newline escapes, and concatenation operators:</p>
+<pre><code>// ORIGINAL
+String message = &quot;&#39;The time has come,&#39; the Walrus said,\n&quot; +
+                 &quot;&#39;To talk of many things:\n&quot; +
+                 &quot;Of shoes -- and ships -- and sealing-wax --\n&quot; +
+                 &quot;Of cabbages -- and kings --\n&quot; +
+                 &quot;And why the sea is boiling hot --\n&quot; +
+                 &quot;And whether pigs have wings.&#39;\n&quot;;</code></pre>
+<p>Using text blocks removes much of the clutter:</p>
+<pre><code>// BETTER
+String message = &quot;&quot;&quot;
+    &#39;The time has come,&#39; the Walrus said,
+    &#39;To talk of many things:
+    Of shoes -- and ships -- and sealing-wax --
+    Of cabbages -- and kings --
+    And why the sea is boiling hot --
+    And whether pigs have wings.&#39;
+    &quot;&quot;&quot;;</code></pre>
+<h2 id="using-text-blocks">Using Text Blocks</h2>
+<h4 id="preview-feature-in-java-se-13-and-14">Preview Feature in Java SE 13 and 14</h4>
+<p>Text blocks existed as a <a href="http://openjdk.java.net/jeps/12">Preview</a> feature of the Java Language in Java SE 13 and 14. In order to use text blocks in those versions of Java SE, you must use the <code>--enable-preview</code> and <code>-source</code> flags on the <code>javac</code> command line and the <code>--enable-preview</code> flag on the <code>java</code> command line:</p>
+<pre><code>javac --enable-preview -source 14 -d classes TextBlockExample.java
+java --enable-preview -cp classes com.example.TextBlockExample</code></pre>
+<p>Using Java SE 13 or 14 <code>jshell</code> to experiment with text blocks requires using the <code>--enable-preview</code> flag as well:</p>
+<pre><code>jshell --enable-preview</code></pre>
+<p>Use <code>--enable-preview</code> and <code>--source</code> flags (note: two hyphens) with the Java SE 13 and 14 <code>java</code> command to compile and run a single source file with a main program:</p>
+<pre><code>java --enable-preview --source 14 TextBlockExample.java</code></pre>
+<p>(Single-file source code programs are described in <a href="https://openjdk.java.net/jeps/330">JEP 330</a>.)</p>
+<h4 id="standard-feature-in-java-se-15-and-beyond">Standard Feature in Java SE 15 and Beyond</h4>
+<p>In Java SE 15 and beyond, the <code>--enable-preview</code> and <code>-source</code> flags are no longer required to use text blocks:</p>
+<pre><code>javac -d classes TextBlockExample.java
+java -cp classes com.example.TextBlockExample</code></pre>
+<p>To use <code>jshell</code> to experiment with text blocks simply requires using the <code>jshell</code> command with no flags:</p>
+<pre><code>jshell</code></pre>
+<p>The <code>java</code> command can be used to compile and run a single source file with a main program, again with no additional flags:</p>
+<pre><code>java TextBlockExample.java</code></pre>
+<p>(Single-file source code programs are described in <a href="https://openjdk.java.net/jeps/330">JEP 330</a>.)</p>
+<h4 id="text-block-syntax">Text Block Syntax</h4>
+<p>A text block begins with three double-quote characters followed by a line terminator. You can’t put a text block on a single line, nor can the contents of the text block follow the three opening double-quotes without an intervening line terminator. The reason for this is that text blocks are primarily designed to support multi-line strings, and requiring the initial line terminator simplifies the indentation handling rules (see the section below, <em>Incidental White Space</em>).</p>
+<pre><code>// ERROR
+String name = &quot;&quot;&quot;Pat Q. Smith&quot;&quot;&quot;;
+
+// ERROR
+String name = &quot;&quot;&quot;red
+                 green
+                 blue
+                 &quot;&quot;&quot;;
+
+// OK
+String name = &quot;&quot;&quot;
+    red
+    green
+    blue
+    &quot;&quot;&quot;;</code></pre>
+<p>This last example is equivalent to the following string literal:</p>
+<pre><code>String name = &quot;red\n&quot; +
+              &quot;green\n&quot; +
+              &quot;blue\n&quot;;</code></pre>
+<p>Here’s an example of a snippet of Java code within a text block:</p>
+<pre><code>String source = &quot;&quot;&quot;
+    String message = &quot;Hello, World!&quot;;
+    System.out.println(message);
+    &quot;&quot;&quot;;</code></pre>
+<p>Note that there is no need to escape the embedded double quotes. The equivalent string literal would be:</p>
+<pre><code>String source = &quot;String message = \&quot;Hello, World!\&quot;;\n&quot; +
+                &quot;System.out.println(message);\n&quot;;</code></pre>
+<h4 id="that-final-new-line">That Final New Line</h4>
+<p>Note that the example above,</p>
+<pre><code>String name = &quot;&quot;&quot;
+    red
+    green
+    blue
+    &quot;&quot;&quot;;</code></pre>
+<p>is equivalent to <code>"red\ngreen\nblue\n"</code>. What if you want to represent a multi-line string without that final <code>\n</code>?</p>
+<pre><code>String name = &quot;&quot;&quot;
+    red
+    green
+    blue&quot;&quot;&quot;;</code></pre>
+<p>This text block is equivalent to <code>"red\ngreen\nblue"</code>. Thus, placing the closing delimiter on the last visible line effectively drops the last <code>\n</code>. However, as described in guideline G12 below, a better alternative is to use the <code>\&lt;line-terminator&gt;</code> escape sequence (see <a href="#new-escape-sequences">New Escape Sequences</a>).</p>
+<h4 id="incidental-white-space">Incidental White Space</h4>
+<p>Ideally, a text block would be indented to match the indentation of the surrounding code. For example:</p>
+<pre><code>void writeHTML() {
+    String html = &quot;&quot;&quot;
+        &lt;html&gt;
+            &lt;body&gt;
+                &lt;p&gt;Hello World.&lt;/p&gt;
+            &lt;/body&gt;
+        &lt;/html&gt;
+        &quot;&quot;&quot;;
+    writeOutput(html);
+}</code></pre>
+<p>However, this raises the question of how spaces used for indentation affect the contents of the string. A naïve interpretation would include all of this whitespace in the text block. The consequence would be that reindenting the code would affect the contents of the text block. This is quite likely to be an error.</p>
+<p>To avoid this problem, a text block differentiates <em>incidental</em> white space from <em>essential</em> white space. The Java compiler automatically strips away the incidental white space. The indentation to the left of <code>&lt;html&gt;</code> and <code>&lt;/html&gt;</code> is considered incidental, since these lines are indented the least. Thus, they effectively determine the left margin of the text in the text block. However, the indentation of <code>&lt;body&gt;</code> relative to <code>&lt;html&gt;</code> is <em>not</em> considered to be incidental white space. Presumably, this relative indentation is intended to be part of the string’s contents.</p>
+<p>The example below uses “<code>·</code>” to visualize the incidental white space, with essential white space shown as actual white space.</p>
+<pre><code>void writeHTML() {
+    String html = &quot;&quot;&quot;
+········&lt;html&gt;
+········    &lt;body&gt;
+········        &lt;p&gt;Hello World.&lt;/p&gt;
+········    &lt;/body&gt;
+········&lt;/html&gt;
+········&quot;&quot;&quot;;
+    writeOutput(html);
+}</code></pre>
+<p>After the incidental white space is stripped, the resulting contents of the text block are as follows:</p>
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        &lt;p&gt;Hello World.&lt;/p&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>The algorithm for determining incidental white space is described in JEP 355 in scary detail. Nevertheless, the net effect is quite simple. The entire contents of the text block is shifted to the left until the line with the least leading white space has no leading white space.</p>
+<p>To preserve some white space and not have it be considered incidental white space, simply shift the content lines of the text block to the right, while keeping the closing triple-quote delimiter at the indentation appropriate for the surrounding code. For example:</p>
+<pre><code>void writeHTML() {
+    String html = &quot;&quot;&quot;
+········    &lt;html&gt;
+········        &lt;body&gt;
+········            &lt;p&gt;Hello World.&lt;/p&gt;
+········        &lt;/body&gt;
+········    &lt;/html&gt;
+········&quot;&quot;&quot;;
+    writeOutput(html);
+}</code></pre>
+<p>results in the following:</p>
+<pre><code>    &lt;html&gt;
+        &lt;body&gt;
+            &lt;p&gt;Hello World.&lt;/p&gt;
+        &lt;/body&gt;
+    &lt;/html&gt;</code></pre>
+<p>A text block can <em>opt out</em> of incidental white space stripping by positioning the closing delimiter in the first character position of a source line:</p>
+<pre><code>void writeHTML() {
+    String html = &quot;&quot;&quot;
+                  &lt;html&gt;
+                      &lt;body&gt;
+                          &lt;p&gt;Hello World.&lt;/p&gt;
+                      &lt;/body&gt;
+                  &lt;/html&gt;
+&quot;&quot;&quot;;
+    writeOutput(html);
+}</code></pre>
+<p>The result is that there is no incidental white space that is stripped, and the string includes leading white space on each line.</p>
+<pre><code>                  &lt;html&gt;
+                      &lt;body&gt;
+                          &lt;p&gt;Hello World.&lt;/p&gt;
+                      &lt;/body&gt;
+                  &lt;/html&gt;</code></pre>
+<p>This technique for controlling the amount of indentation that is preserved only works if the last line of the text block ends with a line terminator. If the last line does <em>not</em> end with a line terminator, you need to use <code>String::indent</code> to control the indentation explicitly. In the following example,</p>
+<pre><code>String colors = &quot;&quot;&quot;
+    red
+    green
+    blue&quot;&quot;&quot;;</code></pre>
+<p>all of the indentation is treated as incidental and is stripped away:</p>
+<pre><code>red
+green
+blue</code></pre>
+<p>To include some indentation in the string’s contents, invoke the <code>indent</code> method on the text block:</p>
+<pre><code>String colors = &quot;&quot;&quot;
+    red
+    green
+    blue&quot;&quot;&quot;.indent(4);</code></pre>
+<p>This results in:</p>
+<pre><code>    red
+    green
+    blue</code></pre>
+<h4 id="trailing-white-space">Trailing White Space</h4>
+<p>Trailing white space on each line in a text block is also considered incidental and is stripped away by the Java compiler. This is done so that the contents of the text block are always visually discernible. If this were not done, a text editor that automatically strips trailing white space could invisibly change the contents of a text block.</p>
+<p>If you need to have trailing white space in a text block, then you can use one of the following strategies:</p>
+<pre><code>// new escape sequence for space, see below
+String q = &quot;&quot;&quot;
+    trailing\s\s\s
+    white space
+    &quot;&quot;&quot;;
+
+// character substitution
+String r = &quot;&quot;&quot;
+    trailing$$$
+    white space
+    &quot;&quot;&quot;.replace(&#39;$&#39;, &#39; &#39;);
+
+
+// character fence
+String s = &quot;&quot;&quot;
+    trailing   |
+    white space|
+    &quot;&quot;&quot;.replace(&quot;|\n&quot;, &quot;\n&quot;);
+
+
+// octal escape sequence for space
+String t = &quot;&quot;&quot;
+    trailing\040\040\040
+    white space
+    &quot;&quot;&quot;;</code></pre>
+<p><strong>Note:</strong> <code>\u0020</code> cannot be used because Unicode escapes are translated early during source file reading, prior to lexical analysis. By contrast, character and string escapes such as <code>\040</code> are processed after lexical analysis has divided the source file into tokens and has identified string literals and text blocks.</p>
+<h4 id="detecting-potential-issues-with-white-space">Detecting Potential Issues with White Space</h4>
+<p>In the preceding examples, all indentation consisted of space characters. However, sometimes people use TAB <code>\t</code> characters. Unfortunately it is not possible for the Java compiler to know how tab characters are displayed in different editors. Therefore, the rule is that each individual white space character is treated equally. A single space character is treated the same as a single tab character, even though the latter might result in white space equivalent up to eight spaces when displayed on some particular system.</p>
+<p>It follows that mixing white space characters can have inconsistent and unintended effects. Consider the following example, in which some lines are indented with spaces and some with tabs (which are visualized with <code>␉</code>):</p>
+<pre><code>    String colors = &quot;&quot;&quot;
+····················red
+␉   ␉   ␉   ␉   ␉   green
+····················blue&quot;&quot;&quot;;</code></pre>
+<p>In this case, stripping of incidental indentation would be uneven since the second line only has five white space characters and the others have twenty. The result would look something like this:</p>
+<pre><code>               red
+green
+               blue</code></pre>
+<p>It is possible to detect issues related to incidental white space by turning on text block lint detection with a Java compiler lint flag, <code>-Xlint:text-blocks</code>. If lint detection is on, then the above example will generate a warning, “inconsistent white space indentation”.</p>
+<p>This lint flag also enables another warning, “trailing white space will be removed”, which will be emitted if there is trailing white space on any line within a text block. If you need to preserve trailing white space, use one of the escaping or replacement techniques described in the section above.</p>
+<h4 id="normalization-of-line-terminators">Normalization Of Line Terminators</h4>
+<p>One of the complications of a multi-line string literal is that the line terminator (<code>\n</code>, <code>\r</code>, or <code>\r\n</code>) used in the source file varies from platform to platform. Editors on different platforms may invisibly change line terminators. Or, if a source file is edited on different platforms, a text block might contain a mixture of different line terminators. This is likely to produce confusing and inconsistent results.</p>
+<p>To avoid these problems, the Java compiler normalizes all line terminators in a text block to be <code>\n</code>, regardless of what line terminators actually appear in the source file. The following text block (where <code>␊</code> and <code>␍</code> represent <code>\n</code> and <code>\r</code>):</p>
+<pre><code>String colors = &quot;&quot;&quot;
+    red␊
+    green␍
+    blue␍␊
+    &quot;&quot;&quot;;</code></pre>
+<p>is equivalent to this string literal:</p>
+<pre><code>String colors = &quot;red\ngreen\nblue\n&quot;;</code></pre>
+<p>If the platform line terminator is required then <code>String::replaceAll("\n", System.lineSeparator())</code> can be used.</p>
+<h4 id="translation-of-escape-sequences">Translation Of Escape Sequences</h4>
+<p>As with string literals, text blocks recognize the escape sequences, <code>\b</code>, <code>\f</code>, <code>\n</code>, <code>\t</code>, <code>\r</code>, <code>\"</code>, <code>\'</code>, <code>\\</code>, and octal escapes. Unlike string literals, escapes sequences are often not required. Under most circumstances, the actual characters <code>\n</code>, <code>\t</code>, <code>\"</code>, and <code>\'</code> can be used instead of escape sequences. The following text block (where <code>␉</code> and <code>␊</code> represent <code>\t</code> and <code>\n</code>):</p>
+<pre><code>String s = &quot;&quot;&quot;
+    Color␉   Shape␊
+    Red␉ ␉   Circle␊
+    Green␉   Square␊
+    Blue␉␉   Triangle␊
+    &quot;&quot;&quot;;</code></pre>
+<p>results in:</p>
+<pre><code>Color␉  Shape␊
+Red␉ ␉  Circle␊
+Green␉  Square␊
+Blue␉␉  Triangle␊</code></pre>
+<p>Escaping is required when three or more double quotes occur consecutively.</p>
+<pre><code>String code = &quot;&quot;&quot;
+    String source = \&quot;&quot;&quot;
+        String message = &quot;Hello, World!&quot;;
+        System.out.println(message);
+        \&quot;&quot;&quot;;
+    &quot;&quot;&quot;;</code></pre>
+<p>Escape translation occurs as the last step of processing by the Java compiler, so you can bypass the line terminator normalization and whitespace stripping steps by using explicit escape sequences. For example:</p>
+<pre><code>String s = &quot;&quot;&quot;
+           red  \040
+           green\040
+           blue \040
+           &quot;&quot;&quot;;</code></pre>
+<p>would guarantee that all lines are of equal length since the <code>\040</code> does not get translated to a space until after stripping of trailing white space (“<code>·</code>” is used to show trailing space). The result is:</p>
+<pre><code>red···
+green·
+blue··</code></pre>
+<p><strong>Note:</strong> As noted previously, the Unicode escape sequence <code>\u0020</code> <em>cannot</em> be used as a substitute for <code>\040</code>.</p>
+<h4 id="new-escape-sequences">New Escape Sequences</h4>
+<p>The <code>\&lt;line-terminator&gt;</code> escape sequence explicitly suppresses the inclusion of an implicit new line character.</p>
+<p>For example, it is common practice to split very long string literals into concatenations of smaller substrings and then hard wrapping the resulting string expression onto multiple lines.</p>
+<pre><code>  String literal = &quot;Lorem ipsum dolor sit amet, consectetur adipiscing &quot; +
+                   &quot;elit, sed do eiusmod tempor incididunt ut labore &quot; +
+                   &quot;et dolore magna aliqua.&quot;;</code></pre>
+<p>With the <code>\&lt;line-terminator&gt;</code> escape sequence this could be expressed as;</p>
+<pre><code>  String text = &quot;&quot;&quot;
+                Lorem ipsum dolor sit amet, consectetur adipiscing \
+                elit, sed do eiusmod tempor incididunt ut labore \
+                et dolore magna aliqua.\
+                &quot;&quot;&quot;;</code></pre>
+<p>The <code>\s</code> escape sequence simply translates to space (<code>\040</code>, ASCII character 32, white space). Since escape sequences don’t get translated until after incidental space stripping, <code>\s</code> can act as fence to prevent the stripping of trailing white space. Using <code>\s</code> at the end of each line in the following example, guarantees that each line is exactly six characters long.</p>
+<pre><code>String colors = &quot;&quot;&quot;
+    red  \s
+    green\s
+    blue \s
+    &quot;&quot;&quot;;</code></pre>
+<h2 id="style-guidelines-for-text-blocks">Style Guidelines For Text Blocks</h2>
+<p><strong><em>G1. You should use a text block when it improves the clarity of the code, particularly with multi-line strings.</em></strong></p>
+<pre><code>// ORIGINAL
+String message = &quot;&#39;The time has come,&#39; the Walrus said,\n&quot; +
+                 &quot;&#39;To talk of many things:\n&quot; +
+                 &quot;Of shoes -- and ships -- and sealing-wax --\n&quot; +
+                 &quot;Of cabbages -- and kings --\n&quot; +
+                 &quot;And why the sea is boiling hot --\n&quot; +
+                 &quot;And whether pigs have wings.&#39;\n&quot;;
+
+// BETTER
+String message = &quot;&quot;&quot;
+    &#39;The time has come,&#39; the Walrus said,
+    &#39;To talk of many things:
+    Of shoes -- and ships -- and sealing-wax --
+    Of cabbages -- and kings --
+    And why the sea is boiling hot --
+    And whether pigs have wings.&#39;
+    &quot;&quot;&quot;;</code></pre>
+<p><strong><em>G2. If a string fits on a single line, without concatenation and escaped newlines, you should probably continue to use a string literal.</em></strong></p>
+<pre><code>// ORIGINAL - is a text block helpful here?
+String name = &quot;&quot;&quot;
+              Pat Q. Smith&quot;&quot;&quot;;
+
+// BETTER - a string literal works fine
+String name = &quot;Pat Q. Smith&quot;;</code></pre>
+<p><strong><em>G3. Use embedded escape sequences when they maintain readability.</em></strong></p>
+<pre><code>var data = &quot;&quot;&quot;
+    Name | Address | City
+    Bob Smith | 123 Anytown St\nApt 100 | Vancouver
+    Jon Brown | 1000 Golden Place\nSuite 5 | Santa Ana
+    &quot;&quot;&quot;;</code></pre>
+<p><strong><em>G4. For most multi-line strings, place the opening delimiter at the right end of the previous line, and place the closing delimiter on its own line, at the left margin of the text block.</em></strong></p>
+<pre><code>String string = &quot;&quot;&quot;
+    red
+    green
+    blue
+    &quot;&quot;&quot;;</code></pre>
+<p><strong><em>G5. Avoid aligning the opening and closing delimiters and the text block’s left margin. This requires reindentation of the text block if the variable name or modifiers are changed.</em></strong></p>
+<pre><code>// ORIGINAL
+String string = &quot;&quot;&quot;
+                red
+                green
+                blue
+                &quot;&quot;&quot;;
+
+// ORIGINAL - after variable declaration changes
+static String rgbNames = &quot;&quot;&quot;
+                         red
+                         green
+                         blue
+                         &quot;&quot;&quot;;
+
+// BETTER
+String string = &quot;&quot;&quot;
+    red
+    green
+    blue
+    &quot;&quot;&quot;;
+
+// BETTER - after variable declaration changes
+static String rgbNames = &quot;&quot;&quot;
+    red
+    green
+    blue
+    &quot;&quot;&quot;;</code></pre>
+<p><strong><em>G6. Avoid in-line text blocks within complex expressions, as doing so can distort readability. Consider refactoring to a local variable or to a static final field.</em></strong></p>
+<pre><code>// ORIGINAL
+String poem = new String(Files.readAllBytes(Paths.get(&quot;jabberwocky.txt&quot;)));
+String middleVerses = Pattern.compile(&quot;\\n\\n&quot;)
+                             .splitAsStream(poem)
+                             .match(verse -&gt; !&quot;&quot;&quot;
+                                   ’Twas brillig, and the slithy toves
+                                   Did gyre and gimble in the wabe;
+                                   All mimsy were the borogoves,
+                                   And the mome raths outgrabe.
+                                   &quot;&quot;&quot;.equals(verse))
+                             .collect(Collectors.joining(&quot;\n\n&quot;));
+
+// BETTER
+String firstLastVerse = &quot;&quot;&quot;
+    ’Twas brillig, and the slithy toves
+    Did gyre and gimble in the wabe;
+    All mimsy were the borogoves,
+    And the mome raths outgrabe.
+    &quot;&quot;&quot;;
+String poem = new String(Files.readAllBytes(Paths.get(&quot;jabberwocky.txt&quot;)));
+String middleVerses = Pattern.compile(&quot;\\n\\n&quot;)
+                             .splitAsStream(poem)
+                             .match(verse -&gt; !firstLastVerse.equals(verse))
+                             .collect(Collectors.joining(&quot;\n\n&quot;));</code></pre>
+<p><strong><em>G7. Either use only spaces or only tabs for the indentation of a text block. Mixing white space will lead to a result with irregular indentation.</em></strong></p>
+<pre><code>// ORIGINAL
+    String colors = &quot;&quot;&quot;
+········red
+␉       green
+········blue&quot;&quot;&quot;;    // result: &quot;·······red\ngreen\n·······blue&quot;
+
+// PROBABLY WHAT WAS INTENDED
+    String colors = &quot;&quot;&quot;
+········red
+········green
+········blue&quot;&quot;&quot;;    // result: &quot;red\ngreen\nblue&quot;</code></pre>
+<p><strong><em>G8. When a text block contains sequences of three or more double quotes, escape the first double quote of every run of three double quotes.</em></strong></p>
+<pre><code>// ORIGINAL
+String code = &quot;&quot;&quot;
+    String source = \&quot;\&quot;\&quot;
+        String message = &quot;Hello, World!&quot;;
+        System.out.println(message);
+        \&quot;\&quot;\&quot;;
+    &quot;&quot;&quot;;
+
+// BETTER
+String code = &quot;&quot;&quot;
+    String source = \&quot;&quot;&quot;
+        String message = &quot;Hello, World!&quot;;
+        System.out.println(message);
+        \&quot;&quot;&quot;;
+    &quot;&quot;&quot;;</code></pre>
+<p><strong><em>G9. Most text blocks should be indented to align with neighbouring Java code.</em></strong></p>
+<pre><code>    // ORIGINAL - odd indentation
+    void printPoem() {
+        String poem = &quot;&quot;&quot;
+’Twas brillig, and the slithy toves
+Did gyre and gimble in the wabe;
+All mimsy were the borogoves,
+And the mome raths outgrabe.
+&quot;&quot;&quot;;
+        System.out.print(poem);
+    }
+
+    // BETTER
+    void printPoem() {
+        String poem = &quot;&quot;&quot;
+            ’Twas brillig, and the slithy toves
+            Did gyre and gimble in the wabe;
+            All mimsy were the borogoves,
+            And the mome raths outgrabe.
+            &quot;&quot;&quot;;
+        System.out.print(poem);
+    }</code></pre>
+<p><strong><em>G10. It is recommended to fully left justify a wide string in order to avoid horizontal scrolling or line wrapping.</em></strong></p>
+<pre><code>// ORIGINAL
+
+class Outer {
+    class Inner {
+        void printPoetry() {
+            String lilacs = &quot;&quot;&quot;
+                Over the breast of the spring, the land, amid cities,
+                Amid lanes and through old woods, where lately the violets peep’d from the ground, spotting the gray debris,
+                Amid the grass in the fields each side of the lanes, passing the endless grass,
+                Passing the yellow-spear’d wheat, every grain from its shroud in the dark-brown fields uprisen,
+                Passing the apple-tree blows of white and pink in the orchards,
+                Carrying a corpse to where it shall rest in the grave,
+                Night and day journeys a coffin.
+                &quot;&quot;&quot;;
+            System.out.println(lilacs);
+        }
+    }
+}
+
+// BETTER
+
+class Outer {
+    class Inner {
+        void printPoetry() {
+            String lilacs = &quot;&quot;&quot;
+Over the breast of the spring, the land, amid cities,
+Amid lanes and through old woods, where lately the violets peep’d from the ground, spotting the gray debris,
+Amid the grass in the fields each side of the lanes, passing the endless grass,
+Passing the yellow-spear’d wheat, every grain from its shroud in the dark-brown fields uprisen,
+Passing the apple-tree blows of white and pink in the orchards,
+Carrying a corpse to where it shall rest in the grave,
+Night and day journeys a coffin.
+&quot;&quot;&quot;;
+            System.out.println(lilacs);
+        }
+    }
+}</code></pre>
+<p><strong><em>G11. Similarly, it is also reasonable to fully left justify a text block when a high line count causes the closing delimiter is likely to vertically scroll out of view. This allows the reader to track indentation with the left margin when the closing delimiter is out of view.</em></strong></p>
+<pre><code>// ORIGINAL
+
+String validWords = &quot;&quot;&quot;
+                    aa
+                    aah
+                    aahed
+                    aahing
+                    aahs
+                    aal
+                    aalii
+                    aaliis
+...
+                    zythum
+                    zythums
+                    zyzzyva
+                    zyzzyvas
+                    zzz
+                    zzzs
+                    &quot;&quot;&quot;;
+
+
+// BETTER
+
+String validWords = &quot;&quot;&quot;
+aa
+aah
+aahed
+aahing
+aahs
+aal
+aalii
+aaliis
+...
+zythum
+zythums
+zyzzyva
+zyzzyvas
+zzz
+zzzs
+&quot;&quot;&quot;;</code></pre>
+<p><strong><em>G12. The <code>\&lt;line-terminator&gt;</code> escape sequence should be used when a text block’s final new line needs to be excluded. This better frames the text block and allows the closing delimiter to manage indentation.</em></strong></p>
+<pre><code>// ORIGINAL
+
+String name = &quot;&quot;&quot;
+    red
+    green
+    blue&quot;&quot;&quot;.indent(4);
+
+
+// BETTER
+
+String name = &quot;&quot;&quot;
+        red
+        green
+        blue\
+    &quot;&quot;&quot;;</code></pre>
+<h2 id="new-string-methods">New String Methods</h2>
+<p>Several new methods are included in the <code>String</code> class as part of the text blocks feature. (Note that these methods are marked deprecated, for removal, in Java SE 13 and 14, to indicate that they are part of a preview feature.)</p>
+<h4 id="string-formattedobject...-args"><code>String formatted(Object... args)</code></h4>
+<p>This method is equivalent to <code>String.format(this, args)</code>. The advantage is that, as an instance method, it can be chained off the end of a text block:</p>
+<pre><code>String output = &quot;&quot;&quot;
+    Name: %s
+    Phone: %s
+    Address: %s
+    Salary: $%.2f
+    &quot;&quot;&quot;.formatted(name, phone, address, salary);</code></pre>
+<h4 id="string-stripindent"><code>String stripIndent()</code></h4>
+<p>The <code>stripIndent</code> method removes incidental white space from a multi-line string, using the same algorithm used by the Java compiler. This is useful if you have a program that reads text as input data and you want to strip indentation in the same manner as is done for text blocks.</p>
+<h4 id="string-translateescapes"><code>String translateEscapes()</code></h4>
+<p>The <code>translateEscapes</code> method performs the translation of escape sequences (<code>\b</code>, <code>\f</code>, <code>\n</code>, <code>\t</code>, <code>\r</code>, <code>\"</code>, <code>\'</code>, <code>\\</code>, <code>\s</code>, <code>\&lt;line-terminator&gt;</code> and octal escapes) and is used by the Java compiler to process text blocks and string literals. This is useful if you have a program that reads text as input data and you want to perform escape sequence processing. Note that Unicode escapes (<code>\uNNNN</code>) are <em>not</em> processed.</p>
+<h2 id="references">References</h2>
+<dl>
+<dt>“The Walrus and the Carpenter”</dt>
+<dd>Lewis Carroll, <em>Through the Looking-Glass and What Alice Found There,</em> 1872.
+<p>
+</dd>
+<dt>“Jabberwocky”</dt>
+<dd>Lewis Carroll, <em>Mischmasch,</em> 1855.
+<p>
+</dd>
+<dt>“When Lilacs Last in the Dooryard Bloom’d”</dt>
+<dd>Walt Whitman, <em>Sequel to Drum-Taps</em>, 1865.
+</dd>
+</dl>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>pattern-match-semantics</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="pattern-matching-for-java-semantics">Pattern Matching for Java – Semantics</h1>
+<h4 id="gavin-bierman-and-brian-goetz-updated-august-2020">Gavin Bierman and Brian Goetz (Updated August 2020)</h4>
+<p>This document explores a possible direction for supporting <em>pattern matching</em> in the Java Language. <em>This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language.</em> This document also may reference other features under exploration; this is purely for illustrative purposes, and does not constitute any sort of plan or commitment to deliver any of these features.</p>
+<h4 id="pattern-matching-documents">Pattern matching documents</h4>
+<ul>
+<li><a href="pattern-matching-for-java.html">Pattern Matching For Java</a>. Overview of pattern matching concepts, and how they might be surfaced in Java.</li>
+<li><a href="pattern-match-semantics.html">Pattern Matching For Java – Semantics</a> (this document). More detailed notes on type checking, matching, and scoping of patterns and binding variables.</li>
+<li><a href="extending-switch-for-patterns.html">Extending Switch for Patterns</a>. An early exploration of the issues surrounding extending pattern matching to the <code>switch</code> statement.</li>
+<li><a href="type-patterns-in-switch.html">Type Patterns in Switch</a>. A more up-to-date treatment of extending pattern matching to <code>switch</code> statements, including treatment of nullity and totality.</li>
+<li><a href="pattern-match-object-model.html">Pattern Matching in the Java Object model</a>. Explores how patterns fit into the Java object model, how they fill a hole we may not have realized existed, and how they might affect API design going forward.</li>
+</ul>
+<h2 id="types-of-patterns">Types of patterns</h2>
+<p>There are multiple types of patterns. We will use a denotation for purposes of exposition in this document, but the final denotation in the language, and which of these pattern types are eventually supported, may be different than presented here.</p>
+<ul>
+<li><em>Type patterns</em>, denoted by <code>T t</code>;</li>
+<li>The <em>var</em> pattern, denoted by <code>var x</code>;</li>
+<li>The <em>ignore</em> pattern, denoted by <code>_</code>;</li>
+<li><em>Constant patterns</em> (including the <em>null constant pattern</em>) denoted by lexical literals or by names of constant variables (JLS 4.12.4) or enum constants;</li>
+<li><em>Deconstruction patterns</em> for a type <code>T</code>, denoted by <code>T(P*)</code>, where <code>P*</code> is a sequence of nested patterns;</li>
+<li><em>Declared patterns</em>, denoted by <code>id(P*)</code> or <code>C.id(P*)</code>.</li>
+</ul>
+<p>In any pattern match, there is always a pattern and a <em>match target</em>. For <code>instanceof</code> the match target is the LHS operand; for <code>switch</code> it is the operand in the switch header. The match target has both a static and dynamic type; both may be used in determining whether the pattern matches.</p>
+<h4 id="type-checking">Type checking</h4>
+<p>Certain pattern matches can be rejected at compile time based strictly on static checks, such as:</p>
+<pre><code>String s = &quot;Hello&quot;;
+if (s instanceof Integer i) { ... }</code></pre>
+<p>The target <code>s</code> is a <code>String</code> and the pattern <code>Integer i</code> only matches expressions of type <code>Integer</code>. Since both are final classes, we know statically that the match cannot succeed and it is rejected, just as we would reject an attempt to cast an <code>Integer</code> to a <code>String</code>.</p>
+<p>We can define an <em>applicability</em> relation between a pattern and a static type, which determines if the pattern is applicable to a target of that type. (In all the rules that follow, “castable” means “cast-convertible without an unchecked warning.”)</p>
+<ul>
+<li>The ignore pattern and the <code>var</code> pattern are applicable to all types.</li>
+<li>The <code>null</code> constant pattern is applicable to all reference types.</li>
+<li>A numeric literal constant pattern for <code>n</code> without a type suffix is applicable to any primitive type <code>P</code> to which <code>n</code> is assignable (within the numeric range of <code>P</code>), and to <code>P</code>’s box type, and its supertypes.</li>
+<li>Other constant patterns of primitive type <code>P</code> are applicable to <code>P</code> and to types <code>U</code> which are castable to <code>P</code>’s box type, and its supertypes.</li>
+<li>Constant patterns of reference type <code>T</code> are applicable to types <code>U</code> which are castable to <code>T</code>.</li>
+<li>The type pattern <code>P p</code> for a primitive type <code>P</code> is applicable to <code>P</code>.</li>
+<li>The type pattern <code>T t</code> for a reference type <code>T</code> is applicable to types <code>U</code> which are castable to <code>T</code>.</li>
+<li>A deconstruction pattern <code>D(P*) [d]</code>, is applicable to types <code>U</code> which are castable to <code>D</code>.</li>
+<li>A declared pattern <code>p(P*)</code> is applicable to types <code>U</code> which are castable to the target type of <code>p</code>. (An example of a declared pattern is <code>Optional.of(var x)</code>, which would be declared in <code>Optional</code> and has a target type of <code>Optional&lt;T&gt;</code>.)</li>
+</ul>
+<p>If a pattern is not applicable to the target type, a compilation error results. Generic type patterns are permitted; this is a relaxation of the current semantics of the <code>instanceof</code> operator, which requires that the type operand is reifiable. However, when determining applicability involves cast conversions, the pattern is not applicable if the cast conversion would be <em>unchecked</em>. So it is allowable to say</p>
+<pre><code>List&lt;Integer&gt; list = ...
+if (list instanceof ArrayList&lt;Integer&gt; a) { ... }</code></pre>
+<p>but not</p>
+<pre><code>List&lt;?&gt; list = ...
+if (list instanceof ArrayList&lt;String&gt; a) { ... }</code></pre>
+<p>as a cast conversion from <code>List&lt;?&gt;</code> to <code>ArrayList&lt;String&gt;</code> would be unchecked.</p>
+<p>For deconstruction and declared patterns, which contain nested sub-patterns, we further required that the nested sub-patterns are applicable to the static type of the corresponding binding variables of the enclosing pattern. So if class <code>D</code> has a deconstructor <code>D(String s, int y)</code>, a pattern <code>D(P, Q)</code> is only applicable if <code>P</code> is applicable to <code>String</code> and <code>Q</code> is applicable to <code>int</code>.</p>
+<p>It may appear we are being unnecessarily unfriendly to numeric constant patterns here, by not being more liberal about widening and boxing conversions. However, we wish to avoid situations where an <code>Object</code> operand is matched against a literal constant <code>0</code>; one could mistakenly expect this to match all of <code>Integer</code> zero, <code>Short</code> zero, etc. Instead, when matching against broad operand types (which are necessarily reference types), we should be explicit and either use typed constants or use destructuring patterns on the box type, such as <code>Integer(0)</code> or <code>Short(0)</code>. We reserve the numeric literal patterns for matching primitives and their boxes only where there is no possible type ambiguity.</p>
+<p>For numeric literal constants without type suffixes, when attempting to match against an operand of primitive type <code>P</code> or the box type for a primitive type <code>P</code>, then the constant is interpreted as being of type <code>P</code>. This means that we can speak of every constant pattern having an unambiguous type.</p>
+<h4 id="matching">Matching</h4>
+<p>Some patterns are <em>total</em> on certain target types, which means no dynamic type test is required to determine matching. The “ignore” and “var” patterns are total on all types. A type pattern <code>T t</code> is total on any type <code>U &lt;: T</code>. A deconstruction <code>D(P*)</code> is total on <code>U</code> if <code>U &lt;: T</code> and each <code>Pi</code> is total on the type of the corresponding binding variable of <code>D</code>.</p>
+<p>We define a <em>matches</em> relation between patterns and expressions as follows.</p>
+<ul>
+<li>The “ignore” and <code>var</code> patterns match anything, including null.</li>
+<li>A type pattern <code>T t</code> matches <code>e</code> if <code>e instanceof T</code>, and additionally matches <code>null</code> if the type pattern is total on the target type.</li>
+<li>The <code>null</code> constant pattern matches <code>e</code> if <code>e == null</code>.</li>
+<li>A primitive constant pattern <code>c</code> of type <code>P</code> matches <code>e : P</code> if <code>c</code> is equal to <code>e</code>, and matches <code>e : T</code> if <code>e</code> is an instance of <code>P</code>’s box type, and <code>c</code> equals <code>unbox(e)</code>. Equality is determined by the appropriate primitive <code>==</code> operator, except for <code>float</code> and <code>double</code>, where equality is determined by the semantics of <code>Float::equals</code> and <code>Double::equals</code>.</li>
+<li>A reference constant pattern <code>c</code> of type <code>T</code> matches <code>e</code> if <code>c.equals(e)</code>.</li>
+<li>A deconstruction pattern <code>D(Pi...)</code> matches <code>e</code> if <code>e instanceof T</code>, and for all <em>i</em>, <code>Pi</code> matches the <em>i</em>’th component extracted by <code>D</code>.</li>
+</ul>
+<p>The only patterns that are nullable are the null constant pattern, the “ignore” and <code>var</code> patterns, and total type patterns. (The latter three are actually equivalent – they are all variants of “any” patterns.)</p>
+<p>Deconstruction (and declared) patterns can contain nested sub-patterns. If a deconstructor <code>D</code> has a single binding variables of type <code>T</code>, then <code>x</code> matches <code>D(P)</code> if and only if <code>x</code> matches <code>D(var alpha)</code> and <code>alpha</code> matches <code>P</code>. In such a match, the target of <code>D(P)</code> is <code>x</code>, but the target of <code>P</code> is the synthetic variable <code>alpha</code>.</p>
+<h4 id="binding-variables">Binding variables</h4>
+<p>Some patterns define variables which will be bound to components extracted from the target if the match succeeds. These variables have types defined as follows:</p>
+<ul>
+<li>For a type pattern <code>T t</code>, the binding variable <code>t</code> has type <code>T</code>.</li>
+<li>For a deconstruction pattern <code>D(P*) d</code>, the binding variable <code>d</code> has type <code>D</code>.</li>
+<li>For a pattern <code>var x</code> on a target of type <code>U</code>, the binding variable <code>x</code> has type <code>U</code>. (Patterns in nested context get their target types from the type of the corresponding binding variable in the declaration of the enclosing pattern.)</li>
+</ul>
+<p>In each of these cases, the pattern variable is initialized to the match target, after casting or converting to the target type, when a successful match is made.</p>
+<h2 id="pattern-aware-constructs">Pattern-aware constructs</h2>
+<p>Several constructs, such as <code>instanceof</code> and <code>switch</code>, will be made pattern-aware. The syntax of <code>instanceof</code> is extended as follows:</p>
+<pre><code>&lt;expression&gt; instanceof &lt;reifiable-type&gt;
+&lt;expression&gt; instanceof &lt;pattern&gt;</code></pre>
+<p>The <code>instanceof</code> operator evaluates to <code>false</code> if the pattern is non-nullable and the expression operand is <code>null</code>. Because the only nullable patterns are the <code>null</code> constant pattern and the total patterns (ignore, <code>var</code>, total type patterns), all of which are somewhat silly to use in <code>instanceof</code>, we may restrict the pattern operand of <code>instanceof</code> to exclude nullable patterns, to avoid confusion with the current behavior of "<code>instanceof</code> which is always false on <code>null</code>.</p>
+<p>Currently, <code>switch</code> only supports a limited range of operand types; when it becomes pattern aware, it can accept any operand type (but patterns are type checked for applicability with the operand type), and patterns may be used as <code>case</code> labels.</p>
+<p>A <em>pattern bind</em> statement is a generalization of a local variable declaration, and is written</p>
+<pre><code>P = e</code></pre>
+<p>The pattern in a pattern bind statement must have at least one binding variable, and must be total on the type of <code>e</code>. If <code>P</code> is not nullable, a pattern bind may throw <code>NullPointerException</code> when <code>e==null</code>. A pattern bind statement with a type or <code>var</code> pattern is equivalent to a local variable declaration; additionally pattern bind statements may use deconstruction patterns:</p>
+<pre><code>Point(var x, var y) = component.getCenter();</code></pre>
+<p>which declares new locals <code>x</code> and <code>y</code>.</p>
+<h2 id="scoping-of-pattern-variables">Scoping of pattern variables</h2>
+<p>Unlike traditional locals, which have “rectangular” scopes, the scope of a pattern variable is flow-sensitive. This ensures that it is in scope only where it would be definitely assigned.</p>
+<p>To define the scoping semantics, we assign to each expression <code>e</code> a “true set” and a “false set” of bindings, denoted <code>e.T</code> and <code>e.F</code>, which are always disjoint. The following table shows the true and false sets for all expression forms, along with an “include” column, which tells us which bindings are in scope in which contexts.</p>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 28%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Expression form</th>
+<th>T</th>
+<th>F</th>
+<th>Include</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>x instanceof P</td>
+<td>bindings(P)</td>
+<td>(empty)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>x &amp;&amp; y</td>
+<td>union(x.T,y.T)</td>
+<td>intersect(x.F,y.F)</td>
+<td>x.T in y</td>
+</tr>
+<tr class="odd">
+<td>x || y</td>
+<td>intersect(x.T,y.T)</td>
+<td>union(x.F,y.F)</td>
+<td>x.F in y</td>
+</tr>
+<tr class="even">
+<td>( x )</td>
+<td>x.T</td>
+<td>x.F</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>!x</td>
+<td>x.F</td>
+<td>x.T</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>x ? y : z</td>
+<td>union( intersect(y.T,z.T), intersect(x.T,z.T), intersect(x.F,y.T))</td>
+<td>union( intersect(y.F,z.F), intersect(x.T,z.F), intersect(x.F,y.F))</td>
+<td>x.T in y<br> x.F in z</td>
+</tr>
+<tr class="odd">
+<td>others</td>
+<td>empty</td>
+<td>empty</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>In this table, union is a <em>disjoint union</em> (it is an error if the sets being unioned contain variables with the same name). For intersection, it is an error if any variables in the sets being intersected contain the same name but have different types.</p>
+<p>For example, in the following:</p>
+<pre><code>if (x instanceof Foo(int y) &amp;&amp; y &gt; 0) { ... }
+if (!(x instanceof Foo(int y)) || y &gt; 0) { ... }</code></pre>
+<p>the pattern variable <code>y</code> is in scope and DA where it is used, but in</p>
+<pre><code>if (x instanceof Foo(int y) || y &gt; 0) { ... }
+if (!(x instanceof Foo(int y)) &amp;&amp; y &gt; 0) { ... }</code></pre>
+<p>the pattern variable <code>y</code> is not in scope, and hence this is an error. The rule about <code>&amp;&amp;</code> is also what allows us to express <code>equals()</code> in terms of a pattern match:</p>
+<pre><code>public boolean equals(Object o) {
+    return (o instanceof Point p)
+        &amp;&amp; p.x == x    // p in scope here
+        &amp;&amp; p.y == y;    // p in scope here
+}</code></pre>
+<p>Why would we declare a pattern variable to be not in scope where it is not defined, rather than simply defining it to be DU? This is so that binding names can be <em>reused</em>. Consider the following:</p>
+<pre><code>if (x instanceof Point p &amp;&amp; p.x == 0) { ... }
+else if (x instanceof Point p &amp;&amp; p.x == p.y) { ... }</code></pre>
+<p>If <code>p</code> were in scope for the whole of the statement containing the first <code>instanceof</code>, as would be implied by a traditional scope, then the second arm of the <code>if-else</code> chain would have to pick a different name for its pattern variable. With a simple <code>if..else</code> like this one, this might not seem like a big deal, but in a <code>switch</code> statement with dozens of clauses, this would indeed get annoying.</p>
+<p>Further, we may eventually want to support <em>merging</em> of pattern bindings, as in:</p>
+<pre><code>if ((x instanceof BlueBox(int height)
+    || x instanceof RedBox(int height)) &amp;&amp; height &gt; 10) { ... }</code></pre>
+<p>Since exactly one of the two bindings for <code>height</code> are in scope and DA in the last clause, we can merge these bindings. If we could not, we would have to restructure the code, likely with significant duplication, to achieve the same effect.</p>
+<h4 id="scoping-and-statements">Scoping and statements</h4>
+<p>We have defined which expressions produce bindings, but we have not yet tied their scopes to statements. The obvious extension of the above rules to <code>if</code> statements would yield:</p>
+<pre><code>if (x instanceof Foo f) {
+    // f is in scope here
+}
+else {
+    // if is not in scope here
+}</code></pre>
+<p>But, what about this:</p>
+<pre><code>if (!(x instanceof Foo(var y, var z)))
+    throw new NotFooException();
+// Are y and z in scope here?</code></pre>
+<p>Because the body of the <code>if</code> always completes abruptly, it is as if the remainder of the scope was an implicit <code>else</code> block, and it would be desirable for <code>y</code> and <code>z</code> to be in scope (and DA) in the remainder of the scope. On the other hand, in this example:</p>
+<pre><code>if (!(x instanceof Foo(var y, var z)))
+    System.out.println(&quot;not a Foo, saddenz&quot;);
+// Are y and z in scope here?</code></pre>
+<p>If <code>y</code> and <code>z</code> were in scope after the <code>if</code>, they would definitely not be DA. And, as per the argument above about reuse, we only want bindings to be in scope where they are DA, so we can reuse the names elsewhere. We can accomplish this by incorporating additional results from the existing flow analysis into the scoping rules for pattern variables.</p>
+<p>We define several additional predicates on statements: <code>AA(x)</code> is true when <code>x</code> always completes abruptly; <code>NB(x)</code> is true when <code>x</code> never completes abruptly because of <code>break</code>; <code>MF(x)</code> is true when <code>x</code> may “fall through” into the following case label. (These are already computed by existing flow analysis.) We can now add in the effects of nonlocal control flow to our scoping rules:</p>
+<table>
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 57%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Statement</th>
+<th>Include</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>if (x) y else z; s;</td>
+<td>x.T in y<br> x.F in z<br> AA(y) &amp;&amp; !AA(z) ? x.F in s<br> AA(z) &amp;&amp; !AA(y) ? x.T in s<br></td>
+</tr>
+<tr class="even">
+<td>while (x) y; s;</td>
+<td>x.T in y<br> NB(y) ? x.F in s</td>
+</tr>
+<tr class="odd">
+<td>do { x } while (y); s;</td>
+<td>NB(x) ? y.F in s</td>
+</tr>
+<tr class="even">
+<td>for (a; b; c) d; s;</td>
+<td>b.T in c<br> b.T in d<br> NB(d) ? b.F in s</td>
+</tr>
+<tr class="odd">
+<td>switch (e) {<br> case P: a;<br> case Q: b;<br> }</td>
+<td>bindings(P) in a<br> MF(a)<br> ? intersection(bindings(P), bindings(Q)) in b<br> : bindings(Q) in b;</td>
+</tr>
+<tr class="even">
+<td>P = e;<br> S;</td>
+<td>e.T in S</td>
+</tr>
+</tbody>
+</table>
+<p>With these rules, we are able to get the full desired scoping with awareness of whether we throw out of <code>if</code> blocks, <code>break</code> out of <code>while</code> loops, or fall out of case groups.</p>
+<p>As mentioned already, the motivation for flow-sensitive scoping is so we can reuse pattern variable names when they are not in scope:</p>
+<pre><code>switch (e) {
+    case RedBox(int height) -&gt; System.out.printf(&quot;Red(%d)&quot;, height);
+    case BlueBox(int height) -&gt; System.out.printf(&quot;Blue(%d)&quot;, height);
+}</code></pre>
+<p>And we can even (if we want to) merge pattern variables in switch fallthrough:</p>
+<pre><code>switch (e) {
+    case RedBox(int height):
+        System.out.println(&quot;It&#39;s red&quot;);
+        // fall through
+    case Box(int height):
+        System.out.println(&quot;It&#39;s a box of height: &quot; height);
+}</code></pre>
+<p>While these rules may look complicated at first, the rules are derived strictly from the flow analysis rules (such as DA/DU) already in the language. So the result is that a pattern variable is in scope wherever it would be DA, and not in scope wherever it would not be DA. (In informal focus-testing with experienced Java programmers, we asked “is it reasonable to be able to use variable <code>x</code> here” for various examples, and there were no surprises, because they were already familiar with when a variable is guaranteed to have a value, and when not.)</p>
+<h4 id="shadowing">Shadowing</h4>
+<p>Because the scoping of pattern bindings is not exactly the same as for local variables, we must describe the interaction between pattern bindings and other kinds of variables (locals, fields.) We adopt the same rules for shadowing as we do for locals – binding variables may not shadow other binding variables or locals (or vice-versa), but they may shadow fields. The unusual shape of the scopes of binding variables may occasionally lead to scoping confusion such as the following, but it was deemed that “curing” this “problem” was probably worse than the disease.</p>
+<pre><code>class Swiss {
+    String s;
+
+    void cheese(Object o) {
+        // pattern variable s &quot;declared&quot; here
+        if (!(o instanceof String s)) {
+            // But s not in scope here!
+            // So s here would refer to the field
+        }
+        else {
+            // And s here would refer to the pattern variable
+        }
+    }</code></pre>
+<p>Because pattern variable names are strictly local, we can always choose names that do not conflict with locals or fields in scope.</p>
+<h2 id="nullability">Nullability</h2>
+<p>Nullability is a complex topic fraught with tradeoffs. The existing constructs have pre-existing notions about nullability; currently <code>instanceof</code> always says <code>false</code> on null, and <code>switch</code> always throws on <code>null</code>.</p>
+<p>These were the right defaults given the role of these constructs in the language as originally designed – <code>instanceof</code> was solely a dynamic type test (matching the behavior of the <code>INSTANCEOF</code> bytecode), and <code>switch</code> only allows us to compare for equality with a constant, on a limited number of types. However, as these constructs become dramatically richer when we upgrade them to support patterns, we may need to (compatibly) refine these behaviors.</p>
+<p>Source compatibility prevents us from changing these for code that is currently valid, but we also want to avoid extending the semantics of these constructs in a too-surprising way. Along the way, we have encountered strong and diverse opinions about how <code>null</code> should be handled (ranging from “null is just another value” to “kill it dead, now, dead, now.”) Our approach is to avoid picking winners and losers here, and to provide a set of primitives that can equally well support null-avoiding and null-tolerant coding styles.</p>
+<p>The “obvious” choice is to simply continue with the null semantics we have now. But the current story scales poorly to <em>nested patterns</em>. If we have a class:</p>
+<pre><code>class Box&lt;T&gt; {
+    private final T t;
+
+    public Box(T t) { this.t = t; }
+    public deconstructor Box(T t) { t = this.t; }
+}</code></pre>
+<p>The author of the class has decided that <code>new Box(null)</code> is an entirely reasonable value for this class; the language should not be second-guessing this design choice. So it would be unreasonable to prevent <code>Box(_)</code> from matching <code>Box(null)</code>, for example; if we’re matching “any box”, then we should match any box. The “ignore” pattern (if we support it at all) doesn’t let us bind to its target, so we might also want to use a nested <code>var</code> or type pattern here. And the same argument applies to <code>Box(var x)</code> as to <code>Box(_)</code>; we’re saying “any box, and please bind <code>x</code> to whatever it is a box of.” And we can extend this argument to a nested total type pattern as well – in fact, we sort of have to, or we risk undermining the claim that <code>var</code> is “just type inference.” As with <code>var</code> in variable declarations, we want the choice of inference or not to be made on the basis of what the author finds most readable – and so the pattern <code>var x</code> must just be type inference for some type pattern <code>T x</code>, and the sensible type to infer is the target type (being the narrowest type that is total on the target.) So we conclude that total type patterns and <code>var</code> patterns are equivalent, and therefore are both nullable, at least in a nested context.</p>
+<p>But, having different semantics for nested vs top-level context would be even more complicated; it is simplest to think about nesting when it is mere “unrolling”. So the natural thing to do is say that these patterns just match null. Which leaves us with how to resolve this with the fact that <code>instanceof</code> and <code>switch</code> have pre-existing opinions about nulls.</p>
+<p>One thing we could do here is nothing; just let these behaviors continue. And for <code>instanceof</code>, we probably should do that – but to accomplish that, we have to ban nullable patterns in <code>instanceof</code> (that prevents <code>instanceof Object</code> and <code>instanceof Object o</code> from meaning different things, which would be confusing). Which is probably fine, since <code>e instanceof var x</code> is kind of a silly way to write <code>var x = e</code>.</p>
+<p>For <code>switch</code>, though, we have a harder choice. We could let <code>switch</code> keep throwing – but this has consequences too. For example, it means giving up the ability to refactor a switch of nested patterns:</p>
+<pre><code>switch (o) {
+    case D(P): A
+    case D(Q): B
+}</code></pre>
+<p>to the obvious nested switch:</p>
+<pre><code>switch (o) {
+    case D(var x):
+       switch (x) {
+           case P: A
+           case Q: B
+       }
+}</code></pre>
+<p>because doing so would cause NPE if <code>x==null</code>. Alternately, we can refine the semantics of <code>switch</code> to only throw on <code>null</code> when no nullable patterns – which means no <code>case null</code> (which must always be first) and no total pattern (which must always be last). Similarly, we would like to be able to refactor chains of <code>instanceof</code> and <code>switch</code> to each other.</p>
+<h4 id="nullity-some-false-starts">Nullity – some false starts</h4>
+<p>Our path for determining the semantics of various patterns with respect to null has been a fairly winding one. While it is impractical to rehash the entire journey, let’s look at some specific examples.</p>
+<p>We initially liked the idea that a type pattern <code>T t</code> would match anything that is assignment-compatible to <code>T</code>, including <code>null</code>. But this runs into a few problems.</p>
+<p>First, it means that refactoring between <code>switch</code> and <code>instanceof</code> is painful, because <code>instanceof T t</code> would not be consistent with <code>instanceof T</code> for any <code>T</code>. (Some might assume the problem here is that we’re trying to reuse <code>instanceof</code>, but having a <code>matches T t</code> that behaves similarly but subtly differently from <code>instanceof T</code> is no better.)</p>
+<p>Further, having type patterns match nulls would result in surprising order dependency. If we have:</p>
+<pre><code>switch (box) {
+    case Box(String s): ...
+    case Box(Integer i): ...
+    case Box(_): ...
+}</code></pre>
+<p>and type patterns matched null, the nulls would fall into the first <code>case</code>. Not only is this surprising and arbitrary, but its even more surprising that if we reordered the first two cases – which surely look disjoint and therefore safely reorderable – it would subtly change the behavior of the program, because now <code>Box(Integer)</code> would get the nulls.</p>
+<p>Additionally, if <code>T t</code> were to match nulls for arbitrary <code>T</code>, this would likely lead to many unexpected NPEs. For example, it would be easy to forget that one can’t safely use <code>s</code> in the following example:</p>
+<pre><code>if (x instanceof String s)
+    printf(&quot;String of length %d%n&quot;, s.length());</code></pre>
+<p>If the type pattern <code>String s</code> matched <code>null</code>, this code would NPE in the body of the <code>if</code>, since we’d be dereferencing a null <code>String</code> reference. This would be a sharp edge that cuts over and over, because the intent of the code above is to perform a dynamic type test.</p>
+<p>At this point, readers should ask: why would it be different for total patterns? And the reason is: we don’t use total patterns in <code>instanceof</code> at all (so it doesn’t matter there), and when we use them in <code>switch</code>, we are not using them as dynamic type tests – we are using them as catch-alls.</p>
+<p>Another idea that didn’t work out is to say <code>var x</code> is nullable but <code>Object x</code> never is. This is doable, but it has a big cost – it violates the sensible intuition that <code>var</code> is “just” type inference, not a semantically different thing. We want the rules for nullity to be robust to a variety of refactorings that seem like they should be the same thing – so we want them to be the same thing:</p>
+<ul>
+<li>That <code>var x</code> is just type inference for some type pattern <code>T t</code>;</li>
+<li>A chain of <code>if (x instanceof P)</code> … <code>else if (x instanceof Q)</code> can be refactored to or from a switch with cases P and Q;</li>
+<li>A sequence of switch cases <code>P(Q)</code>, <code>P(R)</code> can be refactored to a single case <code>P p</code> with a nested switch on <code>p</code> with cases <code>Q</code> and <code>R</code>.</li>
+</ul>
+<p>Each of the ideas discussed and rejected in this section would have fallen afoul of one of these goals.</p>
+<h2 id="pattern-dominance">Pattern dominance</h2>
+<p>We can impose a partial ordering on patterns, called dominance, that means that any value matched by a dominated pattern is also matched by the dominating pattern. We can use this ordering to reject dead switch arms (as we reject dead <code>catch</code> arms today.) Dominance is reflexive; <code>P</code> always dominates itself (or patterns equivalent to itself). Any subtyping conditions used in computing dominance is computed on raw types; type patterns for <code>List&lt;?&gt;</code> and <code>List&lt;String&gt;</code> are considered equivalent.</p>
+<p>Examples of dominance include:</p>
+<ul>
+<li>A constant pattern for a constant of type <code>T</code> is dominated by a type pattern for <code>T</code>.</li>
+<li>If <code>T &lt;: U</code>, then a type pattern for <code>T</code> is dominated by a type pattern for <code>U</code>.</li>
+<li>A deconstruction pattern <code>T(P*)</code> is dominated by a type pattern for <code>T</code>. If <code>T(P*)</code> is total on <code>T</code>, then the type pattern <code>T t</code> is also dominated by <code>T(P*)</code>.</li>
+<li>If <code>T &lt;: U</code>, then a total deconstruction pattern <code>T(P*)</code> is dominated by a total deconstruction pattern <code>U(Q*)</code>.</li>
+<li>If <code>P</code> is dominated by <code>Q</code>, then <code>T(P)</code> is dominated by <code>T(Q)</code>.</li>
+<li><code>null</code> is dominated by any nullable type pattern.</li>
+<li>A guarded pattern <code>P when g</code> is dominated by <code>P</code>.<br />
+</li>
+<li>All patterns are dominated by the “ignore” pattern <code>_</code> and <code>var</code> patterns.</li>
+</ul>
+<p>It is a compile-time error to have a <code>case</code> label in a <code>switch</code> that cannot match any values. This includes patterns that are dominated by prior <code>case</code> labels, as well as <code>case</code> labels that are dominated by combinations of prior case labels (which can arised from type patterns involving sealed classes.)</p>
+<p>The <code>default</code> case is special, and to some extent legacy. It matches everything but <code>null</code> that is not matched by some other case (before or after). For existing switches, the <code>default</code> clause need not be the last case (in fact, you can even fall <em>out</em> of a default into a labeled case!), but once we start enforcing dominance order, this will be confusing, since we’d like for switches to be seen as equivalent to an if-else chain (with potentially optimized dispatch). So for switches that are not “classic” switches (operand is one of the currently supported types, and all cases are constant labels), <code>default</code> must come last, and continues to mean “everything but null.” In reality, though, <code>default</code> is far less useful in pattern switches because it doesn’t support a binding variable, so we will probably prefer type patterns instead.</p>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

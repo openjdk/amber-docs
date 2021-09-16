@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>lvti-style-guide</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="local-variable-type-inference-style-guidelines">Local Variable Type Inference: Style Guidelines</h1>
+<h4 id="stuart-w.-marks">Stuart W. Marks<br />
+</h4>
+<p>March 2018</p>
+<h2 id="introduction">Introduction</h2>
+<p>Java SE 10 introduced type inference for local variables. Previously, all local variable declarations required an explicit (manifest) type on the left-hand side. With type inference, the explicit type can be replaced by the reserved type name <code>var</code> for local variable declarations that have initializers. The type of the variable is inferred from the type of the initializer.</p>
+<p>There is a certain amount of controversy over this feature. Some welcome the concision it enables; others fear that it deprives readers of important type information, impairing readability. And both groups are right. It can make code more readable by eliminating redundant information, and it can also make code less readable by eliding useful information. Another group worries that it will be overused, resulting in more bad Java code being written. This is also true, but it’s also likely to result in more <em>good</em> Java code being written. Like all features, it must be used with judgment. There’s no blanket rule for when it should and shouldn’t be used.</p>
+<p>Local variable declarations do not exist in isolation; the surrounding code can affect or even overwhelm the effects of using <code>var</code>. The goal of this document is to examine the impact that surrounding code has on <code>var</code> declarations, to explain some of the tradeoffs, and to provide guidelines for the effective use of <code>var</code>.</p>
+<h2 id="principles">Principles</h2>
+<h3 id="p1.-reading-code-is-more-important-than-writing-code.">P1. Reading code is more important than writing code.</h3>
+<p>Code is read much more often than it is written. Further, when writing code, we usually have the whole context in our head, and take our time; when reading code, we are often context-switching, and may be in more of a hurry. Whether and how particular language features are used ought to be determined by their impact on <em>future readers</em> of the program, not its original author. Shorter programs can be preferable to longer ones, but shortening a program too much can omit information that’s useful for understanding the program. The central issue here is to find the right size for the program such that understandability is maximized.</p>
+<p>We are specifically unconcerned here with the amount of keyboarding that’s necessary to input or to edit a program. While concision may be a nice bonus for the author, focusing on it misses the main goal, which is to improve the understandability of the resulting program.</p>
+<h3 id="p2.-code-should-be-clear-from-local-reasoning.">P2. Code should be clear from local reasoning.</h3>
+<p>The reader should be able to look at a <code>var</code> declaration, along with uses of the declared variable, and understand almost immediately what’s going on. Ideally, the code should be readily understandable using only the context from a snippet or a patch. If understanding a <code>var</code> declaration requires the reader to look at several locations around the code, it might not be a good situation in which to use <code>var</code>. Then again, it might indicate a problem with the code itself.</p>
+<h3 id="p3.-code-readability-shouldnt-depend-on-ides.">P3. Code readability shouldn’t depend on IDEs.</h3>
+<p>Code is often written and read within an IDE, so it’s tempting to rely heavily on code analysis features of IDEs. For type declarations, why not just use <code>var</code> everywhere, since one can always point at a variable to determine its type?</p>
+<p>There are two reasons. The first is that code is often read outside an IDE. Code appears in many places where IDE facilities aren’t available, such as snippets within a document, browsing a repository on the internet, or in a patch file. It is counterproductive to have to import code into an IDE simply to understand what the code does.</p>
+<p>The second reason is that even when one is reading code within an IDE, explicit actions are often necessary to query the IDE for further information about a variable. For instance, to query the type of a variable declared using <code>var</code>, one might have to hover the pointer over the variable and wait for a popup. This might take only a moment, but it disrupts the flow of reading.</p>
+<p>Code should be self-revealing. It should be understandable on its face, without the need for assistance from tools.</p>
+<h3 id="p4.-explicit-types-are-a-tradeoff.">P4. Explicit types are a tradeoff.</h3>
+<p>Java has historically required local variable declarations to include the type explicitly. While explicit types can be very helpful, they are sometimes not very important, and are sometimes just in the way. Requiring an explicit type can add clutter that crowds out useful information.</p>
+<p>Omitting an explicit type can reduce clutter, but only if its omission doesn’t impair understandability. The type isn’t the only way to convey information to the reader. Other means include the variable’s name and the initializer expression. We should take all the available channels into account when determining whether it’s OK to mute one of these channels.</p>
+<h2 id="guidelines">Guidelines</h2>
+<h3 id="g1.-choose-variable-names-that-provide-useful-information.">G1. Choose variable names that provide useful information.</h3>
+<p>This is good practice in general, but it’s much more important in the context of <code>var</code>. In a <code>var</code> declaration, information about the meaning and use of the variable can be conveyed using the variable’s name. Replacing an explicit type with var should often be accompanied by improving the variable name. For example:</p>
+<pre><code>// ORIGINAL
+List&lt;Customer&gt; x = dbconn.executeQuery(query);
+
+// GOOD
+var custList = dbconn.executeQuery(query);</code></pre>
+<p>In this case, a useless variable name has been replaced with a name that is evocative of the type of the variable, which is now implicit in the <code>var</code> declaration.</p>
+<p>Encoding the variable’s type in its name, taken to its logical conclusion, results in “Hungarian Notation”. Just as with explicit types, this is sometimes helpful, and sometimes just clutter. In this example the name <code>custList</code> implies that a <code>List</code> is being returned. That might not be significant. Instead of the exact type, it’s sometimes better for a variable’s name to express the role or the nature of the variable, such as “customers”:</p>
+<pre><code>// ORIGINAL
+try (Stream&lt;Customer&gt; result = dbconn.executeQuery(query)) {
+    return result.map(...)
+                 .filter(...)
+                 .findAny();
+}
+
+// GOOD
+try (var customers = dbconn.executeQuery(query)) {
+    return customers.map(...)
+                    .filter(...)
+                    .findAny();
+}</code></pre>
+<h3 id="g2.-minimize-the-scope-of-local-variables.">G2. Minimize the scope of local variables.</h3>
+<p>Limiting the scope of local variables is good practice in general. This practice is described in <em>Effective Java (3rd Edition)</em>, Item 57. It applies with extra force if <code>var</code> is in use.</p>
+<p>In the following example, the <code>add</code> method clearly adds the special item as the last list element, so it’s processed last, as expected.</p>
+<pre><code>var items = new ArrayList&lt;Item&gt;(...);
+items.add(MUST_BE_PROCESSED_LAST);
+for (var item : items) ...</code></pre>
+<p>Now suppose that in order to remove duplicate items, a programmer were to modify this code to use a <code>HashSet</code> instead of an <code>ArrayList</code>:</p>
+<pre><code>var items = new HashSet&lt;Item&gt;(...);
+items.add(MUST_BE_PROCESSED_LAST);
+for (var item : items) ...</code></pre>
+<p>This code now has a bug, since sets don’t have a defined iteration order. However, the programmer is likely to fix this bug immediately, as the uses of the <code>items</code> variable are adjacent to its declaration.</p>
+<p>Now suppose that this code is part of a large method, with a correspondingly large scope for the <code>items</code> variable:</p>
+<pre><code>var items = new HashSet&lt;Item&gt;(...);
+
+// ... 100 lines of code ...
+
+items.add(MUST_BE_PROCESSED_LAST);
+for (var item : items) ...</code></pre>
+<p>The impact of changing from an <code>ArrayList</code> to a <code>HashSet</code> is no longer readily apparent, since <code>items</code> is used so far away from its declaration. It seems likely that this bug could survive for much longer.</p>
+<p>If <code>items</code> had been declared explicitly as <code>List&lt;String&gt;</code>, changing the initializer would also require changing the type to <code>Set&lt;String&gt;</code>. This might prompt the programmer to inspect the rest of the method for code that would be impacted by such a change. (Then again, it might not.) Use of <code>var</code> would remove this prompting, possibly increasing the risk of a bug being introduced in code like this.</p>
+<p>This might seem like an argument against using <code>var</code>, but it really isn’t. The initial example that uses <code>var</code> is perfectly fine. The problem only occurs when the variable’s scope is large. Instead of simply avoiding <code>var</code> in these cases, one should change the code to reduce the scope of the local variables, and only then declare them with <code>var</code>.</p>
+<h3 id="g3.-consider-var-when-the-initializer-provides-sufficient-information-to-the-reader.">G3. Consider <code>var</code> when the initializer provides sufficient information to the reader.</h3>
+<p>Local variables are often initialized with constructors. The name of the class being constructed is often repeated as the explicit type on the left-hand side. If the type name is long, use of <code>var</code> provides concision without loss of information:</p>
+<pre><code>// ORIGINAL
+ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+// GOOD
+var outputStream = new ByteArrayOutputStream();</code></pre>
+<p>It’s also reasonable to use <code>var</code> in cases where the initializer is a method call, such as a static factory method, instead of a constructor, and when its name contains enough type information:</p>
+<pre><code>// ORIGINAL
+BufferedReader reader = Files.newBufferedReader(...);
+List&lt;String&gt; stringList = List.of(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;);
+
+// GOOD
+var reader = Files.newBufferedReader(...);
+var stringList = List.of(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;);</code></pre>
+<p>In these cases, the methods’ names strongly imply a particular return type, which is then used for inferring the type of the variable.</p>
+<h3 id="g4.-use-var-to-break-up-chained-or-nested-expressions-with-local-variables.">G4. Use <code>var</code> to break up chained or nested expressions with local variables.</h3>
+<p>Consider code that takes a collection of strings and finds the string that occurs most often. This might look like the following:</p>
+<pre><code>return strings.stream()
+              .collect(groupingBy(s -&gt; s, counting()))
+              .entrySet()
+              .stream()
+              .max(Map.Entry.comparingByValue())
+              .map(Map.Entry::getKey);</code></pre>
+<p>This code is correct, but it’s potentially confusing, as it looks like a single stream pipeline. In fact, it’s a short stream, followed by a second stream over the result of the first stream, followed by a mapping of the <code>Optional</code> result of the second stream. The most readable way to express this code would have been as two or three statements; first group entries into a map, then reduce over that map, then extract the key from the result (if present), as shown below:</p>
+<pre><code>Map&lt;String, Long&gt; freqMap = strings.stream()
+                                   .collect(groupingBy(s -&gt; s, counting()));
+Optional&lt;Map.Entry&lt;String, Long&gt;&gt; maxEntryOpt = freqMap.entrySet()
+                                                       .stream()
+                                                       .max(Map.Entry.comparingByValue());
+return maxEntryOpt.map(Map.Entry::getKey);</code></pre>
+<p>But the author probably resisted doing that because writing the types of the intermediate variables seemed too burdensome, so instead they distorted the control flow. Using <code>var</code> allows us to express the code more naturally without paying the high price of explicitly declaring the types of the intermediate variables:</p>
+<pre><code>var freqMap = strings.stream()
+                     .collect(groupingBy(s -&gt; s, counting()));
+var maxEntryOpt = freqMap.entrySet()
+                         .stream()
+                         .max(Map.Entry.comparingByValue());
+return maxEntryOpt.map(Map.Entry::getKey);</code></pre>
+<p>One might legitimately prefer the first snippet with its single long chain of method calls. However, in some cases it’s better to break up long method chains. Using <code>var</code> for these cases is a viable approach, whereas using full declarations of the intermediate variables in the second snippet makes it an unpalatable alternative. As with many other situations, the correct use of <code>var</code> might involve both taking something out (explicit types) and adding something back (better variable names, better structuring of code).</p>
+<h3 id="g5.-dont-worry-too-much-about-programming-to-the-interface-with-local-variables.">G5. Don’t worry too much about “programming to the interface” with local variables.</h3>
+<p>A common idiom in Java programming is to construct an instance of a concrete type but to assign it to a variable of an interface type. This binds the code to the abstraction instead of the implementation, which preserves flexibility during future maintenance of the code. For example:</p>
+<pre><code>// ORIGINAL
+List&lt;String&gt; list = new ArrayList&lt;&gt;();</code></pre>
+<p>If <code>var</code> is used, however, the concrete type is inferred instead of the interface:</p>
+<pre><code>// Inferred type of list is ArrayList&lt;String&gt;
+var list = new ArrayList&lt;String&gt;();</code></pre>
+<p>It must be reiterated here that <code>var</code> can <em>only</em> be used for local variables. It cannot be used to infer field types, method parameter types, and method return types. The principle of “programming to the interface” is still as important as ever in those contexts.</p>
+<p>The main issue is that code that uses the variable can form dependencies on the concrete implementation. If the variable’s initializer were to change in the future, this might cause its inferred type to change, causing errors or bugs to occur in subsequent code that uses the variable.</p>
+<p>If, as recommended in guideline G2, the scope of the local variable is small, the risks from “leakage” of the concrete implementation that can impact the subsequent code are limited. If the variable is used only in code that’s a few lines away, it should be easy to avoid problems or to mitigate them if they arise.</p>
+<p>In this particular case, <code>ArrayList</code> only contains a couple of methods that aren’t on <code>List</code>, namely <code>ensureCapacity</code> and <code>trimToSize</code>. These methods don’t affect the contents of the list, so calls to them don’t affect the correctness of the program. This further reduces the impact of the inferred type being a concrete implementation rather than an interface.</p>
+<h3 id="g6.-take-care-when-using-var-with-diamond-or-generic-methods.">G6. Take care when using <code>var</code> with diamond or generic methods.</h3>
+<p>Both <code>var</code> and the “diamond” feature allow you to omit explicit type information when it can be derived from information already present. Can you use both in the same declaration?</p>
+<p>Consider the following:</p>
+<pre><code>PriorityQueue&lt;Item&gt; itemQueue = new PriorityQueue&lt;Item&gt;();</code></pre>
+<p>This can be rewritten using either diamond or <code>var</code>, without losing type information:</p>
+<pre><code>// OK: both declare variables of type PriorityQueue&lt;Item&gt;
+PriorityQueue&lt;Item&gt; itemQueue = new PriorityQueue&lt;&gt;();
+var itemQueue = new PriorityQueue&lt;Item&gt;();</code></pre>
+<p>It is legal to use both <code>var</code> and diamond, but the inferred type will change:</p>
+<pre><code>// DANGEROUS: infers as PriorityQueue&lt;Object&gt;
+var itemQueue = new PriorityQueue&lt;&gt;();</code></pre>
+<p>For its inference, diamond can use the target type (typically, the left-hand side of a declaration) or the types of constructor arguments. If neither is present, it falls back to the broadest applicable type, which is often <code>Object</code>. This is usually not what was intended.</p>
+<p>Generic methods have employed type inference so successfully that it’s quite rare for programmers to provide explicit type arguments. Inference for generic methods relies on the target type if there are no actual method arguments that provide sufficient type information. In a <code>var</code> declaration, there is no target type, so a similar issue can occur as with diamond. For example,</p>
+<pre><code>// DANGEROUS: infers as List&lt;Object&gt;
+var list = List.of();</code></pre>
+<p>With both diamond and generic methods, additional type information can be provided by actual arguments to the constructor or method, allowing the intended type to be inferred. Thus,</p>
+<pre><code>// OK: itemQueue infers as PriorityQueue&lt;String&gt;
+Comparator&lt;String&gt; comp = ... ;
+var itemQueue = new PriorityQueue&lt;&gt;(comp);
+
+// OK: infers as List&lt;BigInteger&gt;
+var list = List.of(BigInteger.ZERO);</code></pre>
+<p>If you decide to use <code>var</code> with diamond or a generic method, you should ensure that method or constructor arguments provide enough type information so that the inferred type matches your intent. Otherwise, avoid using both <code>var</code> with diamond or a generic method in the same declaration.</p>
+<h3 id="g7.-take-care-when-using-var-with-literals.">G7. Take care when using <code>var</code> with literals.</h3>
+<p>Primitive literals can be used as initializers for <code>var</code> declarations. It’s unlikely that using <code>var</code> in these cases will provide much advantage, as the type names are generally short. However, <code>var</code> is sometimes useful, for example, to align variable names.</p>
+<p>There is no issue with boolean, character, <code>long</code>, and string literals. The type inferred from these literals is precise, and so the meaning of <code>var</code> is unambiguous:</p>
+<pre><code>// ORIGINAL
+boolean ready = true;
+char ch = &#39;\ufffd&#39;;
+long sum = 0L;
+String label = &quot;wombat&quot;;
+
+// GOOD
+var ready = true;
+var ch    = &#39;\ufffd&#39;;
+var sum   = 0L;
+var label = &quot;wombat&quot;;</code></pre>
+<p>Particular care should be taken when the initializer is a numeric value, especially an integer literal. With an explicit type on the left-hand side, the numeric value may be silently widened or narrowed to types other than <code>int</code>. With <code>var</code>, the value will be inferred as an <code>int</code>, which may be unintended.</p>
+<pre><code>// ORIGINAL
+byte flags = 0;
+short mask = 0x7fff;
+long base = 17;
+
+// DANGEROUS: all infer as int
+var flags = 0;
+var mask = 0x7fff;
+var base = 17;</code></pre>
+<p>Floating point literals are mostly unambiguous:</p>
+<pre><code>// ORIGINAL
+float f = 1.0f;
+double d = 2.0;
+
+// GOOD
+var f = 1.0f;
+var d = 2.0;</code></pre>
+<p>Note that <code>float</code> literals can be widened silently to <code>double</code>. It is somewhat obtuse to initialize a <code>double</code> variable using an explicit <code>float</code> literal such as <code>3.0f</code>, however, cases may arise where a <code>double</code> variable is initialized from a <code>float</code> field. Caution with <code>var</code> is advised here:</p>
+<pre><code>// ORIGINAL
+static final float INITIAL = 3.0f;
+...
+double temp = INITIAL;
+
+// DANGEROUS: now infers as float
+var temp = INITIAL;</code></pre>
+<p>(Indeed, this example violates guideline G3, because there isn’t enough information in the initializer for a reader to see the inferred type.)</p>
+<h2 id="examples">Examples</h2>
+<p>This section contains some examples of where <code>var</code> can be used to greatest benefit.</p>
+<p>The following code removes at most <code>max</code> matching entries from a Map. Wildcarded type bounds are used for improving the flexibility of the method, resulting in considerable verbosity. Unfortunately, this requires the type of the Iterator to be a nested wildcard, making its declaration more verbose. This declaration is so long that the header of the for-loop no longer fits on a single line, making the code even harder to read.</p>
+<pre><code>// ORIGINAL
+void removeMatches(Map&lt;? extends String, ? extends Number&gt; map, int max) {
+    for (Iterator&lt;? extends Map.Entry&lt;? extends String, ? extends Number&gt;&gt; iterator =
+             map.entrySet().iterator(); iterator.hasNext();) {
+        Map.Entry&lt;? extends String, ? extends Number&gt; entry = iterator.next();
+        if (max &gt; 0 &amp;&amp; matches(entry)) {
+            iterator.remove();
+            max--;
+        }
+    }
+}</code></pre>
+<p>Use of <code>var</code> here removes the noisy type declarations for the local variables. Having explicit types for the Iterator and Map.Entry locals in this kind of loop is largely unnecessary. This also allows the for-loop control to fit on a single line, further improving readability.</p>
+<pre><code>// GOOD
+void removeMatches(Map&lt;? extends String, ? extends Number&gt; map, int max) {
+    for (var iterator = map.entrySet().iterator(); iterator.hasNext();) {
+        var entry = iterator.next();
+        if (max &gt; 0 &amp;&amp; matches(entry)) {
+            iterator.remove();
+            max--;
+        }
+    }
+}</code></pre>
+<p>Consider code that reads a single line of text from a socket using the try-with-resources statement. The networking and I/O APIs use an object wrapping idiom. Each intermediate object must be declared as a resource variable so that it will be closed properly if an error occurs while opening a subsequent wrapper. The conventional code for this requires the class name to be repeated on the left and right sides of the variable declaration, resulting in a lot of clutter:</p>
+<pre><code>// ORIGINAL
+try (InputStream is = socket.getInputStream();
+     InputStreamReader isr = new InputStreamReader(is, charsetName);
+     BufferedReader buf = new BufferedReader(isr)) {
+    return buf.readLine();
+}</code></pre>
+<p>Using <code>var</code> reduces the noise considerably:</p>
+<pre><code>// GOOD
+try (var inputStream = socket.getInputStream();
+     var reader = new InputStreamReader(inputStream, charsetName);
+     var bufReader = new BufferedReader(reader)) {
+    return bufReader.readLine();
+}</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Using <code>var</code> for declarations can improve code by reducing clutter, thereby letting more important information stand out. On the other hand, applying <code>var</code> indiscriminately can make things worse. Used properly, <code>var</code> can help improve good code, making it shorter and clearer without compromising understandability.</p>
+<h2 id="references">References</h2>
+<p><a href="http://openjdk.java.net/jeps/286">JEP 286: Local-Variable Type Inference</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Hungarian_notation">Wikipedia: Hungarian Notation</a></p>
+<p><a href="https://www.pearson.com/us/higher-education/program/Bloch-Effective-Java-3rd-Edition/PGM1763855.html">Bloch, Joshua. Effective Java, 3rd Edition. Addison-Wesley Professional, 2018.</a></p>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

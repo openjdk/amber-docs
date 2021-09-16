@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>lvti-faq</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="local-variable-type-inference-frequently-asked-questions">Local Variable Type Inference: Frequently Asked Questions</h1>
+<h4 id="brian-goetz-and-stuart-marks">Brian Goetz and Stuart Marks<br />
+</h4>
+<p>August 2019</p>
+<h2 id="why-have-var-in-java">Why have <code>var</code> in Java?</h2>
+<p>Local variables are the workhorse of Java. They allow methods to compute significant results by cheaply storing intermediate values. Unlike a field, a local variable is declared, initialized, and used in the same block. The name and initializer of a local variable are often more important for a reader’s understanding than the type. Commonly, the name and initializer carry just as much information as the type: <code>Person person = new Person();</code></p>
+<p>The role of <code>var</code> in a local variable declaration is to stand in for the type, so that the name and initializer stand out: <code>var person = new Person();</code> The compiler infers the type of the local variable from the initializer. This is especially worthwhile if the type is parameterized with wildcards, or if the type is mentioned in the initializer. Using <code>var</code> can make code more concise without sacrificing readability, and in some cases it can improve readability by removing redundancy.</p>
+<h2 id="does-this-make-java-dynamically-typed-is-this-like-var-in-javascript">Does this make Java dynamically typed? Is this like <code>var</code> in JavaScript?</h2>
+<p>No and no. Java is still a statically typed language, and the addition of <code>var</code> doesn’t change this. <code>var</code> can be used in a local variable declaration instead of the variable’s type. With <code>var</code>, the Java compiler <em>infers</em> the type of the variable at compile time, using type information obtained from the variable’s initializer. The inferred type is then used as the static type of the variable. Typically, this is the same as the type you would have written explicitly, so a variable declared with <code>var</code> behaves exactly as if you had written the type explicitly.</p>
+<p>Java compilers have performed type inference for many years. For example, in Java 8, the parameters of a lambda expression do not need explicit types because the compiler infers their types from how the lambda expression is used:</p>
+<pre><code>List&lt;Person&gt; list = ...
+list.stream().filter(p -&gt; p.getAge() &gt; 18) ...</code></pre>
+<p>In the code snippet above, the lambda parameter <code>p</code> is inferred to have the static type <code>Person</code>. If the <code>Person</code> class is changed so that it no longer has a <code>getAge</code> method, or if the list is changed to be a list of type other than <code>Person</code>, type inference will fail with a compile-time error.</p>
+<h2 id="is-a-var-variable-final">Is a <code>var</code> variable final?</h2>
+<p>No. Local variables declared with <code>var</code> are non-final by default. However, the <code>final</code> modifier can be added to <code>var</code> declarations:</p>
+<pre><code>final var person = new Person();</code></pre>
+<p>There is no shorthand for <code>final var</code> in Java. Languages such as Scala use <code>val</code> to declare immutable (final) variables. This works well in Scala because all variables - locals and fields alike - are declared using a syntax of the form</p>
+<pre><code>val name : type</code></pre>
+<p>or</p>
+<pre><code>var name : type</code></pre>
+<p>You can include or omit the <code>": type"</code> part of the declaration depending on whether or not you want type inference. In Scala, the choice between mutability and immutability is orthogonal to type inference.</p>
+<p>In Java, <code>var</code> can be used only where type inference is desired; it cannot be used where a type is declared explicitly. If <code>val</code> were added, it too could be used only where type inference is used. The use of <code>var</code> or <code>val</code> in Java could not be used to control immutability if the type were declared explicitly.</p>
+<p>In addition, Java allows the use of <code>var</code> only for local variables, not for fields. Immutability is much more significant for fields, whereas immutable local variables are comparatively rarely used.</p>
+<p>Using <code>var</code>/<code>val</code> keywords to control immutability is a feature that seems like it ought to carry over cleanly from Scala to Java. In Java, however, it would be much less useful than it is in Scala.</p>
+<h2 id="wont-bad-developers-misuse-this-feature-to-write-terrible-code">Won’t bad developers misuse this feature to write terrible code?</h2>
+<p>Yes, bad developers will write terrible code no matter what we do. Withholding a feature won’t prevent them from doing so. But, when used properly, using type inference allows developers to also write better code.</p>
+<p>One way that <code>var</code> may encourage developers to write better code is that it lowers the overhead of declaring a new variable. If the overhead of declaring a variable is high, developers will often avoid doing so, and create complex nested or chained expressions that impair readability solely in order to avoid declaring more variables. With <code>var</code>, the overhead of pulling a subexpression into a named variable is lower, so developers are more likely to do so, resulting in more cleanly factored code.</p>
+<p>When a feature is introduced, it is common that at first, programmers will use, overuse, and maybe even abuse that feature, and it takes some time for the community to converge on a reasonable set of guidelines for what uses are reasonable and what uses are not. It’s probably reasonable to use <code>var</code> fairly frequently though not for the majority of local variable declarations.</p>
+<p>Starting with Local Variable Type Inference (LVTI), we’re publishing material about its intent and recommended usage (such as this FAQ, and the <a href="lvti-style-guide.html">LVTI Style Guidelines</a>) around the same time the feature is delivered. We hope that this will accelerate the community’s convergence on what constitutes reasonable usage, and that it will help avoid most cases of abuse.</p>
+<h2 id="where-can-var-be-used">Where can <code>var</code> be used?</h2>
+<p><code>var</code> can be used for declaring local variables, including index variables of for-loops and resource variables of the try-with-resources statement.</p>
+<p><code>var</code> cannot be used for fields, method parameters, and method return types. The reason is that types in these locations appear explicitly in class files and in Javadoc specifications. With type inference, it’s quite easy for a change to an initializer to cause the variable’s inferred type to change. For local variables, this is not a problem, because local variables are limited in scope, and their types are not recorded directly into class files. However, type inference could easily cause a problem if types for fields, method parameters, and method return types were inferred.</p>
+<p>For example, suppose that the return type of a method were inferred from the expression in the method’s <code>return</code> statement. A change to the method’s implementation might end up changing the type of the expression in the <code>return</code> statement. This in turn might change the method’s return type. This could result in a source or binary incompatibility. Such incompatible changes should not arise from harmless-looking changes to the implementation.</p>
+<p>Suppose a field’s type were inferred. A change to the field’s initializer could change the field’s type, which might unexpectedly break reflective code.</p>
+<p>Type inference is ok within the implementation, but not in APIs. API contracts should be declared explicitly.</p>
+<p>What about private fields and methods, which are not part of APIs? In theory, we could have chosen to support <code>var</code> for private fields and for the return type of private methods, without worry that this would cause incompatibilities due to separate compilation and dynamic linkage. We chose to limit the scope of type inference in this way for simplicity. Trying to push the boundary to include some fields and some method returns makes the feature considerably more complex and harder to reason about, but only marginally more useful.</p>
+<h2 id="why-is-an-initializer-required-on-the-right-hand-side-of-var">Why is an initializer required on the right-hand side of <code>var</code>?</h2>
+<p>The type of the variable is inferred from the type of the initializer. This means, of course, that <code>var</code> can only be used when there is an initializer. We could have chosen to infer the type from the assignments to the variable, but that would have made the feature considerably more complex, and it could potentially lead to misleading or hard-to-diagnose errors. In order to keep things simple, we’ve defined <code>var</code> so that only local information is used for type inference.</p>
+<p>Suppose that we allowed type inference based on assignment in multiple locations, separate from the variable declaration. Consider this example:</p>
+<pre><code>var order;
+...
+order = &quot;first&quot;;
+...
+order = 2;</code></pre>
+<p>If a type were chosen based on (say) the first assignment, it might cause an error at another statement that’s quite distant from the cause of the error. (This is sometimes referred to as the “action-at-a-distance” problem.)</p>
+<p>Alternatively, a type could be chosen that’s compatible with all assignments. In this case one might expect that the inferred type would be <code>Object</code>, because that’s the common superclass of <code>String</code> and <code>Integer</code>. Unfortunately, the situation is more complicated than that. Since both <code>String</code> and <code>Integer</code> are <code>Serializable</code> and <code>Comparable</code>, the common supertype would be an odd intersection type that’s something like</p>
+<pre><code>Serializable &amp; Comparable&lt;? extends Serializable &amp; Comparable&lt;...&gt;&gt;</code></pre>
+<p>(Note that it isn’t possible to declare a variable of this type explicitly.) Also note that this results in a boxing conversion when 2 is assigned to <code>order</code>, which might be unexpected and undesirable.</p>
+<p>To avoid these problems, it seems preferable to require that the type be inferred using an explicit initializer.</p>
+<h2 id="why-cant-you-use-var-with-null">Why can’t you use <code>var</code> with <code>null</code>?</h2>
+<p>Consider this declaration (which is illegal):</p>
+<pre><code>var person = null; // ERROR</code></pre>
+<p>The <code>null</code> literal denotes a value of a special <em>null type</em> (<a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-4.html#jls-4.1">JLS 4.1</a>) that is the subtype of all reference types in Java. The only value of the <em>null type</em> is <code>null</code> itself, therefore, the only value that could ever be assigned to a variable of the <em>null type</em> is <code>null</code>. This isn’t very useful.</p>
+<p>A special rule could be made so that a <code>var</code> declaration initialized to <code>null</code> is inferred to have type <code>Object</code>. This could be done, but it raises the question of what the programmer intended. Presumably the variable is initialized to <code>null</code> so that it can be assigned to some other value later. In that case it seems unlikely that inferring the variable’s type as <code>Object</code> is the correct choice.</p>
+<p>Instead of creating some special rules to handle this case, we’ve disallowed it. If you want a variable of type <code>Object</code>, declare it explicitly.</p>
+<h2 id="can-you-use-var-with-a-diamond-on-the-right-hand-side">Can you use <code>var</code> with a diamond on the right-hand side?</h2>
+<p>Yes, it works, but it’s probably not what you want. Consider:</p>
+<pre><code>var list = new ArrayList&lt;&gt;();</code></pre>
+<p>This will infer the type of list to be <code>ArrayList&lt;Object&gt;</code>. In general, it’s preferable use an explicit type on the left with diamond on the right, or use <code>var</code> on the left with an explicit type on the right. See the <a href="lvti-style-guide.html">LVTI Style Guidelines</a>, guideline G6, for further information.</p>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

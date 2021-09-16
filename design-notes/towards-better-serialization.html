@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>towards-better-serialization</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="towards-better-serialization">Towards Better Serialization</h1>
+<p><strong>Brian Goetz, June 2019</strong></p>
+<p>This document explores a possible direction for improving serialization in the Java Platform. This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Platform.</p>
+<h2 id="motivation">Motivation</h2>
+<p>Java’s serialization facility is a bit of a paradox. On the one hand, it was probably critical to Java’s success — Java would probably not have risen to dominance without it, as serialization enabled the transparent remoting that in turn enabled the success of Java EE. On the other hand, Java’s serialization makes nearly every mistake imaginable, and poses an ongoing tax (in the form of maintenance costs, security risks, and slower evolution) for library maintainers, language developers, and users.</p>
+<p>To be clear, there’s nothing wrong with the <em>concept</em> of serialization; the ability to convert an object into a form that can be easily transported across JVMs and reconstituted on the other side is a perfectly reasonable idea. The problem is with the <em>design</em> of serialization in Java, and how it fits (or more precisely, does not fit) into the object model.</p>
+<h2 id="whats-wrong-with-serialization">What’s wrong with serialization?</h2>
+<p>The mistakes made by Java’s serialization are manifold. A partial list of sins includes:</p>
+<ul>
+<li><p><strong>Pretends to be a library feature, but isn’t.</strong> Serialization pretends to be a library feature — you opt in by implementing the <code>Serializable</code> interface, and serialize with <code>ObjectOutputStream</code>. In reality, though, serialization extracts object state and recreates objects via privileged, extralinguistic mechanisms, bypassing constructors and ignoring class and field accessibility.</p></li>
+<li><p><strong>Pretends to be a statically typed feature, but isn’t.</strong> Serializability is a function of an object’s dynamic type, not its static type; <code>implements Serializable</code> doesn’t actually mean that instances are serializable, just that they are not overtly serialization-hostile. So, despite the requirement to opt-in via the static type system, doing so gives you little confidence that your instances are actually serializable.</p></li>
+<li><p><strong>The compiler won’t help you.</strong> There are all sorts of mistakes one can make when writing serializable classes, and the compiler does not help you identify them. Instead, errors are caught at runtime. (For example, there’s no way for the <code>TreeMap</code> constructor to say that the <code>Comparator</code> passed to its constructor should be serializable, so that the compiler could warn you if you make a mistake.)</p></li>
+<li><p><strong>Magic methods and fields.</strong> There are a number of “magic” methods and fields (in the sense that they are not specified by any base class or interface) that affect the behavior of serialization. (Before reading on, close your eyes and try to name them all. Can you? Probably not.) These include: <code>readObject</code>, <code>writeObject</code>, <code>readObjectNoData</code>, <code>readResolve</code>, <code>writeReplace</code>, <code>serialVersionUID</code>, and <code>serialPersistentFields</code>. Because these do not exist in any public type, they’re hard to discover, and one cannot easily navigate to their specification. They are also easy to accidentally get wrong; if you spell them wrong, or get the signature wrong, or make them static members when they should be instance members, no one tells you.</p></li>
+<li><p><strong>Woefully imperative.</strong> If you want a customized serial form, you can implement the methods <code>readObject()</code> and <code>writeObject()</code>. But one cannot easily read the code and deduce the serial form — it’s implicit in the bodies of these methods, and it’s on you to ensure that they’re consistent with each other. Further, if you use these methods, it’s on you to build in a versioning mechanism from the beginning (which is easy to forget), since otherwise this will cause pain when you go to evolve your representation or invariants and want to maintain serialization compatibility. And it’s also on you to repeat (in a syntactically different form) the validity checking the constructor does in <code>readObject</code> — and keep the two in sync.</p></li>
+<li><p><strong>Tightly coupled to encoding.</strong> The serialization mechanism is tightly coupled to its bytestream encoding. This makes it unnecessarily difficult to reuse serialization logic with other encodings such as JSON or XML; the logic for deconstructing and reconstructing the object is intertwined with the logic for reading from and writing to the stream.</p></li>
+<li><p><strong>Unfortunate stream format.</strong> That we are stuck with the serializion stream format is made worse by the fact that this format is neither compact, nor efficient, nor human-readable.</p></li>
+</ul>
+<p>These design choices leads directly to the following serious problems:</p>
+<ul>
+<li><p><strong>Cripples library maintainers.</strong> Library designers must think very carefully before publishing a serializable class — as doing so potentially commits you to maintaining compatibility with all the instances that have ever been serialized. While the default serialization scheme has some ability to deal with simple representational evolution, evolving serializable classes is far more constrained than evolving non-serializable ones, because there is an implicit public API with which you must maintain compatibility. And if you choose explicit control over serialization (<code>readObject()</code> and <code>writeObject()</code>), you need to manually build versioning into your serial form.</p></li>
+<li><p><strong>Makes a mockery of encapsulation.</strong> Because an object is serialized by scraping its state and is recreated through an extralinguistic mechanism that bypasses user-written constructors, choosing serializability effectively means forgoing the benefits of encapsulation. Serialization constitutes an invisible but public constructor, and an invisible but public set of accessors for your internal state. This means it is easy to sneak bad data into a serializable class (unless you’ve (painfully) duplicated your argument checking between constructors and <code>readObject()</code>, in which case you have lost the biggest benefit of Java’s serialization mechanism: that it supposedly comes for free).</p></li>
+<li><p><strong>Readers cannot verify correctness merely by reading the code.</strong> In an object-oriented system, the role of the constructor is to initialize an object with its invariants established; this allows the rest of the system to assume a basic degree of object integrity. In theory, we should be able to reason about the possible states an object might be in by reading the code for its constructors and any methods that mutate the object’s state. But because serialization constitutes a hidden public constructor, you have to also reason about the state that objects might be in based on <em>previous versions</em> of the code (whose source code might not even exist any more, to say nothing of maliciously constructed bytestreams). By bypassing constructors, serialization completely subverts the integrity of the object model.</p></li>
+<li><p><strong>Too hard to reason about security.</strong> The variety and subtlety of security exploits that target serialization is impressive; no ordinary developer can keep them all in their head at once. Even security experts can review serialization code and miss vulnerabilities. It is just too hard to secure serialization for trusted code — because serialization operates mostly invisibly, and is controlled by arcane low-level mechanisms that do not fit into an intuitive model of how classes work. As a trivial example of what class writers have to contend with, suppose you have a <code>final</code> field, initialized by <code>myField = new Foo(arg)</code>, and not otherwise exposed to callers. You might be forgiven for assuming that the only outstanding reference to this object is the one held by <code>myField</code>, or that the type of the object to which it refers is exactly <code>Foo</code> and not one of its subtypes, but if your class is serializable, you have to make heroic efforts to preserve these implicit invariants – if you even remember that you have to.</p></li>
+<li><p><strong>Impedes language evolution.</strong> Complexity in programming languages comes from unexpected interactions between features, and serialization interacts with nearly everything. Nearly every feature added to the language must engage, some way, with serialization. Some of the most subtle aspects of the Java Memory Model were motivated by serialization’s need to write final fields after construction. (Think about that for a moment; the memory model is supposed to describe the language’s <em>low level interaction with hardware</em>, and we needed to distort it to accomodate serialization!) A nontrivial fraction of the design effort for Lambdas involved interaction with serialization — and the best we could accomplish was a compromise that no one could really like all that much. (This even bubbled up into the syntax, requiring the need to express intersection types in casts — purely to accomodate serializability.) And the same will be true with records, and value types, and probably everything else in our future. Serialization is an ongoing tax on evolving the language.</p></li>
+</ul>
+<h2 id="the-underlying-mistake">The underlying mistake</h2>
+<p>Many of the design errors listed above stem from a common source — the choice to implement serialization by “magic” rather than giving deconstruction and reconstruction a first-class place in the object model itself. Scraping an object’s fields is magic; reconstructing objects through an extralinguistic back door is more magic. Using these extralinguistic mechanisms means we’re outside the object model, and thus we give up on many of the benefits that the object model provides us.</p>
+<p>Worse, the magic does its best to remain invisible to the reader. It would be one thing if there were big signs planted near the magic warning us “Dark magic here!” — at least we might stop and think about what non-obvious things are going on. But with invisible magic, we continue to think that our primary job is designing a bulletproof API and implementing our business logic, when in fact we’ve left the back door wide open and unguarded.</p>
+<p>The allure of magic is obvious; just sprinkle some serialization dust over your classes, and voila: instant transparent remoting! But the accumulated cost is crippling.</p>
+<p>In <a href="https://www.cs.utexas.edu/users/EWD/transcriptions/EWD02xx/EWD215.html">“Goto Considered Harmful”</a>, Dijkstra offers a rational basis for why a language with <code>goto</code> places an unreasonable cognitive load on developers. The same arguments apply equally well to the current state of serialization:</p>
+<blockquote>
+<p>My second remark is that our intellectual powers are rather geared to master static relations and that our powers to visualize processes evolving in time are relatively poorly developed. For that reason we should do (as wise programmers aware of our limitations) our utmost to shorten the conceptual gap between the static program and the dynamic process, to make the correspondence between the program (spread out in text space) and the process (spread out in time) as trivial as possible.</p>
+</blockquote>
+<p>Serialization, as it is currently implemented, does the exact opposite of minimizing the gap between the text of the program and its computational effect; we could be forgiven for mistakenly assuming that our objects are always initialized by the constructors written in our classes, but we shouldn’t have to be.</p>
+<p>In addition to trying to be invisible, serialization also tries to do <em>too much</em>. That is, it aims to be able to serialize any object graph and reconstitute it, at full fidelity and in full working order, on the other side. But in reality, the vast majority of use cases for serialization don’t involve serializing <em>programs</em>, but merely serializing <em>data</em> — which is a far easier problem. (This mistake is understandable in historical context, since at the time the industry believed that distributed objects were going to save us from complexity.) Many of the sins of serialization were committed in the desire to get that last .1%, but the cost and benefit of that last .1% are woefully out of balance.</p>
+<h3 id="why-not-just-use-json-or-xml-or-protobuf-or">Why not “just” use JSON or XML or protobuf or …</h3>
+<p>Much ink has been spilled over the choice of bytestream-encoding format, but in reality this is the least of our concerns. While it is unfortunate that choosing an alternate encoding is unnecessarily difficult, and that the encoding we have is obscure and inefficient, switching to another encoding doesn’t solve the main problem of serialization, which is: how we can safely extract the state of objects to be serialized without compromising the integrity of the access control model, and safely reconstruct them on the other side with their invariants intact? These problems have to be solved before we can even talk about bytestream encoding.</p>
+<h3 id="why-not-write-a-new-serialization-library">Why not write a new serialization library?</h3>
+<p>There is a veritable cottage industry of libraries that are either intended as serialization “replacements”, or that are valid alternatives to serialization for some use cases (an incomplete list: Arrow, Avro, Bert, Blixter, Bond, Capn Proto, CBOR, Colfer, Elsa, Externalizor, FlatBuffers, FST, GemFire PDX, Gson, Hessian, Ion, Jackson, JBoss Marshaling, JSON.simple, Kryo, Kudu, Lightning, MessagePack, Okapi, ORC, Paranoid, Parcelable, Parquet, POF, Portable, Protocol Buffers, Protostuff, Quickser, ReflecT, Seren, Serial, Simple, Simple Binary Encoding, SnakeYAML, Stephenerialization, Thrift, TinySerializer, travny, Verjson, Wobly, Xson, XStream, YamlBeans, and surely more).</p>
+<p>While some of these exist to provide Java bindings for popular cross-language serialization approaches (e.g., CBOR, Protocol Buffers), most represent someone’s attempt to do a “better” serialization. And it’s worth asking: what did they think “better” meant? To end up with such a broad variety of attempts suggests that there is a broad variety of metrics on which existing options are considered “not good enough”, and surely some of these are intrinsically in tension with others (for example, some might consider using JSON to be an advantage for reasons of human readability or interoperability; others see it as an inefficient and error-prone encoding). But very few of these alternate libraries attempt to address the fundamental programming-model or security concerns — they are mostly concerned either with encoding format, efficiency, or flexibility.</p>
+<h2 id="what-does-success-look-like">What does success look like?</h2>
+<p>As we’ve said, there’s nothing fundamentally wrong with the <em>concept</em> of serializing objects to a bytestream. But, if we want to avoid the problems described so far, we’re going to have to adjust our goals and priorities. Let’s try to state some assumptions about what success looks like, and set out some terminology.</p>
+<p>For the remainder of this document, <em>serialization</em> will refer to the abstract concept of turning objects into bytestreams and reconstituting them, a <em>serialization framework</em> is a library or facility that implements some form of serialization, and <em>Java Serialization</em> will refer to the specific serialization framework built into the platform and defined by the <a href="https://docs.oracle.com/en/java/javase/12/docs/specs/serialization/index.html"><em>Java Object Serialization Specification</em></a>.</p>
+<h3 id="narrow-the-requirements">Narrow the requirements</h3>
+<p>We’ve noted above that one of the problems with Java Serialization is that it tries to do too much — to ensure that an arbitrary object graph can be persisted and reconstituted in perfect operational order. But this reflects a view of the world that has not come to pass, and modern expectations of a serialization mechanism are generally far more modest; applications use serialiation to persist data, or to exchange data with other applications. Not objects; data.</p>
+<p>We can make serialization considerably simpler and safer by narrowing the goals explicitly to reflect this reality:</p>
+<blockquote>
+<p>We should seek to support serialization of <em>data</em>, not <em>objects</em>.</p>
+</blockquote>
+<p>For example, many modern services are built around exchanging JSON documents — which cannot even represent the notion of object identity! The fact that JSON is considered a viable encoding strategy for nearly all services underscores the fact that Java serialization is solving a much harder problem than it actually needs to.</p>
+<p>Much of the complexity and risk of Java Serialization stems from the desire to transparently serialize logically cyclic data, such as collections that contain themselves (which cannot be represented by JSON documents at all). Similarly, many of the potential attacks rely on exploiting backreferences — which comes from the desire to produce a topologically identical copy.</p>
+<h3 id="make-serialization-explicit">Make serialization explicit</h3>
+<p>Java serialization is transparent; this was assumed to be one of its primary benefits. But this transparency is also a weakness, and we can easily forget that we are dealing with a serializable class. The Java language provides tools for building robust, secure APIs; Java developers know how to write constructors which validate their arguments and make defensive copies of mutable data, and how to use non-public members to keep certain operations out of the public-facing API. But Java serialization constitutes an implicit public API, and because it is often invisible, it is too easy to forget to secure it.</p>
+<p>When we design a class, we’re often thinking about its more typical clients — ordinary Java code that will access or extend our class, through the documented, public-facing API. Let’s call this the “front door” API or the “user-facing” API. But classes often have APIs that are for a different category of clients — frameworks such as serialization, mocking, or dependency injection. We commonly expose API points intended for use by frameworks, that we do not necessarily want to expose to “ordinary” users. Let’s call these the “back door” APIs.</p>
+<p>The problem is not that we have back-door APIs; it is that the back-door APIs are implicit, and therefore too hard for class authors to secure and for clients to reason about.</p>
+<blockquote>
+<p>It should be as easy to secure the “back door” API as it is the “front door” API — and ideally we would do so with the same techniques.</p>
+</blockquote>
+<p>At the very least, we want to make it harder to forget to consider serialization; this calls for making the back door API used by serialization explicit. It would be even better if securing this API could use the same techniques that developrs are already familiar with (such as defensive constructors). And it would be better still if this back-door API could directly share members with the front door API, such as using a constructor both for programmatic instantiation and for deserialization.</p>
+<p>Another form of convenient, but dangerous, implicitness is inheritance. Because serializability is indicated by implementing an interface, making a class or interface <code>Serializable</code> puts the responsibility for serialization on all your subclasses. This makes it too easy for classes to be serializable without realizing it — and therefore at risk for leaving the back door wide open.</p>
+<h3 id="bring-serialization-into-the-object-model">Bring serialization into the object model</h3>
+<p>If the major sins of serialization are related to its extralinguistic nature, then the cure is to bring serialization back within the language and the object model, so that developers are equally in control of the front-door and back-door APIs. This means not only providing explicit control over <em>whether</em> a class is serializable, but also <em>how</em> it is to be serialized and deserialized, and <em>by whom</em>. Some basic requirements include:</p>
+<ul>
+<li><p>Serializable classes should be designed for serialization; authors should provide class members that deconstruct and reconstruct the object. It should be clear from reading the source or documentation for a class that it is designed for serialization.</p></li>
+<li><p>Authors should have control over the <em>serialized form</em> of their classes; this is the logical at-rest state that can be written to a stream to represent an instance of the class. (This can be, but need not be, similar to the in-memory representation (fields) of the class.) The serial form should be manifest in the code so readers can reason about it, and the choice of serial form should be orthogonal to the choice of bytestream encoding.</p></li>
+<li><p>Deserialized objects should be created through ordinary constructors or factories, to get the full benefit of validity checking and defensive copies. The constructor used for deserialization could be, but need not be, shared with the front-door API.</p></li>
+<li><p>Schema evolution should be manifest in the source code. It should be clear which old versions of the serial form a class agrees to or refuses to deserialize, and how they map to the current representation.</p></li>
+</ul>
+<p>Bringing serialization into the object model in this way means that, by reading the code for a class, we can see all the ways in which an instance might come into existence, and validate that each way properly respects the invariants of the <em>current</em> representation. (Ideally the validation code is shared between constructors used for deserialization and those used for routine instantiation, thereby eliminating another place for bugs to hide.)</p>
+<h3 id="break-up-the-monolith">Break up the monolith</h3>
+<p>Java serialization is a monolithic facility, spanning state extraction, object graph traversal, wire encoding, and reconstruction, and several of these aspects use privileged magic to do their job. If you want any of them, you have to take them all together; if you are building a serialization framework, you have to reinvent them all. Components of Java serialization include:</p>
+<ul>
+<li><p><strong>State extraction.</strong> Java serialization uses reflection to extract the non-transient fields of an object, using its privileged status to access otherwise inacessible fields.</p></li>
+<li><p><strong>Serial form.</strong> Java serialization strongly encourages using an object’s in-memory state as its serial form. Sometimes this is a sensible choice, but sometimes this is a terrible choice, and overriding this choice currently involves using a difficult and error-prone mechanism (<code>readObject</code> and <code>writeObject</code>.)</p></li>
+<li><p><strong>Versioning.</strong> Classes evolve over time; Java serialization forces implementations to confront past (and possibly future) versions of their serial form. It should be easy and explicit to mediate between different versions of serial form and live object state. However, unless you plan for versioning from the beginning, it can be very difficult to version the serialized form with the tools available without sacrificing compatibility.</p></li>
+<li><p><strong>Reconstruction.</strong> Like deconstruction, Java serialization leans on privileged reflective mechanisms to reconstruct an object’s state. This should be carried out in concert with the object’s implementation, so that invariants can be validated, maliciously constructed instances rejected, and the serial form mapped to a sensible in-memory equivalent, but unless the author has implemented <code>readObject</code> and <code>writeObject</code>, serialization will just accept whatever state it found in the bytestream. The lack of flexibility and transparency here is the source of many of core serialization’s biggest weaknesses.</p></li>
+<li><p><strong>Stream format.</strong> The choice of stream format is probably the least interesting part of a serialization mechanism; once a suitable serial form is chosen, it can be encoded with any number of encodings.</p></li>
+<li><p><strong>Relaxing encapsulation.</strong> In the desire to make serialization ubiquitous and transparent, core serialization is willing to trample on the encapsulation of any class. While we likely do want to strike a balance between the competing needs of “API users” and serialization with respect to encapsulation, it would be better if this were more explicitly reflected in the programming model.</p></li>
+</ul>
+<p>To improve the state of serialization, we focus on bringing the touch points with serialization directly into the object model. Not only does this put authors more in control of how these tasks are performed, but it also pulls them out of the otherwise monolithic serialization stack, where they can be reused by all serialization frameworks.</p>
+<h3 id="non-goals">Non-goals</h3>
+<p>It is not a goal <em>of this effort</em> to address resource-consumption attacks (such as <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack">“Billion Laughs”</a>); these may be the subject of other efforts.</p>
+<h2 id="a-concrete-proposal">A concrete proposal</h2>
+<p>Our approach centers around factoring state extraction and object reconstruction out of Java serialization and into the object model. Further, to the extent that the “back door” API requires relaxation of accessibility, this should also be explicit and under the control of the author. This puts authors in control, makes serialization obvious to readers, and allows all serialization frameworks to reuse the logic provided by the user. In an ideal world, serialization frameworks should not require special privileges.</p>
+<p>Over time, we can migrate JDK classes away from the serialization artifacts supported by Java serialization (e.g., <code>readObject</code>) and towards the more explicit mechanism.</p>
+<h3 id="sidebar-pattern-matching">Sidebar: pattern matching</h3>
+<p>It should be clear enough how we might explicitly represent reconstruction of an object from its serialized form — a constructor or factory method. To represent the other direction — state extraction — we need to borrow some machinery from an upcoming language feature: <a href="pattern-matching-for-java.html"><em>pattern matching</em></a>. Pattern matching provides class authors with the ability to implement mediated destructuring logic as part of a class’s API — which is exactly what we need for extracting the serialized form of an instance.</p>
+<p>In the following <code>Point</code> class, the author has provided a constructor and a <em>deconstruction pattern</em> that share the state description <code>(int x, int y)</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">public</span> <span class="kw">class</span> <span class="bu">Point</span> {</a>
+<a class="sourceLine" id="cb1-2" title="2">    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> x;</a>
+<a class="sourceLine" id="cb1-3" title="3">    <span class="kw">private</span> <span class="dt">final</span> <span class="dt">int</span> y;</a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5">    <span class="co">// Constructor</span></a>
+<a class="sourceLine" id="cb1-6" title="6">    <span class="kw">public</span> <span class="bu">Point</span>(<span class="dt">int</span> x, <span class="dt">int</span> y) {</a>
+<a class="sourceLine" id="cb1-7" title="7">        <span class="kw">this</span>.<span class="fu">x</span> = x;</a>
+<a class="sourceLine" id="cb1-8" title="8">        <span class="kw">this</span>.<span class="fu">y</span> = y;</a>
+<a class="sourceLine" id="cb1-9" title="9">    }</a>
+<a class="sourceLine" id="cb1-10" title="10"></a>
+<a class="sourceLine" id="cb1-11" title="11">    <span class="co">// Deconstruction pattern</span></a>
+<a class="sourceLine" id="cb1-12" title="12">    <span class="kw">public</span> pattern <span class="bu">Point</span>(<span class="dt">int</span> x, <span class="dt">int</span> y) {</a>
+<a class="sourceLine" id="cb1-13" title="13">        x = <span class="kw">this</span>.<span class="fu">x</span>;</a>
+<a class="sourceLine" id="cb1-14" title="14">        y = <span class="kw">this</span>.<span class="fu">y</span>;</a>
+<a class="sourceLine" id="cb1-15" title="15">    }</a>
+<a class="sourceLine" id="cb1-16" title="16">}</a></code></pre></div>
+<p>The declared pattern <code>Point</code> acts as a “reverse constructor”; where a constructor takes state components as arguments and aggregates them into a <code>Point</code> object, a deconstruction pattern takes a <code>Point</code> object and breaks it down into its state components. The “argument list” of the pattern is actually a declaration of a list of <em>binding variables</em>, which can be thought of as being the “output parameters” upon a successful match:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">if</span> (o <span class="kw">instanceof</span> <span class="bu">Point</span>(var xVal, yVal)) {</a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="co">// can use xVal, yVal here</span></a>
+<a class="sourceLine" id="cb2-3" title="3">}</a></code></pre></div>
+<p>Note that the argument list of the constructor <code>Point</code> and the binding variable list of the deconstruction pattern <code>Point</code> are compatible; this means that, while these members are part of the front-door API, they are also suitable for serializing a <code>Point</code> using the serialized form <code>(int x, int y)</code> and deserializing it back into a <code>Point</code>. All we need now is for the author to tell us that the class is serializable, and which members should be used for serialization and deserialization. (Just as an author can expose either a constructor or a factory as part of its API, pattern matching allows for multiple kinds of patterns, including <em>deconstruction patterns</em> (analogous to constructors, in reverse) and <em>static patterns</em> (analogous to static factories, in reverse), and both are suitable for serializing instances.)</p>
+<h3 id="serializers-and-deserializers">Serializers and deserializers</h3>
+<p>The first thing we have to add to the object model is the ability to project an instance into its serial form. Sometimes the serial form will exactly coincide with the in-memory representation (fields) of the object, such as for most simple domain objects like our <code>Point</code> above. Other times, the serial form may discard accidental implementation detail and strip the serial form down to its essence, or uplevel it to a more descriptive form. (For example, the existing serial form for <code>LinkedList</code> discards the internal link nodes and just serializes the elements, and on deserialization, adds the elements into an empty list.)</p>
+<p>As our <code>Point</code> example hinted, we want to use linguistic constructs (constructors, factories, and patterns) to declare serializers (to convert an object into its serial form) and deserializers (to convert the serial form back into an object). The benefits of this approach are:</p>
+<ul>
+<li>The serial form is under the control of the author, and explicit in the code, and can be mechanically transcribed into Javadoc or accessed via reflection;</li>
+<li>The serial form can be decoupled from the in-memory representation;</li>
+<li>Extraction and reconstruction can be factored from the stream representation — one can take a serializable object and serialize to byte streams, JSON, XML, etc., using the same basic extraction and reconstruction mechanism;</li>
+<li>We can statically validate that serialization and deserialization class members are compatible; and</li>
+<li>Deserialization ultimately proceeds through constructors, and therefore the serialized form can be validated before the object is created, rather than merely accepting whatever (potentially malicious) data was present in the bytestream.</li>
+</ul>
+<p>The last point is the most important, as it is key to taming the security risks inherent in serialization. While we’re used to coding constructors and factories defensively, deserialization is when we most need that defensiveness — and when we currently use it the least! Deserialization should be able to proceed through the same defensive code as objects created through the primary API.</p>
+<p>Finally, we must mark the members to be used for serialization and deserialization, so that a serialization framework will know that a constructor can be used as a deserializer for the corresponding serial form. We can use ordinary annotations for this. Here’s an example of what a class designed for serialization might look like under this scheme.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">public</span> <span class="kw">class</span> Range {</a>
+<a class="sourceLine" id="cb3-2" title="2">    <span class="dt">int</span> lo;</a>
+<a class="sourceLine" id="cb3-3" title="3">    <span class="dt">int</span> hi;</a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5">    <span class="kw">private</span> <span class="fu">Range</span>(<span class="dt">int</span> lo, <span class="dt">int</span> hi) {</a>
+<a class="sourceLine" id="cb3-6" title="6">        <span class="kw">if</span> (lo &gt; hi)</a>
+<a class="sourceLine" id="cb3-7" title="7">            <span class="kw">throw</span> <span class="kw">new</span> <span class="bu">IllegalArgumentException</span>(<span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;(</span><span class="sc">%d</span><span class="st">,</span><span class="sc">%d</span><span class="st">)&quot;</span>,</a>
+<a class="sourceLine" id="cb3-8" title="8">                                                             lo, hi));</a>
+<a class="sourceLine" id="cb3-9" title="9">        <span class="kw">this</span>.<span class="fu">lo</span> = lo;</a>
+<a class="sourceLine" id="cb3-10" title="10">        <span class="kw">this</span>.<span class="fu">hi</span> = hi;</a>
+<a class="sourceLine" id="cb3-11" title="11">    }</a>
+<a class="sourceLine" id="cb3-12" title="12"></a>
+<a class="sourceLine" id="cb3-13" title="13">    <span class="at">@Serializer</span></a>
+<a class="sourceLine" id="cb3-14" title="14">    <span class="kw">public</span> pattern <span class="fu">Range</span>(<span class="dt">int</span> lo, <span class="dt">int</span> hi) {</a>
+<a class="sourceLine" id="cb3-15" title="15">        lo = <span class="kw">this</span>.<span class="fu">lo</span>;</a>
+<a class="sourceLine" id="cb3-16" title="16">        hi = <span class="kw">this</span>.<span class="fu">hi</span>;</a>
+<a class="sourceLine" id="cb3-17" title="17">    }</a>
+<a class="sourceLine" id="cb3-18" title="18"></a>
+<a class="sourceLine" id="cb3-19" title="19">    <span class="at">@Deserializer</span></a>
+<a class="sourceLine" id="cb3-20" title="20">    <span class="kw">public</span> <span class="dt">static</span> Range <span class="fu">make</span>(<span class="dt">int</span> lo, <span class="dt">int</span> hi) {</a>
+<a class="sourceLine" id="cb3-21" title="21">        <span class="kw">return</span> <span class="kw">new</span> <span class="fu">Range</span>(lo, hi);</a>
+<a class="sourceLine" id="cb3-22" title="22">    }</a>
+<a class="sourceLine" id="cb3-23" title="23">}</a></code></pre></div>
+<p>In this example, we’ve chosen a serial form that matches the representation. The “front door” API has a public factory and a public deconstruction pattern that share this form; by applying the appropriate annotations, we capture the author’s design intent that these members are also suitable for serialization and deserialization. (These annotations are not special; they serve only to capture the author’s design intent, and can be acted on by serialization frameworks.) It is not required that the serialization members be part of the “front door” API, but is allowable and often convenient to do so. (If <code>Point</code> were declared as a <a href="records-and-sealed-classes-classes.html">record</a>, it would acquire a public deconstruction pattern and constructor for free, which could be used by a serialization framework.)</p>
+<p>Note that we’ve not said anything about <code>implements Serializable</code>; we’ve just annotated the matcher and factory to say that these members are suitable for deconstructing and reconstructing a <code>Range</code>. This is deliberate; rather than encouraging users to write <code>Serializable</code> classes, we encourage users to write classes that are <em>ready for serialization</em>, using primitives provided by the language, and capturing the author’s design intent through annotations. Then any serialization framework can use the members marked by the author as intended for deconstruction and reconstruction.</p>
+<p>This approach captures a common idiom already used by some serializable classes: the <em>serialization proxy pattern</em> (which involves using explicit <code>readResolve</code> and <code>writeReplace</code> methods to override the default choice of serialized form, and replace it with a custom state carrier, and reconstitute the object through a constructor at deserialization time). While a serialization framework is free to encode the serialized form as it chooses, a sensible encoding would be to encode the name of the class, some version information (see below), and the serializations of the components of the serial form. (Obviously, these components must themselves be serializable somehow.)</p>
+<h3 id="alternate-serial-forms">Alternate serial forms</h3>
+<p>Not all classes want to use their in-memory representation as their serial form. Consider <code>LinkedList</code>, which, rather than serializing the full graph including the internal doubly-linked nodes, instead merely serializes the elements, and reconstructs the list at deserialization time by adding them to an empty list. (In this case, this trick turns a cyclic data structure into a serial form that is (usually) backreference-free, and also reduces the size of the serial form.) We can represent this as having a serial form of <code>(Object[] elements)</code>, and code it as follows:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">public</span> <span class="kw">class</span> <span class="bu">LinkedList</span> {</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="at">@Serializer</span></a>
+<a class="sourceLine" id="cb4-3" title="3">    <span class="kw">public</span> pattern <span class="fu">serialize</span>(<span class="bu">Object</span>[] elements) {</a>
+<a class="sourceLine" id="cb4-4" title="4">        elements = <span class="fu">toArray</span>();</a>
+<a class="sourceLine" id="cb4-5" title="5">    }</a>
+<a class="sourceLine" id="cb4-6" title="6"></a>
+<a class="sourceLine" id="cb4-7" title="7">    <span class="at">@Deserializer</span></a>
+<a class="sourceLine" id="cb4-8" title="8">    <span class="kw">public</span> <span class="dt">static</span> <span class="bu">LinkedList</span> <span class="fu">deserialize</span>(<span class="bu">Object</span>[] elements) {</a>
+<a class="sourceLine" id="cb4-9" title="9">        <span class="bu">LinkedList</span> list = <span class="kw">new</span> <span class="bu">LinkedList</span>();</a>
+<a class="sourceLine" id="cb4-10" title="10">        <span class="kw">for</span> (<span class="bu">Object</span> e : elements)</a>
+<a class="sourceLine" id="cb4-11" title="11">            list.<span class="fu">add</span>(e);</a>
+<a class="sourceLine" id="cb4-12" title="12">        <span class="kw">return</span> list;</a>
+<a class="sourceLine" id="cb4-13" title="13">    }</a>
+<a class="sourceLine" id="cb4-14" title="14">}</a></code></pre></div>
+<p>Another situation where we might want to use a serial form that doesn’t match our representation is when we have components that are not serializable, or for some reason we don’t want to serialize them directly. As an example, consider a <code>ServerConnection</code> class which is not serializable, and a <code>ServerMonitor</code> class that maintains a connection to a server. The constructor for <code>ServerMonitor</code> takes the name of the server to connect to. As our serial form, instead of serializing the <code>ServerConnection</code>, we could instead serialize the information needed to reconstruct the <code>ServerConnection</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">class</span> ServerMonitor {</a>
+<a class="sourceLine" id="cb5-2" title="2">    <span class="kw">private</span> <span class="dt">final</span> ServerConnection conn;</a>
+<a class="sourceLine" id="cb5-3" title="3"></a>
+<a class="sourceLine" id="cb5-4" title="4">    <span class="at">@Deserializer</span></a>
+<a class="sourceLine" id="cb5-5" title="5">    <span class="kw">public</span> <span class="fu">ServerMonitor</span>(<span class="bu">String</span> serverName) {</a>
+<a class="sourceLine" id="cb5-6" title="6">        conn = <span class="kw">new</span> <span class="fu">ServerConnection</span>(serverName);</a>
+<a class="sourceLine" id="cb5-7" title="7">    }</a>
+<a class="sourceLine" id="cb5-8" title="8"></a>
+<a class="sourceLine" id="cb5-9" title="9">    <span class="at">@Serializer</span></a>
+<a class="sourceLine" id="cb5-10" title="10">    <span class="kw">public</span> pattern <span class="fu">serializeMe</span>(<span class="bu">String</span> serverName) {</a>
+<a class="sourceLine" id="cb5-11" title="11">        serverName = conn.<span class="fu">getName</span>();</a>
+<a class="sourceLine" id="cb5-12" title="12">    }</a>
+<a class="sourceLine" id="cb5-13" title="13">}</a></code></pre></div>
+<p>A side-benefit of using this technique is that it can protect against aliasing attacks; in the class as written, the <code>ServerConnection</code> is fully encapsulated, but using ordinary serialization, it’s possible (using backreferences) for malicious serialization code to obtain a reference to the underlying <code>ServerConnection</code> at deserialization time, and potentially mutate it. (It is possible to guard against this attack today, but very easy to forget to do so.) By reconstructing our state from its base ingredients, rather than just serializing it directly, we gain defense against such attacks (as well as the ability to reconstruct nonserializable state).</p>
+<h3 id="versioning">Versioning</h3>
+<p>Over time, the representation of our objects may evolve or may acquire new invariants. It’s easy to change our code, and to change the serializer/deserializer to match the latest version, but we may also want to continue to support deserialization of objects that were serialized under previous versions (or alternately, not). Explicit control over versioning can be easily added to the mechanism outlined above. If we assume that each version is identified by a version tag, all we need to do is ensure that each supported version of the serialized form has a deserializer that accepts that version of the serialized form.</p>
+<p>Suppose we have a class <code>C</code> which is evolved over time. In version 1, it has only an <code>a</code> field; in version 2, a <code>b</code> field is added (for which zero is a suitable default); and in version 3, a <code>c</code> field is simlarly added. Over time, <code>C</code> can accrete additional deserializers to handle the various forms it expects to encounter:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">class</span> C {</a>
+<a class="sourceLine" id="cb6-2" title="2">    <span class="dt">int</span> a;</a>
+<a class="sourceLine" id="cb6-3" title="3">    <span class="dt">int</span> b;</a>
+<a class="sourceLine" id="cb6-4" title="4">    <span class="dt">int</span> c;</a>
+<a class="sourceLine" id="cb6-5" title="5"></a>
+<a class="sourceLine" id="cb6-6" title="6">    <span class="at">@Deserializer</span>(version = <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb6-7" title="7">    <span class="kw">public</span> <span class="fu">C</span>(<span class="dt">int</span> a, <span class="dt">int</span> b, <span class="dt">int</span> c) {</a>
+<a class="sourceLine" id="cb6-8" title="8">        <span class="kw">this</span> a = a;</a>
+<a class="sourceLine" id="cb6-9" title="9">        <span class="kw">this</span>.<span class="fu">b</span> = b;</a>
+<a class="sourceLine" id="cb6-10" title="10">        <span class="kw">this</span>.<span class="fu">c</span> = c;</a>
+<a class="sourceLine" id="cb6-11" title="11">    }</a>
+<a class="sourceLine" id="cb6-12" title="12"></a>
+<a class="sourceLine" id="cb6-13" title="13">    <span class="at">@Deserializer</span>(version = <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb6-14" title="14">    <span class="kw">public</span> <span class="fu">C</span>(<span class="dt">int</span> a, <span class="dt">int</span> b) {</a>
+<a class="sourceLine" id="cb6-15" title="15">        <span class="kw">this</span>(a, b, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb6-16" title="16">    }</a>
+<a class="sourceLine" id="cb6-17" title="17"></a>
+<a class="sourceLine" id="cb6-18" title="18">    <span class="at">@Deserializer</span>(version = <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb6-19" title="19">    <span class="kw">public</span> <span class="fu">C</span>(<span class="dt">int</span> a) {</a>
+<a class="sourceLine" id="cb6-20" title="20">        <span class="kw">this</span>(a, <span class="dv">0</span>, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb6-21" title="21">    }</a>
+<a class="sourceLine" id="cb6-22" title="22"></a>
+<a class="sourceLine" id="cb6-23" title="23">    <span class="at">@Serializer</span>(version = <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb6-24" title="24">    <span class="kw">public</span> pattern <span class="fu">C</span>(<span class="dt">int</span> a, <span class="dt">int</span> b, <span class="dt">int</span> c) {</a>
+<a class="sourceLine" id="cb6-25" title="25">        a = <span class="kw">this</span>.<span class="fu">a</span>;</a>
+<a class="sourceLine" id="cb6-26" title="26">        b = <span class="kw">this</span>.<span class="fu">b</span>;</a>
+<a class="sourceLine" id="cb6-27" title="27">        c = <span class="kw">this</span>.<span class="fu">c</span>;</a>
+<a class="sourceLine" id="cb6-28" title="28">    }</a>
+<a class="sourceLine" id="cb6-29" title="29">}</a></code></pre></div>
+<p>Now, it is clear exactly which old serialized forms <code>C</code> is expecting, and how they map to the current representation. If the author decides that supporting a specific old version is impractical or undesirable, all they need do is not provide a deserializer for that version (or, to make it even more explicit, a deserializer that always throws), and such forms will be rejected at deserialization time. Again, this is all under the control of the class author, and manifest in the source and documentation.</p>
+<h3 id="encapsulation-relaxation">Encapsulation relaxation</h3>
+<p>The above examples focused on the common case where serialization and deserialization proceeded through members of the public (front door) API. However, sometimes we might not want the members designed for serialization to be part of the public API, but may still want serialization frameworks to be able to dynamically invoke them.</p>
+<p>The natural way to denote the intended set of API users is through accessibility modifiers (e.g, <code>public</code>, <code>private</code>). Which leaves us looking for a way to denote the fact that a given serializer or deserializer should always be accessible reflectively to serialization frameworks, even if it is otherwise inaccessible (or the class itself is inaccessible).</p>
+<p>We’ve encountered this exact same problem before with modules, where we wanted to make one set of choices for exporting packages for direct use by clients, and another set of choices for <em>opening</em> them for deep reflective access by frameworks (such as dependency injection). The different categories of users want to interact with our API in different ways; we’d like to expose the smallest API to each that meets the requirements.</p>
+<p>We could address this by saying that any module that wants to serialize non-public classes or classes using non-public serialization members use the <code>opens</code> facility of the module declaration, and then have serialization uses unprivileged reflection and <code>setAccessible()</code> to access the serialization members. But this is a blunt tool; we probably want something more direct, both for means of explicitness (so the member is explicitly identified in the source as “frameworks are going to invoke this reflectively, and that’s OK”) and granularity (we probably do not want to open an entire package to reflection just to support serialization of a few classes; we may prefer to expose only a few specific members of specific classes). Rather than requiring modules that have serializable classes to open them widely, or relying on the special magic privileges of Java serialization, let’s again declare this explicitly in the class, by extending the notion of <code>open</code> from packages in module descriptors to individual members in classes. For consistency with modules, let’s call this <code>open</code>, and its meaning is just as it is with packages in a module: that it should be reflectively accessible even when they are otherwise inaccessible.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">class</span> Foo {</a>
+<a class="sourceLine" id="cb7-2" title="2">    <span class="kw">private</span> <span class="dt">final</span> InternalState is;</a>
+<a class="sourceLine" id="cb7-3" title="3"></a>
+<a class="sourceLine" id="cb7-4" title="4">    <span class="kw">public</span> <span class="fu">Foo</span>(ExternalState es) {</a>
+<a class="sourceLine" id="cb7-5" title="5">        <span class="kw">this</span>(<span class="kw">new</span> <span class="fu">InternalState</span>(es));</a>
+<a class="sourceLine" id="cb7-6" title="6">    }</a>
+<a class="sourceLine" id="cb7-7" title="7"></a>
+<a class="sourceLine" id="cb7-8" title="8">    <span class="at">@Deserializer</span></a>
+<a class="sourceLine" id="cb7-9" title="9">    <span class="kw">private</span> open <span class="fu">Foo</span>(InternalState is) {</a>
+<a class="sourceLine" id="cb7-10" title="10">        <span class="kw">this</span>.<span class="fu">is</span> = is;</a>
+<a class="sourceLine" id="cb7-11" title="11">    }</a>
+<a class="sourceLine" id="cb7-12" title="12"></a>
+<a class="sourceLine" id="cb7-13" title="13">    <span class="at">@Serializer</span></a>
+<a class="sourceLine" id="cb7-14" title="14">    <span class="kw">private</span> open pattern <span class="fu">serialize</span>(InternalState is) {</a>
+<a class="sourceLine" id="cb7-15" title="15">        is = <span class="kw">this</span>.<span class="fu">is</span>;</a>
+<a class="sourceLine" id="cb7-16" title="16">    }</a>
+<a class="sourceLine" id="cb7-17" title="17">}</a></code></pre></div>
+<p>The <code>open</code> modifier would permit core reflection to allow the member to be dynamically invoked, even though its accessibility is otherwise restricted — whether because the member itself is inaccessible, or the containing class is inaccessible, or the containing package is not exported or opened. (We choose a language keyword here rather than an annotation because it actually affects accessibility semantics, rather than merely signaling design intent.)</p>
+<p>The combination of <code>private</code> and <code>open</code> means that for purposes of ordinary invocation, the method can only be invoked from members of the same class or nest, but can be reflectively invoked by anyone. Because the serializer and deserializer are private, they don’t show up in JavaDoc or in the IDE’s completion or navigation aids, but serialization frameworks (with no special privilege except that granted by <code>open</code> and core reflection) can still invoke the serialization-related members.</p>
+<h3 id="adapting-java-serialization">Adapting Java serialization</h3>
+<p>It is a relatively simple matter to adapt Java serialization (or any serialization framework) to support the mechanisms outlined here. When an object is presented for serialization, it can introspect for a suitable serializer; serializers must either be accessible to the client requesting serialization, or be <code>open</code> (either explicitly or through the module declaration). If a serializer is found, an object description is written to the bytestream containing the name of the class, its serialization version (from the serializer), and the serialization of the components of its serial form.</p>
+<p>In the other direction, when a serialization framework encounters an object description corresponding to an explicit serial form, the framework again uses ordinary unprivileged reflection to find a suitable deserializer for that class, version, and serial form, which again is subject to the same access control requirements.</p>
+<p>Java serialization would use the new mechanism in preference to the legacy serialization approaches; other serialization frameworks would be free to select their own policies.</p>
+<p>For new language features such as value types, we can go farther: make the new serialization approach the <em>only</em> way to serialize a value type.</p>
+<h3 id="adapting-the-jdk">Adapting the JDK</h3>
+<p>Existing serializable classes in the JDK can be adapted to support the new mechanism, by adding serializers and deserializers.</p>
+<p>Historically the JDK has followed a policy of “one forward, one back” for serialization compatibility; this means that an instance that is serialized on JDK N should (at least) deserialize on JDK N-1 and N+1. (Among other things, this allows for rolling upgrades of clusters across consecutive JDK versions.)</p>
+<p>We can migrate JDK classes compatibly via a three-step process:</p>
+<ul>
+<li><p>Version N: add a <em>deserializer</em>, but not a serializer. This will enable serialized instances from version N+1 to be deserialized, providing the one-forward part of the story.</p></li>
+<li><p>Version N+1: add a <em>serializer</em>, but leave old serialization members in place. This allows instances from version N to be deserialized, providing the one-back part of the story.</p></li>
+<li><p>Version N+2 (or later, depending on policy choices): remove old serialization members, and replace with a <code>readObject()</code> method that throws. Now, legacy instances cannot be deserialized.</p></li>
+</ul>
+<p>At the current six-month cadence, legacy serialization can be phased out of JDK classes in as little as 18 months.</p>
+<h3 id="limitations">Limitations</h3>
+<p>There are two main limitations of the approach outlined here. The first is the inability to represent cyclic object graphs, such as lists that contain each other. (However, we should note that this exclusion does not apply to object graphs whose cyclicity is a merely a representational artifact, such as the link nodes in a doubly-linked list — these can be serialized by extracting a more abstract, non-cyclic state description (such as the elements themselves) rather than the physical representation.) This is indeed a real restriction; on the other hand, JSON is incapable of representing cycles and it is still a very popular encoding target. If our goal is to serialize <em>data</em>, it seems an acceptable restriction to exclude cyclic graphs.</p>
+<p>The other main limitation is that every class must carry its own serialization behavior, rather than inheriting it from a supertype that implements <code>Serializable</code> or using default serialization. This may be a challenge for inner classes and lambdas, for which declaring the appropriate members may not be syntactically possible, and for which we might have to make some special accomodation in the language. This limitation is also, in some way, a benefit — it is far more obvious what is going to happen when an instance is serialized or deserialized, since all the code is in one place, and subclasses do not inherit the serialization vulnerabilities of their supertypes.</p>
+<h2 id="summary">Summary</h2>
+<p>We’ve factored out a number of concerns that used to be part of Java serialization, and made them part of the object model:</p>
+<ul>
+<li>Using factories, constructors, and matchers for explicit serialization and deserialization;</li>
+<li>Publishing a trivial set of annotations intended to capture serialization-related design intent;</li>
+<li>Classes can additionally permit dynamic frameworks to access specific members with the explicit “dynamically public” <code>open</code> modifier, relieving serialization frameworks of the need for special accessibility relaxation;</li>
+<li>Serialization frameworks (including Java serialization) can use these annotated members to safely extract and reconstitute state, using ordinary access control.</li>
+</ul>
+<p>The result is that classes that are <em>designed for serialization</em> can be serialized and deserialized safely, under the control of the class, with no magic extralinguistic state-scraping, reconstruction, or accessibility mechanisms, by any serialization framework. And deserialization always proceeds through a constructor that can validate its inputs.</p>
+<p>By “safely”, we don’t mean magic security dust; the language cannot defend against constructors that do not validate their arguments. Instead, we mean that the mechanisms for managing the integrity of the API exposed for programmatic use are also used for (or even shared with) the API implicitly exposed for construction and deconstruction via serialization. With some extra work, and some limitations, we can get away from the undesirable status quo of the remotely-accessible API being <em>less</em> defensive than the programmatic API.</p>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

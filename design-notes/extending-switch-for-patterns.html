@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>extending-switch-for-patterns</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="extending-switch-for-pattern-matching">Extending switch for pattern matching</h1>
+<h4 id="gavin-bierman-and-brian-goetz-april-2017">Gavin Bierman and Brian Goetz, April 2017</h4>
+<p>This document explores a possible direction for enhancements to <code>switch</code> in the Java language, motivated by the desire to support <a href="pattern-matching-for-java.html"><em>pattern matching</em></a>. <em>This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language.</em></p>
+<h4 id="pattern-matching-documents">Pattern matching documents</h4>
+<ul>
+<li><a href="pattern-matching-for-java.html">Pattern Matching For Java</a>. Overview of pattern matching concepts, and how they might be surfaced in Java.</li>
+<li><a href="pattern-match-semantics.html">Pattern Matching For Java – Semantics</a>. More detailed notes on type checking, matching, and scoping of patterns and binding variables.</li>
+<li><a href="extending-switch-for-patterns.html">Extending Switch for Patterns</a> (this document). An early exploration of the issues surrounding extending pattern matching to the <code>switch</code> statement.</li>
+<li><a href="type-patterns-in-switch.html">Type Patterns in Switch</a>. A more up-to-date treatment of extending pattern matching to <code>switch</code> statements, including treatment of nullity and totality.</li>
+<li><a href="pattern-match-object-model.html">Pattern Matching in the Java Object model</a>. Explores how patterns fit into the Java object model, how they fill a hole we may not have realized existed, and how they might affect API design going forward.</li>
+</ul>
+<h2 id="background">Background</h2>
+<p>Java inherited its <code>switch</code> construct nearly wholesale from C. It was designed as a limited mechanism for limited situations; one can only switch on a small set of types, and one can only have case labels that exactly match literal constants. While its range was extended several times (switching on enums in Java 5, and strings in Java 7), the basic facility is largely unchanged from C.</p>
+<p>As we consider extending <code>switch</code> to support a wider variety of types, and <code>case</code> labels to support patterns, it raises some new questions, such as:</p>
+<ul>
+<li>What is the scope of binding variables introduced in pattern <code>case</code> labels?</li>
+<li>Does fallthrough need to be restricted to make sense with pattern <code>case</code> labels?</li>
+<li>Can <code>switch</code> be smoothly extended to an expression, and if so, what changes need to be made?</li>
+<li>Do we need additional control flow constructs, like <code>break</code> or <code>continue</code>?</li>
+<li>Do we need “guard” conditions on patterns?</li>
+<li>Under what conditions might a <code>switch</code> expression without a <code>default</code> clause be considered exhaustive?</li>
+</ul>
+<p>It should be noted that there is a duality between <code>switch</code> statements and a chain of <code>if-else</code> statements. We can use this duality as a lens through which to evaluate the regularity of extensions to <code>switch</code>.</p>
+<h2 id="scoping">Scoping</h2>
+<p>A <code>switch</code> statement today is one big scope; the “arms” of a <code>switch</code> do not constitute individual scopes, unless scoping constructs (such as introducing a new block) are explicitly used by the author.</p>
+<p>The situation of having variable declarations arise from expressions is new, so it is a reasonable question to ask “What is the scope of of a binding variable of a pattern match?” There’s also an obvious answer – the scope of the statement that encloses the pattern match; we can just hoist variables into the scope which includes the statement which includes the match expression:</p>
+<pre><code>if (x matches String s) { ... }</code></pre>
+<p>becomes</p>
+<pre><code>String s;
+if (x matches String s) { ... }</code></pre>
+<p>However, this seems like one of those “obvious but wrong” answers; there are going to be places in that scope where the variable is still not usable (because it is not definitely assigned), and it is likely that users will want to reuse the same variable name for multiple bindings in the same scope:</p>
+<pre><code>if (x matches Integer n) { ... }
+else if (x matches Float n) { ... }
+else if (x matches Double n) { ... }</code></pre>
+<p>(or the equivalent in a <code>switch</code> statement.) Having to come up with a unique name for each binding variable, just because the variable has been hoisted into a broader scope, will be unpopular (and as it turns out, unnecessary.)</p>
+<h4 id="natural-scoping-for-binding-variables">Natural scoping for binding variables</h4>
+<p>The following example illustrates the that “natural” scope of a binding variables is complex and not necessarily contiguous:</p>
+<pre><code>if (x matches Foo(var y)) { .. y .. }                 // OK
+if (x matches Foo(var y)) { ... } else { .. y .. }    // not OK
+if (x matches Foo(var y) &amp;&amp; .. y ..) { ... }          // OK
+if (x matches Foo(var y) || .. y ..) { ... }          // not OK
+if (!(x matches Foo(var y)) &amp;&amp; .. y .. ) { ... }      // not OK
+if (!(x matches Foo(var y)) || .. y .. ) { ... }      // OK
+if (!(x matches Foo(var y))) { ... } else { .. y .. } // OK
+if (!(x matches Foo(var y))) { y } else { ... }       // not OK</code></pre>
+<p>The above cases are derived from a standard application of <em>definite assignment</em> rules; we’d like for a binding variable to be in scope wherever it is definitely assigned, to not be in scope wherever it is not definitely assigned, and for a binding variable to always be definitely unassigned at the point of its declaration.</p>
+<p>We can construct a set of rules for the natural scope of these variables. To start with, we say that each expression <em>e</em> gives rise to two sets of binding variables, <code>e.T</code> and <code>e.F</code>, along with rules for when one or the other of these sets are included in the scope of a statement or expression, over all the expression forms. If not otherwise defined, <code>e.T</code> = <code>e.F</code> = <code>{}</code> – most expressions (including all current expression forms) make available no new bindings. We also define a set of binding variables to additionally be in scope for certain expressions or statements via the “include in” clauses below.</p>
+<p>If <em>e</em> is <code>x matches P</code>:</p>
+<pre><code>e.T = { binding variables from P }
+e.F = { }</code></pre>
+<p>If e is <code>x &amp;&amp; y</code>:</p>
+<pre><code>e.T = union(x.T, y.T)
+e.F = intersection(x.F, y.F)
+include x.T in y</code></pre>
+<p>If e is <code>x || y</code>:</p>
+<pre><code>e.T = intersection(x.T, y.T)
+e.F = union(x.F, y.F)
+include x.F in y</code></pre>
+<p>If e is <code>x ? y : z</code>:</p>
+<pre><code>e.T = union(intersect(y.T, z.T), intersect(x.T, z.T), intersect(x.F, y.T))
+e.F = union(intersect(y.F, z.F), intersect(x.T, z.F), intersect(x.F, y.F))
+include x.T in y
+include x.F in z</code></pre>
+<p>If e is <code>(x)</code>:</p>
+<pre><code>e.T = x.T
+e.F = x.F</code></pre>
+<p>If e is <code>!x</code>:</p>
+<pre><code>e.T = x.F
+e.F = x.T</code></pre>
+<p>We can do the same for statement forms:</p>
+<p>For <code>if (x) y else z</code>:</p>
+<pre><code>include x.T in y
+include x.F in z</code></pre>
+<p>For <code>if (x) return/throw; z</code></p>
+<pre><code>include x.T in return/throw
+include x.F in z</code></pre>
+<p>For <code>while (x) y</code>:</p>
+<pre><code>include x.T in y</code></pre>
+<p>For <code>for (a; b; c) d</code>:</p>
+<pre><code>include b.T in c
+include b.T in d</code></pre>
+<p>For <code>switch (x) { ... case P: y; case Q: ... }</code></p>
+<pre><code>include binding variables from P in y</code></pre>
+<p>Further, union and intersection should be limited to avoid conflicts. The <code>union</code> function should be a disjoint union: it is an error if any binding varible is present in both sets – otherwise, expressions like <code>x matches Foo(var x) &amp;&amp; y matches Bar(var x)</code> would include two different variables called <code>x</code> in the same scope. Similarly, for <code>intersect</code>, it is an error if the same binding variable is present in both sets but with different types.</p>
+<h2 id="fallthrough-and-or-patterns">Fallthrough and OR patterns</h2>
+<p>While one could make an argument that fallthrough in <code>switch</code> was the wrong default, the problem fallthrough aims to solve – treating multiple items similarly without duplicating the code – were real, and are still relevant when our <code>case</code> labels get richer.</p>
+<p>Patterns that generate binding variables require some refinements to the above scoping rules. For example:</p>
+<pre><code>case Foo(int x):
+case Bar(float x):
+    s;</code></pre>
+<p>would be an error, just as <code>x matches Foo(int x) || x.matches Bar(float x)</code> would be.</p>
+<p>However, there’s no reason why we can’t make this work, with <code>x</code> in scope in <code>s</code>:</p>
+<pre><code>case Foo(int x):
+case Bar(int x):
+    s;</code></pre>
+<p>This is analogous to the disjunction <code>y matches Foo(int x) || y matches Bar(int x)</code>.</p>
+<p>Similarly, in:</p>
+<pre><code>case Foo(int x, int y):
+case Bar(int x):
+    s;</code></pre>
+<p>the binding variable <code>y</code> would not be available in <code>s</code>, because we can’t rely on it having a value on all control paths, but <code>x</code> can still be available in <code>s</code>. These restrictions are a straightforward refinement of the scoping rules presented earlier.</p>
+<p>A more limited form of fallthrough is OR patterns:</p>
+<pre><code>case P1 || P2:
+    s;</code></pre>
+<p>Which is equivalent to:</p>
+<pre><code>case P1:
+case P2:
+    s;</code></pre>
+<p>We might consider prohibiting fallthrough but allowing OR patterns (in which case we’d probably require that all OR patterns declare exactly the same set of binding variables.)</p>
+<h4 id="guards-compound-patterns-and-continue">Guards, compound patterns, and continue</h4>
+<p>Nested patterns, such as:</p>
+<pre><code>case Point(0, 0):</code></pre>
+<p>express <em>compound conditions</em>; we’re testing that the target is a <code>Point</code>, and that both its <code>x</code> and <code>y</code> components match the constant pattern <code>0</code>. While nested patterns are powerful, they have their limits; we can’t easily test for whether a point is, say, on the diagonal. We could express this with a <em>guard</em>:</p>
+<pre><code>case Point(var x, var y) &amp;&amp; x == y:</code></pre>
+<p>Alternately, we could express compound conditions by pushing the subordinate test into the body, and permitting the <code>continue</code> control flow construct in switches, which would indicate we want to break out of the existing <code>case</code> arm, and resume matching at the next <code>case</code> label:</p>
+<pre><code>case Point(var x, var y):
+    if (x != y)
+        continue;</code></pre>
+<p>(Note that nested patterns desugar to guards, and guards desugar to <code>continue</code>, so we are likely to have to implement all these mechanisms internally anyway.)</p>
+<h4 id="dead-code">Dead code</h4>
+<p>In some cases, the compiler may be able to prove that a case is unreachable, such as:</p>
+<pre><code>switch (x) {
+    case Comparable c: ... break;
+    case Integer i: // can&#39;t reach this
+}</code></pre>
+<p>In these cases, the compiler will issue an error (just as with unreachable <code>catch</code> clauses.)</p>
+<h2 id="switch-expressions">Switch expressions</h2>
+<p>The other major direction in which we would like to extend <code>switch</code> is to given it an expression form:</p>
+<pre><code>float overtimeFactor = switch (day) {
+    case SATURDAY -&gt; 1.5;
+    case SUNDAY -&gt; 2;
+    default -&gt; 1;
+}</code></pre>
+<p>While statement switches need not be exhaustive (just as <code>if</code> statements need not have an <code>else</code>), expression switches must be (as the expression must evaluate to something.) Exhaustiveness can always be provided via a <code>default</code> arm, but sometimes we may want to do better. The compiler can use class hierarchy information, as well as sealing information, to prove exhaustiveness. (Since the type hiearchy can change between compile and run time, the compiler will still want to insert a catch-all throwing <code>default</code> even if it deems the analysis exhaustive.)</p>
+<p>Unrestricted fallthrough makes less sense in an expression <code>switch</code>, but OR patterns still do:</p>
+<pre><code>int days = switch (month) {
+    case JANUARY
+         || MARCH
+         || MAY
+         || JULY
+         || AUGUST
+         || OCTOBER
+         || DECEMBER -&gt; 31;
+     case FEBRUARY -&gt; 28;
+     case APRIL
+         || JUNE
+         || SEPTEMBER
+         || NOVEMBER -&gt; 30;
+};</code></pre>
+<p>A switch expression is a <em>poly expression</em>, and pushes its target type down into the switch arms (just as we do with conditional expressions.)</p>
+<h4 id="mixing-statements-and-expressions">Mixing statements and expressions</h4>
+<p>While the common case with a switch expression is that the RHS of a case label is a single expression, occasionally the result may not be constructible in this way (or construction of the result might require side-effects, such as debugging output). Other languages usually handle this with <em>block expressions</em>; we can construct a limited form of block expression for use in expression <code>switch</code> by coopting the <code>break</code> keyword, as in these examples:</p>
+<pre><code>case String s -&gt; {
+    System.out.println(&quot;It&#39;s a string!&quot;);
+    break s.toUpperCase();
+}
+
+case Flooble f -&gt; {
+    FloobleDescriptor fd = new FloobleDescriptor();
+    fd.setFlooble(f);
+    break fd;
+}</code></pre>
+<p>There is some potential ambiguity between label-break and result-break here, but working these out is practical.</p>
+<h4 id="throw-expressions">Throw expressions</h4>
+<p>It is not uncommon that one or more arms of a switch expression will result in a transfer-of-control operation, such as:</p>
+<pre><code>int size = switch (x) {
+    case Collection c -&gt; c.size();
+    case String s -&gt; s.length();
+    default -&gt; throw new IllegalArgumentException(...);
+}</code></pre>
+<p>Even though <code>throw</code> is a statement, not an expression, the intent here is clear, so we want to allow <code>throw</code> (and possibly other transfer-of-control operations) in this context.</p>
+<h4 id="targetless-switch">Targetless switch</h4>
+<p>In the theme of elevating <code>switch</code> as the generalization of the ternary conditional operator, we may also wish to allow a simplified form of <code>switch</code> where there is no switch target, and all case labels are boolean expressions:</p>
+<pre><code>String fizzbuzz(int n) {
+    boolean byThree = n % 3 == 0;
+    boolean byFive = n % 5 == 0;
+    return switch {
+        case byThree &amp;&amp; byFive -&gt; &quot;fizzbuzz&quot;;
+        case byThree -&gt; &quot;fizz&quot;;
+        case byFive -&gt; &quot;buzz&quot;;
+        default -&gt; Integer.toString(n);
+    }
+}</code></pre>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

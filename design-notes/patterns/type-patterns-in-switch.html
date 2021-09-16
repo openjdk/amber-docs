@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>type-patterns-in-switch</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="type-patterns-in-switch">Type patterns in switch</h1>
+<h4 id="brian-goetz-sept-2020">Brian Goetz, Sept 2020</h4>
+<p>This document describes a possible approach for the next phase of <em>pattern matching</em> – adding type patterns to the <code>switch</code> statement. This builds on the work of <a href="https://openjdk.java.net/jeps/375">JEP 375</a>. <em>This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language.</em></p>
+<h4 id="pattern-matching-documents">Pattern matching documents</h4>
+<ul>
+<li><a href="pattern-matching-for-java.html">Pattern Matching For Java</a>. Overview of pattern matching concepts, and how they might be surfaced in Java.</li>
+<li><a href="pattern-match-semantics.html">Pattern Matching For Java – Semantics</a>. More detailed notes on type checking, matching, and scoping of patterns and binding variables.</li>
+<li><a href="extending-switch-for-patterns.html">Extending Switch for Patterns</a>. An early exploration of the issues surrounding extending pattern matching to the <code>switch</code> statement.</li>
+<li><a href="type-patterns-in-switch.html">Type Patterns in Switch</a> (this document). A more up-to-date treatment of extending pattern matching to <code>switch</code> statements, including treatment of nullity and totality.</li>
+<li><a href="pattern-match-object-model.html">Pattern Matching in the Java Object model</a>. Explores how patterns fit into the Java object model, how they fill a hole we may not have realized existed, and how they might affect API design going forward.</li>
+</ul>
+<p><a href="https://openjdk.java.net/jeps/305">JEP 305</a> introduced the first phase of <a href="pattern-matching-for-java.html">pattern matching</a> into the Java language, later refined by <a href="https://openjdk.java.net/jeps/375">JEP 375</a>. It was deliberately limited, focusing on only one kind of pattern (type test patterns) and one linguistic context (<code>instanceof</code>). Having introduced the concept to Java developers, we can now extend both the kinds of patterns and the linguistic context where patterns are used.</p>
+<p>The obvious next context in which to introduce pattern matching is <code>switch</code>; a switch using patterns as <code>case</code> labels can replace <code>if .. else if</code> chains with a more direct way of expressing a multi-way conditional. In the first iteration, we will extend <code>switch</code> to support type patterns only, before moving on to other kinds of patterns. However, this document makes extensive reference to other kinds of patterns, because where the language is going will have an impact on the semantics that are sensible to choose.</p>
+<p>Unfortunately, <code>switch</code> is one of the most complex, irregular constructs we have in Java, so we must teach it some new tricks while avoiding some existing traps. Such tricks and traps may include:</p>
+<p><strong>Typing.</strong> Currently, the operand of a <code>switch</code> may only be one of the integral primitive types, the box type of an integral primitive, <code>String</code>, or an <code>enum</code> type. (Further, the type affects the interpretation of case labels; if the <code>switch</code> operand is an <code>enum</code> type, the <code>case</code> labels must be <em>unqualified</em> enum constant names.) Clearly we can relax this restriction to allow other types and constrain the case labels to only be patterns that are applicable to that type, but it may leave a seam of “legacy” vs “pattern” switch, especially if we do not adopt bare constant literals as the denotation of constant patterns.</p>
+<p><strong>Parsing.</strong> The grammar currently specifies that the operand of a <code>case</code> label is a <code>CaseConstant</code>, which casts a wide syntactic net, later narrowed with post-checks after attribution. This means that, since parsing is done before we know the type of the operand, we must be watchful for ambiguities between patterns and expressions (and possibly refine the production for <code>case</code> labels.) Literals are an obvious source of ambiguity (if we choose to denote constant patterns with literals); deconstruction patterns with no arguments are another.</p>
+<p><strong>Nullity.</strong> In the limited forms where <code>switch</code> can be used on reference types today (enums, strings, and primitive boxes), <code>switch</code> appears to be hostile to <code>null</code>. However, this null-hostility does not make sense when extended to richer forms of patterns, so we will need to refine the semantics to support the legacy cases without polluting the new ones. (It is always tempting to preemptively say “sorry, nulls not allowed”, but to not refine null handling here will show up as sharp edges elsewhere, such as refactoring anomalies.)</p>
+<p><strong>Exhaustiveness.</strong> For switches over the permitted subtypes of sealed types, we will want to be able to do exhaustiveness analysis, and for sufficiently exhaustive pattern sets, allow the user to omit a catch-all case such as <code>default</code>. (When we get to nested patterns, we will want to do this for nested patterns too – if <code>Circle</code> and <code>Rect</code> are exhaustive on <code>Shape</code>, then <code>Box(Circle c)</code> and <code>Box(Rect r)</code> should be exhaustive on <code>Box&lt;Shape&gt;</code>.)</p>
+<p><strong>Fallthrough.</strong> Fallthrough is everyone’s least favorite feature of <code>switch</code>, but it exists for a reason. (The mistake was making fallthrough the default behavior, but that ship has sailed.) In the absence of an OR pattern combinator, one might find fallthrough in switch useful in conjunction with patterns:</p>
+<pre><code>case Box(int x):
+case Bag(int x):
+    // use x</code></pre>
+<p>However, it is likely that we will, at least initially, disallow falling out of, or into, a case label with binding variables.</p>
+<p>As we did with <em>expression switches</em> in Java 12, rather than invent a new linguistic construct that is like <code>switch</code> but different (but would have to leave the old construct around), we choose to continue down the path of rehabilitating switch to cover more situations. This road involves some difficult choices where the legacy behavior does not provide a clean extrapolation to the desired generalized behavior; we must choose between the extrapolating the legacy behavior anyway, or leaving a visible seam or asymmetry – neither of which is ideal. There is no perfect answer here; we aim to balance minimizing the long-term complexity of the language with compatibility with past choices.</p>
+<h2 id="type-patterns-in-switch-1">Type patterns in switch</h2>
+<p>Adding type patterns to switch is not the final step in the addition of pattern matching to Java; we expect pattern assignment statements, deconstruction patterns, nested patterns, and declared patterns to follow. However, the design of this step has been extensively informed by analysis of the steps to follow. In the explanatory sections below, we will make significant use of future steps to ensure that the semantics we are choosing now has a clean extension to where we want to end up.</p>
+<p>The current iteration proposes:</p>
+<ul>
+<li>Allow switches on all types (with the possible temporary exception of the three primitive types not currently permitted), not just the current limited set of types.</li>
+<li>Allow <code>case</code> labels to specify patterns in addition to constant case labels. The specified pattern must be applicable to the static type of the switch target.</li>
+<li>Restrict fallthrough out of cases with bindings and into non-total patterns with bindings.</li>
+<li>Refine the null-handling behavior of <code>switch</code>:
+<ul>
+<li>Support a <code>case null</code> constant case label, which matches only <code>null</code> (when the switch target is a reference type.)</li>
+<li>For switches on enums, strings, and primitive boxes that do not include an explicit <code>case null</code>, the compiler inserts an implicit <code>case null</code> at the beginning which throws <code>NullPointerException</code>.</li>
+<li>In all other switches, <code>null</code> is just a value (though, see the treatment of totality with remainder.)</li>
+</ul></li>
+<li>Support declarative <em>guards</em> on case labels with patterns.</li>
+<li>For total switches (which includes expression switches and possibly others) whose set of <code>case</code> patterns is total on the target type with nonempty remainder, provide an implicit <code>default</code> case that throws on the remainder.</li>
+</ul>
+<p>These semantics have been carefully chosen to support a number of goals:</p>
+<ul>
+<li>Refactoring-friendliness. We want a simple relationship between a <code>switch</code> statement over patterns and a corresponding <code>if-else if</code> chain, so that the two can be freely refactored to each other. This means that the semantics of <code>instanceof</code> and <code>switch</code> must be suitably aligned, particularly with respect to null handling. Similarly, a switch whose case labels are a series of nested patterns <code>D(P)</code>, <code>D(Q)</code>, <code>D(R)</code> must have a simple relationship with a <code>case D d</code> with a nested switch whose cases are <code>P</code>, <code>Q</code>, and <code>R</code>.</li>
+<li>Consistent meaning of <code>var</code>. The pattern <code>var x</code> and the type pattern <code>T x</code> where <code>T</code> is arrived at by the obvious type inference should be equivalent; the choice to use <code>var</code> or a manifest type should be purely one of developer preference and not affect the semantics.</li>
+<li>Generalization of <code>enum</code> switches to sealed classes. Expression switches over <code>enum</code> types get special treatment; if all the constants of the <code>enum</code> are covered, the compiler will insert a <code>default</code> clause that throws on unexpected inputs (which can happen if a new constant is added and the client code not recompiled.) We want to generalize this behavior to type patterns covering all the permitted subtypes of a sealed class, and eventually when a suitably total set of patterns is wrapped in a deconstruction pattern.</li>
+<li>Rehabilitation of null handling. Legacy switches are quite limited; they only work over a small set of types, and can only have constant case labels. Moreover, the set of reference types supported by legacy switches are special – enums, strings, and primitive boxes – where it is extremely rare that <code>null</code> is a sensible member of the domain. As we generalize switch to support more types, and generalize case labels to express more complicated predicates over those types, this treatment of <code>null</code> is quickly seen to be arbitrary and problematic, and extending it in the obvious way would introduce many sharp edges that would cause surprises and interfere with otherwise-sensible refactorings.</li>
+</ul>
+<p>Because of the complexity of the <code>switch</code> statement, and its history, there are still sure to be some rough edges and potholes. (Unfortunately, these rough edges are often more apparent than the benefits, since the costs can be imagined relative to the code we write today, whereas the benefits often accrue more to the code we will write tomorrow.) For example, when extending <code>switch</code> to be an expression or a statement, one of these costs was the asymmetry with respect to totality between expression switches and statement switches. In the current round, these costs include having special legacy behavior for string, box, and enum switches to match the legacy null-hostility, but not extending this null-hostility to new reference-type switches, and possibly having an explicit way for statement switches to opt into the same totality treatment that expression switches get, rather than a single uniform rule.</p>
+<h4 id="translation">Translation</h4>
+<p>Switches on primitives and their wrapper types are translated using the <code>tableswitch</code> or <code>lookupswitch</code> bytecodes; switches on strings and enums are lowered in the compiler to switches involving string hash codes or enum ordinals.</p>
+<p>For switches on patterns we will need a new strategy. A sensible candidate is to lower the cases to a densely numbered <code>int</code> switch, and then invoke a classifier function using <code>invokedynamic</code> (whose static argument list includes a description of the patterns in order), whose arguments include the switch operand and whose result tells us the first case number it matches. So a switch like:</p>
+<pre><code>switch (o) {
+    case P: A
+    case Q: B
+}</code></pre>
+<p>is lowered to:</p>
+<pre><code>int target = indy[BSM=PatternSwitch, args=[P,Q]](o)
+switch (target) {
+    case 0: A
+    case 1: B
+}</code></pre>
+<p>A suitable symbolic description of the patterns is provided as the bootstrap argument list, which builds a decision tree based on analysis of the patterns and their target types.</p>
+<p>At the same time, we may wish to switch to an <code>invokedynamic</code>-based implementation for <code>String</code> and <code>Enum</code> switch as well; the static desugaring of these in the compiler is complex, and the dynamic approach offers the opportunity for performance improvement in the future without having to recompile code.</p>
+<h4 id="guards">Guards</h4>
+<p>No matter how rich our patterns are, it is often the case that we will want to provide additional filtering on the results of a pattern. If we are doing so in <code>instanceof</code>, there’s no problem; it is easy to join multiple boolean expressions with <code>&amp;&amp;</code>:</p>
+<pre><code>if (shape instanceof Cylinder c &amp;&amp; c.color() == RED) { ... }</code></pre>
+<p>and the scoping rules already defined ensure that <code>c</code> is in scope in the second clause of the conditional. But in a <code>case</code> label, we do not currently have this opportunity. Worse, the semantics of <code>switch</code> mean that once a <code>case</code> label is selected, there is no way to say “oops, my mistake, keep trying from the next label”.</p>
+<p>It is common in languages with pattern matching to support some form of “guard” expression, which is a boolean expression that conditions whether the case matches, such as:</p>
+<pre><code>case Point(var x, var y)
+    __where x == y: ...</code></pre>
+<p>There is a good reason guards are so common in languages with pattern matching; without them, a 50-way switch for which one arm needs to represent a filter condition that can’t be expressed as a pattern would have to refactor to a 50-element long <code>if-else</code> chain, which results in less readable and more error-prone code.</p>
+<p>Syntactic options (and hazards) for guards abound; users would probably find it natural to reuse <code>&amp;&amp;</code> to attach guards to patterns; <code>C#</code> has chosen <code>when</code> for introducing guards; we could use <code>case P only-if (e)</code>, etc. Whatever surface syntax we pick here there is a readability risk, as the more complex guards are, the harder it is to tell where the case label ends and the “body” begins. (And worse if we allow switch expressions inside guards, which we shouldn’t do.) Bindings from the <code>case</code> pattern would be available in guard expressions.</p>
+<p>An alternative to boolean guards is to allow an imperative <code>continue</code> (or <code>next-case</code>) statement in <code>switch</code>, which would mean “keep trying to match from the next label.” Given the existing semantics of <code>continue</code>, this is a natural extension, but since <code>continue</code> does not currently have meaning for switch, some work would have to be done to disambiguate continue statements in switches enclosed in loops. This imperative alternative is strictly more expressive than most reasonable forms of declarative guards, but users are likely to prefer the declarative version, which more cleanly separates the dispatch criteria from the consequences.</p>
+<h4 id="do-we-need-constant-patterns">Do we need constant patterns?</h4>
+<p>Originally, we envisioned denoting constant patterns with literals, since existing case labels use literals:</p>
+<pre><code>switch (i) {
+    case 1: ...
+    case 2: ...
+}</code></pre>
+<p>It seemed natural to say that <code>1</code> and <code>2</code> are constant patterns, which means we could nest them: <code>case Box(0)</code>. However, using literals as patterns creates additional ambiguities between patterns and expressions (is <code>Box(0)</code> a pattern match or an invocation of a method?), at least for humans if not for parsers. And, constant patterns, outside of their top-level use in <code>switch</code>, are just not that useful; we can always express these more flexibly with guards:</p>
+<pre><code>case Box(int x) when x == 1: ...
+case Box(int x) when x == 2: ...</code></pre>
+<p>At this point, constant patterns do not seem to carry their weight. We can instead interpret a <code>case</code> label as carrying a compatible literal or pattern, but not make literals into actual patterns. (This is the same move we made with <code>instanceof</code>; the RHS can be either a type or a pattern, but bare type names are not patterns.) We can consider adding them later, perhaps with a different syntax (such as <code>Box(const 0)</code> or <code>Box(== 0)</code>) to distinguish them from expressions.</p>
+<h4 id="missing-primitive-types">Missing primitive types</h4>
+<p>The set of primitives we can use today in <code>switch</code> is limited to the integral numeric primitive types; this includes <code>char</code> but leaves out <code>float</code>, <code>double</code> and <code>boolean</code>. It is understandable why these were left out, as they are not all that useful, but as <code>switch</code> gets more sophisticated their omission becomes an impediment to refactoring. For example, if <code>P</code> has one binding, and <code>Q</code> and <code>R</code> are compatible with the type of that binding, we would like to be able to refactor:</p>
+<pre><code>switch (o) {
+    case P(Q): A
+    case P(R): B
+    ...
+}</code></pre>
+<p>into</p>
+<pre><code>switch (o) {
+    case P(var x):
+        switch (x) {
+            case Q: A
+            case R: B
+        }
+    ...
+}</code></pre>
+<p>However, if <code>x</code> were of one of the missing primitive types, we would not be able to express this refactoring. (Adding these types isn’t hard, especially if we are free to use an <code>indy</code>-based translation for these switch types.) We don’t need to do this immediately, since the above motivation only applies when we have nested patterns.</p>
+<h2 id="nullity-and-totality">Nullity and totality</h2>
+<p>Almost no language design exercise is complete without some degree of wrestling with <code>null</code>. (There is an inevitable temptation, when adding new aspects to the language, to try to exclude null from these new aspects. This temptation, however natural, usually turns out to be a mistake, because these new aspects typically have some connection to existing aspects.) As we define more complex patterns than simple type patterns, and extend constructs such as <code>switch</code> (which may have existing opinions about nullity) to support patterns, we need to have a clear understanding of which patterns match null, and separate the nullity behaviors of <em>patterns</em> from the nullity behaviors of <em>constructs which use patterns</em>. For the current phase – type patterns in <code>switch</code> – much of this may seem like borrowing trouble as it is largely motivated by future steps, but if we want to be able to consistently evolve to support deconstruction and nested patterns, we have to tackle this now.</p>
+<p>Pattern matching with type patterns and <code>instanceof</code> have a lot in common; this is one reason we choice to extend the semantics of <code>instanceof</code> to support patterns, rather than create a similar-but-different alternate construct like <code>matches</code>. It is a tempting, but unfortunately wrong, initial thought to define the semantics of type patterns purely in terms of the historical <code>instanceof &lt;type&gt;</code> construct; this leads us to a wrong intuition about how to think about nulls in pattern matching. We will define what it means for a pattern to <em>match</em> a target, and then define the behavior of pattern-aware constructs in terms of matching.</p>
+<p>A pattern is <em>total</em> on a type if it matches all possible values of that type – including null (for reference types). The “any” pattern (<code>var x</code>) is total on all types; the type pattern <code>T t</code> is total on all types <code>U &lt;: T</code>. If a pattern is total on its target type, no dynamic test is required; we already know it matches. Other than the constant pattern <code>null</code>, total patterns are the only patterns that match <code>null</code>.</p>
+<p>If <code>D(T)</code> is a deconstruction pattern with a binding of type <code>T</code>, then the nested pattern <code>D(Q)</code> matches <code>x</code> if and only if <code>D(var t)</code> matches <code>x</code> and <code>Q</code> matches <code>t</code>. Deconstruction patterns themselves can never match <code>null</code> (a deconstructor is an instance member, like a constructor, and we cannot invoke an instance member with a null receiver), but if <code>D(var t)</code> matches its target, then <code>t</code> may well be null.</p>
+<h4 id="switch-totality">Switch totality</h4>
+<p>Just as some patterns are total on some types, some switches are also total on some types. For a <code>switch</code>, totality means that some action is taken for every member of the value set of the target type – no values “leak through” silently. Expression switches must be total (because expressions must be total); the compiler will enforce that the set of cases, in the aggregate, cover all the possible values. Currently there are two ways to get totality; a <code>default</code> clause, or, for a switch over an <code>enum</code> type, specifying <code>case</code> clauses for all the known constants of that type.</p>
+<p>Even today, this notion of totality is still somewhat “leaky”. If we have an enum class:</p>
+<pre><code>enum Color { RED, GREEN, BLUE }</code></pre>
+<p>and a switch expression:</p>
+<pre><code>Color c = ...;
+int n = switch (c) {
+    case RED -&gt; 1;
+    case GREEN -&gt; 2;
+    case BLUE -&gt; 3;
+}</code></pre>
+<p>there are still two sorts of values of <code>c</code> for which an explicit <code>case</code> is not taken: <code>null</code> and novel <code>Color</code> constants that may have been introduced (via separate compilation) since this client was compiled. In these cases, the compiler ensures that an exception is thrown rather than the value being silently ignored. Let’s call these unwelcome values the <em>remainder</em> of the specified set of patterns on the target type.</p>
+<p>Why do we accept this switch as total, when we know it is not really? Because the values in the remainder are, in some sense, “silly” values. It would be annoying and pedantic for the compiler to require that we provide a <code>case null</code> to catch null (which would probably just throw NPE anyway) and a <code>default</code> to catch constants that may arrive from the future (which would probably just throw ICCE or ISE anyway.) So we allow this switch to be accepted as “total enough”, and the compiler inserts code to handle the silly values. (If in some situation we think they are not silly, we are free to add explicit <code>case null</code> or <code>default</code> clauses to handle them.)</p>
+<h4 id="refining-totality">Refining totality</h4>
+<p>With this notion of remainder, we can define some rules for when a set of patterns is total on a type, and characterize the remainder. We will define when a set of patterns <code>P*</code> is total on a type <code>T</code> with remainder <code>R*</code>; the remainder is a <em>set of patterns</em> that characterizes the remainder. The intuition is that, if <code>P*</code> is total on <code>T</code> with remainder <code>R*</code>, the values matched by <code>R*</code> but not by <code>P*</code> are deemed to be “silly” values and a language construct like switch can (a) consider <code>P*</code> sufficient to establish totality and (b) can insert synthetic tests for each of the patterns in <code>R*</code> that throw. We start with the obvious base cases:</p>
+<ul>
+<li><code>{ T t }</code> is total on any <code>U &lt;: T</code> with empty remainder.</li>
+<li><code>{ var t }</code> is total on all types <code>T</code> with empty remainder.</li>
+<li>The <code>default</code> case corresponds to a pattern that is total on all types <code>T</code> with empty remainder.</li>
+</ul>
+<p>Now, let <code>D(T)</code> be a deconstruction pattern with a single binding of type <code>T</code>. Then:</p>
+<ul>
+<li>If <code>{ Q }</code> is total on <code>T</code> with remainder <code>R*</code>, then { <code>D(Q)</code> } is total on <code>D</code> with remainder <code>{ null }</code> ∪ <code>{ D(R) : R in R* }</code></li>
+</ul>
+<p>By this rule, we see that, <code>Box(Bag(var s))</code> is total on <code>Box&lt;Bag&lt;String&gt;&gt;</code> with remainder <code>{ null, Box(null) }</code>.</p>
+<p>We can recast our rule about enums more explicitly. Suppose <code>E</code> is an enum class with constants <code>C1..Cn</code>:</p>
+<ul>
+<li>The set of constant patterns <code>{ C1, ... Cn }</code> is total on E with remainder <code>{ null, E e}</code>.</li>
+</ul>
+<p>At first, this rule might look useless – since the remainder pattern is the entirety of what we’re matching. But what this means is that, after matching all the provided cases, the only thing left are “silly” values, and the silly values are completely characterized by the set of patterns <code>{ null, E e }</code>.</p>
+<p>There is an obvious analogue of this rule for sealed classes. Suppose <code>S</code> is an abstract sealed class or interface, with permitted direct subtypes <code>C0..Cn</code>, and <code>P*</code> is a set of patterns.</p>
+<ul>
+<li>If for each <code>Cn</code> there exists a subset <code>P(Cn)</code> of <code>P*</code> that is total on <code>Cn</code> with remainder <code>Rn</code>, then <code>P*</code> is total on <code>S</code> with remainder <code>{ null, S s }</code> ∪ <code>{ R0 }</code> ∪ <code>... { Rn }</code>.</li>
+</ul>
+<p>If <code>S</code> is a concrete class, we can amend the above rule to add <code>S</code> explicitly into the list <code>C0..Cn</code> (because if <code>S</code> is concrete, we need to cover it explicitly.)</p>
+<p>Finally, if we have a total set of patterns, we can generalize lifting deconstruction over them. If <code>D(T)</code> is a deconstructor, and <code>P*</code> is total on <code>T</code> with remainder <code>R*</code>, then:</p>
+<ul>
+<li><code>{ D(P) : P in P* }</code> is total on <code>D</code> with remainder <code>{ null }</code> ∪ <code>{ D(R) : R in R* }</code>.</li>
+</ul>
+<p>If we need to cover union types, there is also a simple rule for that:</p>
+<ul>
+<li>If <code>P*</code> is total on <code>A</code> with remainder <code>R*</code>, and <code>Q*</code> is total on <code>B</code> with remainder <code>S*</code>, then <code>P*</code> ∪ <code>Q*</code> is total on <code>A|B</code> with remainder <code>R*</code> ∪ <code>S*</code>.</li>
+</ul>
+<p>This construction (which is simplified in that it only covers deconstruction patterns of arity 1) both provides a basis to determine whether a set of patterns is total on a type, but also constructs the remainder. The motivation for all these rules is the same as outlined above for enums – the remainder values are often enough “silly” values that the cost of expecting users to spell them out would be excessive.</p>
+<p>We can now simply say that for a total switch on a target type <code>T</code> (which currently includes only expression switches), the set of patterns named by the cases must be total on <code>T</code> with some remainder according to these rules, and the compiler can insert synthetic cases to throw on the remainder. If the switch contains <em>more</em> patterns than are required for totality, the only effect is that some of these synthetic cases may never be reached.</p>
+<p>Guarded patterns should be ignored entirely for purposes of computing totality.</p>
+<h4 id="patching-the-legacy-holes">Patching the legacy holes</h4>
+<p>We have so far described a <code>switch</code> construct where <code>null</code> is just an ordinary value and where some patterns match <code>null</code>. For total switches where <code>null</code> is in the remainder of the pattern set, the above construction covers throwing <code>NPE</code>. But for partial switches (such as statement switches), null would be ignored like any other non-matched value. This is inconsistent with the current treatment of <code>null</code> in the few reference-targeted switches that we currently have, so to accomodate this, we add the following rule for compatibility:</p>
+<ul>
+<li>For a switch on <code>String</code>, a primitive box type, or an enum type, if there is no explicit <code>case null</code>, we insert an implicit <code>case null</code> at the beginning of the <code>switch</code> that throws <code>NPE</code>.</li>
+</ul>
+<p>This means switches on these types continue to be preemptively null-hostile as before, but we add the ability to handle the null explicitly, and for switches on other types, the more general rules outlined here apply.</p>
+<h4 id="looking-ahead-pattern-assignment">Looking ahead: pattern assignment</h4>
+<p>We used totality of pattern sets to determine whether a switch was total. We can use the same machinery to unify pattern assignment with local variable declaration.</p>
+<p>We anticipate a pattern assignment statement:</p>
+<pre><code>P = e;</code></pre>
+<p>In the case of a <code>var x</code> or type pattern, this looks like just like a local variable declaration and has the same semantics. But we can extend it to any pattern that is total (possibly with some remainder) on the static type of <code>e</code>; the compiler then generates code to throw on the remainder. Deconstruction patterns are a prime example; we would like to be able to say</p>
+<pre><code>Point(var x, var y) = aPoint;</code></pre>
+<p>and treat <code>null</code> as dynamically rejected remainder.</p>
+<h4 id="total-patterns-in-instanceof">Total patterns in instanceof</h4>
+<p>Our decision to use <code>instanceof</code> for pattern matching rather than creating a new <code>match</code> operator leaves us with one sharp edge. There are two forms for <code>instanceof</code>:</p>
+<pre><code>x instanceof Type
+x instanceof Pattern</code></pre>
+<p>In the former case, the semantics are fixed; it is true if and only if <code>x</code> is a <em>non-null</em> instance of that type. But in the latter case, a total pattern like <code>var x</code> matches null. It would be weird if</p>
+<pre><code>x instanceof Object</code></pre>
+<p>and</p>
+<pre><code>x instanceof Object o`</code></pre>
+<p>had different semantics; this would be a sharp edge. It might seem “obvious” that this is evidence of an error somewhere, but really, this is just collateral damage from rehabilitating <code>instanceof</code> rather than creating a parallel <code>matches</code> construct with subtly different semantics.</p>
+<p>In any case, there is an obvious and sensible fix here: disallow patterns that are total with no remainder in <code>instanceof</code>. It is sensible because <code>x instanceof &lt;total pattern&gt;</code> is in some sense a silly question, in that it will always be true and there’s a simpler way (local variable assignment) to express the same thing. (More generally, we are saying that <code>instanceof</code> should always be asking a question.) If the question is a silly one to ask, and the ability to ask it creates confusion, then outlawing it solves the problem.</p>
+<h4 id="refactoring-switches">Refactoring switches</h4>
+<p>These semantics allow us to freely refactor between switch statements and chains of <code>if (x instanceof P) ... else if (x instanceof Q)</code> without fear of subtle semantic change. Ignoring remainder handling (there is currently no way to ask for remainder handling in statement switches), a switch with patterns:</p>
+<pre><code>switch (t) {
+    case A: X
+    case B: Y
+    case C: Z
+}</code></pre>
+<p>is equivalent to</p>
+<pre><code>if (x instanceof A) { X }
+else if (x instanceof B) { Y }
+else { Z }</code></pre>
+<p>if <code>C</code> is total with no remainder, and</p>
+<pre><code>if (x instanceof A) { X }
+else if (x instanceof B) { Y }
+else if (x instanceof C) { Z }</code></pre>
+<p>otherwise. Further, a switch with nested patterns on <code>D(T)</code>:</p>
+<pre><code>case D(P): A
+case D(Q): B
+case D(R): C</code></pre>
+<p>where <code>{ P, Q, R }</code> are total (with no remainder) on <code>T</code> can be refactored to:</p>
+<pre><code>case D(var x):
+    switch (x) {
+        case P: A
+        case Q: B
+        case R: C
+    }</code></pre>
+<h4 id="some-intuitions-about-totality-and-nullity">Some intuitions about totality and nullity</h4>
+<p>The interaction of totality and nullity, and the minor divergence between what it means to match and what <code>instanceof</code> does, may be surprising at first.</p>
+<p>The first thing to realize is that this new <code>switch</code> is a much more powerful construct than its prior self, and the assumptions that made sense with legacy switch do not necessarily scale to a more powerful construct. Previously, <code>switch</code> was restricted to types whose values were enumerable with literals – integers (and their boxes), characters, strings, and enums. These are very constrained domains, and given the context in which reference switches got off the ground (in Java 1.0, there were not even any switches over reference types; switches over enums and boxes was added in Java 5, and over strings in Java 7), it seemed a pragmatic consideration at the time to just outlaw null, since null primitive boxes and null enum values were considered “silly”. But as switch becomes more general and case labels become more powerful, this assumption itself starts to turn silly.</p>
+<p>As a motivating example, consider:</p>
+<pre><code>record Box(Object o) { }
+
+Box box = ...
+switch (box) {
+    case Box(var x):
+}</code></pre>
+<p>We’ll further posit that the <code>Box</code> class expresses no opinions about what it holds; <code>null</code> is as good a value as any. That means that it is OK to construct:</p>
+<pre><code>Box bnull = new Box(null);</code></pre>
+<p>So the first question is, should <code>Box(var x)</code> match <code>bnull</code>, and assign <code>null</code> to <code>x</code>? Really, there’s no way it could do anything else, because of what deconstruction is – it is the dual of construction. If I can put a <code>null</code> in a box with the constructor, it would be absurd if I could not take a <code>null</code> out of the box with the corresponding deconstructor. It would be like having a <code>List</code> that you could put <code>null</code> elements into, but couldn’t get them out; this would be a terrible <code>List</code> implementation. (And, if the <code>Box</code> constructor rejects nulls, it doesn’t matter, because the case where the deconstructor might serve up a <code>null</code> would never come up.)</p>
+<p>The <code>var x</code> pattern is the most general pattern we have that can nest in the <code>Box</code> deconstruction pattern; it matches everything. If it didn’t match <code>null</code>, then the nested pattern <code>Box(var x)</code> wouldn’t match <code>Box(null)</code> – which is silly because <code>Box(null)</code> is a totally valid member of the value set of <code>Box</code>.</p>
+<p>What if we used <code>Box(Object x)</code> instead of <code>Box(var x)</code>? If we want <code>var</code> to be mere type inference – rather than something subtly different – then the logical type to infer here is <code>Object</code>, based on the declaration of the deconstructor in <code>Box</code>. This means that <code>Box(Object o)</code> also matches <code>Box(null)</code>. And since <code>x</code> matches <code>Box(Object o)</code> if and only if <code>x</code> matches <code>Box(var t)</code> and <code>t</code> matches <code>Object o</code>, that suggests that <code>null</code> matches <code>Object o</code> too.</p>
+<p>So, does it mean that type patterns always match null? That would be extrapolating from too few data points. If we had:</p>
+<pre><code>Box b = ...;
+switch (b) {
+    case Box(Chocolate c):
+}</code></pre>
+<p>one might think that, by the above argument, it should also match <code>bnull</code>. But the sensible outcome is more subtle; this is a nested pattern with a <em>dynamic</em> type test. We only match the target if it matches <code>Box(var t)</code>, and further if <code>t</code> matches <code>Chocolate c</code>. In the cases where there is actually a dynamic test going on, the semantics of <code>instanceof</code> is what we want – the above pattern should match on (non-null) <code>Box</code> instances whose contents are non-null <code>Chocolate</code> instances.</p>
+<p>This gets more obvious when we have multiple partial cases:</p>
+<pre><code>switch (box) {
+    case Box(Chocolate c):
+    case Box(Frog f):
+}</code></pre>
+<p>The types <code>Chocolate</code> and <code>Frog</code> are presumed unrelated, so we should be free to reorder the two cases, as the sets of values they match seem disjoint, right? But, if either of these matched <code>Box(null)</code>, then the value sets would not be disjoint, and we would not be able to freely reorder these cases.</p>
+<p>At first, the conjunction of these examples may seem strange, because on the one hand, it looks like <code>Box(var x)</code> – which is just type inference for <code>Box(Object x)</code> – should match <code>Box(null)</code>, but <code>Box(Frog f)</code> should not.</p>
+<p>So what is the difference? The difference is <em>totality</em>. The pattern <code>Box(Frog f)</code> on an arbitrary <code>Box</code> encodes a dynamic test which only matches certain boxes, with a conditional destructuring should the test succeed. On the other hand, there is nothing conditional about matching <code>Box(var x)</code> to a <code>Box</code> – it is just pure unconditional destructuring. This becomes more obvious when we put them together:</p>
+<pre><code>Box box = ...
+switch (box) {
+    case Box(Chocolate c):
+    case Box(Frog f):
+    case Box(var o):
+}</code></pre>
+<p>What’s happening here is that we are handling the special cases first, and the last case is a catch-all that handles “all the rest of the boxes”; it is like a <code>default</code> case, but is richer because it also destructures the target. This pattern is exceedingly common in languages with similar constructs; use the conditionality of pattern matching for the distinguished cases, and use the deconstructuring of pattern matching for the catch-all case. (This idiom should be familiar to Java developers in another context: <code>try-catch</code> chains, where the specific exception types come before the catch-all handler.)</p>
+<p>We used similar reasoning earlier, with the corner case of total patterns in <code>instanceof</code> – that it is significant whether a pattern is asking a nontrivial question or not. A total pattern not asking a question, and that is significant.</p>
+<p>It is conceivably possible that in some situation, that what the author meant by the last case was “All boxes, except those that contain null”, but in reality this is extremely unlikely; if <code>null</code> is in the domain of <code>Box</code> contents, then typically you want to treat the domain uniformly. (And if <code>null</code> is not in the domain, it doesn’t make a difference.)</p>
+<p>These rules are sound, but may feel a little uncomfortable at first because they are unfamiliar. There are other rules we might be tempted to adopt, but they have much sharper edges, and those sharp edges would persist long after we achieved familiarity.</p>
+<p>Some have even suggested that <code>var x</code> not match <code>null</code>. But it would be terrible if there were <em>no</em> way to say "Match any <code>Box</code>, even if it contains <code>null</code>. One might be initially tempted to patch this with OR patterns, where we ORed together <code>Box(var x)</code> and <code>Box(null)</code>, but this quickly falls apart when <code>Box</code> has multiple bindings; if destructuring a <code>Box</code> yielded <em>n</em> bindings, we’d need to OR together <em>2^n</em> patterns, with complex merging, to express all the possible combinations of nullity, and this would be both cumbersome and error-prone. It is hard to escape the conclusion that the last pattern is intended to match any <code>Box</code> – including those that contain <code>null</code>.</p>
+<p>Scala and C# took a different road, where <code>var</code> patterns are not just type inference, they are “any” patterns – so <code>Box(Object o)</code> matches boxes containing a non-null payload, where <code>Box(var o)</code> matches all boxes. This aligns the meaning of the <code>Object o</code> pattern with that of <code>instanceof</code>, but at a serious cost: that <code>var</code> is no longer mere type inference. Users should not have to choose between the semantics they want and being explicit about types; these should be orthogonal choices, and the choice to leave types implicit should be solely one of whether the manifest types are deemed to improve or impair readability.</p>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

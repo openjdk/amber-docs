@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>pattern-matching-for-java</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="pattern-matching-for-java">Pattern Matching for Java</h1>
+<h4 id="gavin-bierman-and-brian-goetz-september-2018">Gavin Bierman and Brian Goetz, September 2018</h4>
+<p>This document explores a possible direction for supporting <em>pattern matching</em> in the Java Language. <em>This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language.</em> This document also may reference other features under exploration; this is purely for illustrative purposes, and does not constitute any sort of plan or committment to deliver any of these features.</p>
+<h4 id="pattern-matching-documents">Pattern matching documents</h4>
+<ul>
+<li><a href="pattern-matching-for-java.html">Pattern Matching For Java</a> (this document). Overview of pattern matching concepts, and how they might be surfaced in Java.</li>
+<li><a href="pattern-match-semantics.html">Pattern Matching For Java – Semantics</a>. More detailed notes on type checking, matching, and scoping of patterns and binding variables.<br />
+</li>
+<li><a href="extending-switch-for-patterns.html">Extending Switch for Patterns</a>. An early exploration of the issues surrounding extending pattern matching to the <code>switch</code> statement.</li>
+<li><a href="type-patterns-in-switch.html">Type Patterns in Switch</a>. A more up-to-date treatment of extending pattern matching to <code>switch</code> statements, including treatment of nullity and totality.<br />
+</li>
+<li><a href="pattern-match-object-model.html">Pattern Matching in the Java Object model</a>. Explores how patterns fit into the Java object model, how they fill a hole we may not have realized existed, and how they might affect API design going forward.</li>
+</ul>
+<h2 id="motivation">Motivation</h2>
+<p>Nearly every program includes some sort of logic that combines testing if an expression has a certain type or structure, and then conditionally extracting components of its state for further processing. For example, all Java programmers are familiar with the instanceof-and-cast idiom:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Integer</span>) {</a>
+<a class="sourceLine" id="cb1-2" title="2">    <span class="dt">int</span> intValue = ((<span class="bu">Integer</span>) obj).<span class="fu">intValue</span>();</a>
+<a class="sourceLine" id="cb1-3" title="3">    <span class="co">// use intValue</span></a>
+<a class="sourceLine" id="cb1-4" title="4">}</a></code></pre></div>
+<p>There are three things going on here: a test (is <code>x</code> an <code>Integer</code>), a conversion (casting <code>obj</code> to <code>Integer</code>), and a destructuring (extracting the <code>intValue</code> component from the <code>Integer</code>). This pattern is straightforward and understood by all Java programmers, but is suboptimal for several reasons. It is tedious; doing both the type test and cast should be unnecessary (what else would you do after an <code>instanceof</code> test?), and the accidental boilerplate of casting and destructuring obfuscates the more significant logic that follows. But most importantly, the needless repetition of the type name provides opportunities for errors to creep unnoticed into programs.</p>
+<p>This problem gets worse when we want to test against multiple possible target types. We sometimes repeatedly test the same target with a chain of <code>if...else</code> tests:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb2-1" title="1"><span class="bu">String</span> formatted = <span class="st">&quot;unknown&quot;</span>;</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Integer</span>) {</a>
+<a class="sourceLine" id="cb2-3" title="3">    <span class="dt">int</span> i = (<span class="bu">Integer</span>) obj;</a>
+<a class="sourceLine" id="cb2-4" title="4">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;int </span><span class="sc">%d</span><span class="st">&quot;</span>, i);</a>
+<a class="sourceLine" id="cb2-5" title="5">}</a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Byte</span>) {</a>
+<a class="sourceLine" id="cb2-7" title="7">    <span class="dt">byte</span> b = (<span class="bu">Byte</span>) obj;</a>
+<a class="sourceLine" id="cb2-8" title="8">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;byte </span><span class="sc">%d</span><span class="st">&quot;</span>, b);</a>
+<a class="sourceLine" id="cb2-9" title="9">}</a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Long</span>) {</a>
+<a class="sourceLine" id="cb2-11" title="11">    <span class="dt">long</span> l = (<span class="bu">Long</span>) obj;</a>
+<a class="sourceLine" id="cb2-12" title="12">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;long </span><span class="sc">%d</span><span class="st">&quot;</span>, l);</a>
+<a class="sourceLine" id="cb2-13" title="13">}</a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Double</span>) {</a>
+<a class="sourceLine" id="cb2-15" title="15">    <span class="dt">double</span> d = (<span class="bu">Double</span>) obj;</a>
+<a class="sourceLine" id="cb2-16" title="16">    formatted = <span class="bu">String</span><span class="fu">.format</span>(“double %f<span class="st">&quot;, d);</span></a>
+<a class="sourceLine" id="cb2-17" title="17">}</a>
+<a class="sourceLine" id="cb2-18" title="18"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">String</span>) {</a>
+<a class="sourceLine" id="cb2-19" title="19">    <span class="bu">String</span> s = (<span class="bu">String</span>) obj;</a>
+<a class="sourceLine" id="cb2-20" title="20">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;String </span><span class="sc">%s</span><span class="st">&quot;</span>, s);</a>
+<a class="sourceLine" id="cb2-21" title="21">}</a>
+<a class="sourceLine" id="cb2-22" title="22">...</a></code></pre></div>
+<p>The above code is familiar, but has many undesirable properties. As already mentioned, repeating the cast in each arm is annoying and unnecessary. The business logic can too easily get lost in the boilerplate. But most importantly, the approach allows coding errors to remain hidden – because we’ve used an overly-general control construct. The intent of the above code is to assign something to <code>formatted</code> in each arm of the <code>if...else</code> chain. But, there is nothing here that enables the compiler to verify this actually happens. If some block – perhaps one that is executed rarely in practice – forgets to assign to <code>formatted</code>, we have a bug. (Leaving <code>formatted</code> as a blank local or blank final would at least enlist the “definite assignment” analysis in this effort, but this is not always done.) Finally, the above code is less optimizable; absent compiler heroics, the chain with <em>n</em> branches will have <em>O(n)</em> time complexity, even though the underlying problem is often <em>O(1)</em>.</p>
+<p>There have been plenty of ad-hoc suggestions for ameliorating these problems, such as <em>flow typing</em> (where the type of <code>obj</code> after an <code>instanceof Integer</code> test is refined in any control path dominated by the test, so that the cast is unneeded), or <em>type switch</em> (where the case labels of a switch statement can specify types as well as constants). But these are mostly band-aids; there’s a better alternative that subsumes these (and other cases.)</p>
+<h4 id="patterns">Patterns</h4>
+<p>Rather than reach for ad-hoc solutions to the test-and-extract problem, we believe it is time for Java to embrace <em>pattern matching</em>. Pattern matching is a technique that has been adapted to many different styles of programming languages going back to the 1960s, including text-oriented languages like SNOBOL4 and AWK, functional languages like Haskell and ML, and more recently extended to object-oriented languages like Scala (and most recently, C#).</p>
+<p>A <em>pattern</em> is a combination of a <em>match predicate</em> that determines if the pattern matches a target, along with a set of <em>pattern variables</em> that are conditionally extracted if the pattern matches the target. Many language constructs that test an input, such as <code>instanceof</code> and <code>switch</code>, can be generalized to accept patterns that are matched against the input.</p>
+<p>One form of pattern is a <em>type pattern</em>, which consists of a type name and the name of a variable to bind the result to, illustrated below in a generalization of <code>instanceof</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">if</span> (x <span class="kw">instanceof</span> <span class="bu">Integer</span> i) {</a>
+<a class="sourceLine" id="cb3-2" title="2">    <span class="co">// can use i here, of type Integer</span></a>
+<a class="sourceLine" id="cb3-3" title="3">}</a></code></pre></div>
+<p>Here, <code>x</code> is being matched against the type pattern <code>Integer i</code>. First <code>x</code> is tested to see if it is an instance of <code>Integer</code>. If so, it is cast to <code>Integer</code>, and the result assigned to <code>i</code>. The name <code>i</code> is not a reuse of an existing variable, but instead a declaration of a pattern variable. (The resemblance to a variable declaration is not accidental.)</p>
+<p>Using patterns with <code>instanceof</code> simplifies commonly messy operations, such as implementation of <code>equals()</code> methods. For a class <code>Point</code>, we might implement <code>equals()</code> as follows:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">equals</span>(<span class="bu">Object</span> o) {</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="kw">if</span> (!(o <span class="kw">instanceof</span> <span class="bu">Point</span>))</a>
+<a class="sourceLine" id="cb4-3" title="3">        <span class="kw">return</span> <span class="kw">false</span>;</a>
+<a class="sourceLine" id="cb4-4" title="4">    <span class="bu">Point</span> other = (<span class="bu">Point</span>) o;</a>
+<a class="sourceLine" id="cb4-5" title="5">    <span class="kw">return</span> x == other.<span class="fu">x</span></a>
+<a class="sourceLine" id="cb4-6" title="6">        &amp;&amp; y == other.<span class="fu">y</span>;</a>
+<a class="sourceLine" id="cb4-7" title="7">}</a></code></pre></div>
+<p>Using a pattern match instead, we can combine this into a single expression, eliminating the repetition and simplifying the control flow:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">equals</span>(<span class="bu">Object</span> o) {</a>
+<a class="sourceLine" id="cb5-2" title="2">    <span class="kw">return</span> (o <span class="kw">instanceof</span> <span class="bu">Point</span> other)</a>
+<a class="sourceLine" id="cb5-3" title="3">        &amp;&amp; x == other.<span class="fu">x</span></a>
+<a class="sourceLine" id="cb5-4" title="4">        &amp;&amp; y == other.<span class="fu">y</span>;</a>
+<a class="sourceLine" id="cb5-5" title="5">}</a></code></pre></div>
+<p>Similarly, we could simplify the <code>if..else</code> chain above with type patterns, eliminating the casting and binding boilerplate:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb6-1" title="1"><span class="bu">String</span> formatted = <span class="st">&quot;unknown&quot;</span>;</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Integer</span> i) {</a>
+<a class="sourceLine" id="cb6-3" title="3">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;int </span><span class="sc">%d</span><span class="st">&quot;</span>, i);</a>
+<a class="sourceLine" id="cb6-4" title="4">}</a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Byte</span> b) {</a>
+<a class="sourceLine" id="cb6-6" title="6">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;byte </span><span class="sc">%d</span><span class="st">&quot;</span>, b);</a>
+<a class="sourceLine" id="cb6-7" title="7">}</a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Long</span> l) {</a>
+<a class="sourceLine" id="cb6-9" title="9">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;long </span><span class="sc">%d</span><span class="st">&quot;</span>, l);</a>
+<a class="sourceLine" id="cb6-10" title="10">}</a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">Double</span> d) {</a>
+<a class="sourceLine" id="cb6-12" title="12">    formatted = <span class="bu">String</span><span class="fu">.format</span>(“double %f<span class="st">&quot;, d);</span></a>
+<a class="sourceLine" id="cb6-13" title="13">}</a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="kw">else</span> <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="bu">String</span> s) {</a>
+<a class="sourceLine" id="cb6-15" title="15">    formatted = <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;String </span><span class="sc">%s</span><span class="st">&quot;</span>, s);</a>
+<a class="sourceLine" id="cb6-16" title="16">}</a>
+<a class="sourceLine" id="cb6-17" title="17">...</a></code></pre></div>
+<p>This is already a big improvement – the business logic pops out much more clearly – but we can do better.</p>
+<h4 id="patterns-in-multi-way-conditionals">Patterns in multi-way conditionals</h4>
+<p>The chain of <code>if...else</code> still has some redundancy we’d like to squeeze out, both because it gives bugs a place to hide, and makes readers work harder to understand what the code does. Specifically, the <code>if (obj instanceof ...)</code> part is repeated. We’d like to say “choose the block which best describes the target object”, and be guaranteed that exactly one of them will execute.</p>
+<p>We already have a mechanism for a multi-armed equality test in the language – <code>switch</code>. But <code>switch</code> is currently very limited. You can only switch on a small set of types – numbers, strings, and enums – and you can only test for exact equality against constants. But these limitations are mostly accidents of history; the <code>switch</code> statement is a perfect “match” for pattern matching. Just as the type operand of <code>instanceof</code> can be generalized to patterns, so can <code>case</code> labels. Using a switch expression with pattern cases, we can express our formatting example as:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb7-1" title="1"><span class="bu">String</span> formatted =</a>
+<a class="sourceLine" id="cb7-2" title="2">    <span class="kw">switch</span> (obj) {</a>
+<a class="sourceLine" id="cb7-3" title="3">        <span class="kw">case</span> <span class="bu">Integer</span> i -&gt; <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;int </span><span class="sc">%d</span><span class="st">&quot;</span>, i);</a>
+<a class="sourceLine" id="cb7-4" title="4">        <span class="kw">case</span> <span class="bu">Byte</span> b    -&gt; <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;byte </span><span class="sc">%d</span><span class="st">&quot;</span>, b);</a>
+<a class="sourceLine" id="cb7-5" title="5">        <span class="kw">case</span> <span class="bu">Long</span> l    -&gt; <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;long </span><span class="sc">%d</span><span class="st">&quot;</span>, l);</a>
+<a class="sourceLine" id="cb7-6" title="6">        <span class="kw">case</span> <span class="bu">Double</span> d  -&gt; <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;double </span><span class="sc">%f</span><span class="st">&quot;</span>, d);</a>
+<a class="sourceLine" id="cb7-7" title="7">        <span class="kw">case</span> <span class="bu">String</span> s  -&gt; <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;String </span><span class="sc">%s</span><span class="st">, s);</span></a>
+<a class="sourceLine" id="cb7-8" title="8">        <span class="kw">default</span>        -&gt; <span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;Object </span><span class="sc">%s</span><span class="st">&quot;</span>, obj);</a>
+<a class="sourceLine" id="cb7-9" title="9">    };</a>
+<a class="sourceLine" id="cb7-10" title="10">...</a></code></pre></div>
+<p>Now, the intent of the code is far clearer, because we’re using the right control construct – we’re saying “the expression <code>obj</code> matches at most one of the following conditions, figure it out and evaluate the corresponding expression”. This is more concise, but more importantly it is also safer – we’ve enlisted the language’s aid in ensuring that <code>formatted</code> is always assigned, and the compiler can verify that the supplied cases are exhaustive. As a bonus, it is more optimizable too; in this case we are more likely to be able to do the dispatch in <em>O(1)</em> time.</p>
+<h4 id="constant-patterns">Constant patterns</h4>
+<p>We’re already familiar with a kind of pattern, namely, the constant case labels in today’s <code>switch</code> statement. Currently, case labels can only be numeric, string, or enum constants; going forward, these constant case labels are just <em>constant patterns</em>. Matching a target to a constant pattern means the obvious thing: test for equality against the constant. Previously, a constant case label could only be used to match a target of the same type as the case label; going forward, we can use constant pattern to combine type tests and equality tests, allowing us to match <code>Object</code> against specific constants.</p>
+<h2 id="operations-on-polymorphic-data">Operations on polymorphic data</h2>
+<p>The example above, where we are handed an <code>Object</code> and have to do different things depending on its dynamic type, can be thought of as a sort of “ad-hoc polymorphism.” There is no common supertype to appeal to that would give us virtual dispatch or methods that we could use to differentiate between the various subtypes, so we can resort only to dynamic type tests to answer our question.</p>
+<p>Often, we are able to arrange our classes into a hierarchy, in which case we can use the type system to make answering questions like this easier. For example, consider this hierarchy for describing an arithmetic expression:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">interface</span> <span class="bu">Node</span> { }</a>
+<a class="sourceLine" id="cb8-2" title="2"></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw">class</span> IntNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb8-4" title="4">    <span class="dt">int</span> value;</a>
+<a class="sourceLine" id="cb8-5" title="5">}</a>
+<a class="sourceLine" id="cb8-6" title="6"></a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="kw">class</span> NegNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb8-8" title="8">    <span class="bu">Node</span> node;</a>
+<a class="sourceLine" id="cb8-9" title="9">}</a>
+<a class="sourceLine" id="cb8-10" title="10"></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="kw">class</span> MulNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb8-12" title="12">    <span class="bu">Node</span> left, right;</a>
+<a class="sourceLine" id="cb8-13" title="13">}</a>
+<a class="sourceLine" id="cb8-14" title="14"></a>
+<a class="sourceLine" id="cb8-15" title="15"><span class="kw">class</span> AddNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb8-16" title="16">    <span class="bu">Node</span> left, right;</a>
+<a class="sourceLine" id="cb8-17" title="17">}</a></code></pre></div>
+<p>An operation we might commonly perform on such a hierarchy is to evaluate the expression; this is an ideal application for a virtual method:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">interface</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb9-2" title="2">    <span class="dt">int</span> <span class="fu">eval</span>();</a>
+<a class="sourceLine" id="cb9-3" title="3">}</a>
+<a class="sourceLine" id="cb9-4" title="4"></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="kw">class</span> IntNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb9-6" title="6">    <span class="dt">int</span> value;</a>
+<a class="sourceLine" id="cb9-7" title="7"></a>
+<a class="sourceLine" id="cb9-8" title="8">    <span class="dt">int</span> <span class="fu">eval</span>() { <span class="kw">return</span> value; }</a>
+<a class="sourceLine" id="cb9-9" title="9">}</a>
+<a class="sourceLine" id="cb9-10" title="10"></a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="kw">class</span> NegNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb9-12" title="12">    <span class="bu">Node</span> node;</a>
+<a class="sourceLine" id="cb9-13" title="13"></a>
+<a class="sourceLine" id="cb9-14" title="14">    <span class="dt">int</span> <span class="fu">eval</span>() { <span class="kw">return</span> -node.<span class="fu">eval</span>(); }</a>
+<a class="sourceLine" id="cb9-15" title="15">}</a>
+<a class="sourceLine" id="cb9-16" title="16"></a>
+<a class="sourceLine" id="cb9-17" title="17"><span class="kw">class</span> MulNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb9-18" title="18">    <span class="bu">Node</span> left, right;</a>
+<a class="sourceLine" id="cb9-19" title="19"></a>
+<a class="sourceLine" id="cb9-20" title="20">    <span class="dt">int</span> <span class="fu">eval</span>() { <span class="kw">return</span> left.<span class="fu">eval</span>() * right.<span class="fu">eval</span>(); }</a>
+<a class="sourceLine" id="cb9-21" title="21">}</a>
+<a class="sourceLine" id="cb9-22" title="22"></a>
+<a class="sourceLine" id="cb9-23" title="23"><span class="kw">class</span> AddNode <span class="kw">implements</span> <span class="bu">Node</span> {</a>
+<a class="sourceLine" id="cb9-24" title="24">    <span class="bu">Node</span> left, right;</a>
+<a class="sourceLine" id="cb9-25" title="25"></a>
+<a class="sourceLine" id="cb9-26" title="26">    <span class="dt">int</span> <span class="fu">eval</span>() { <span class="kw">return</span> left.<span class="fu">eval</span>() + right.<span class="fu">eval</span>(); }</a>
+<a class="sourceLine" id="cb9-27" title="27">}</a></code></pre></div>
+<p>In a bigger program, we might define many operations over a hierarchy. Some, like <code>eval()</code>, are intrinsically sensible to the hierarchy, and so we will likely implement them as virtual methods. But some operations are too ad-hoc (such as “does this expression contain any intermediate nodes that evaluate to 42”); it would be silly to put this into the hierarchy, as it would just pollute the API.</p>
+<h4 id="the-visitor-pattern">The Visitor pattern</h4>
+<p>The standard trick for separately specifying a hierarchy from its operations is the <em>visitor pattern</em>, which separate traversal of a data structure from the definition of the data structure itself. For example, if the data structure is a tree that represents a design in a CAD application, nearly every operation requires traversing at least some part of the tree – saving, printing, searching for text in element labels, computing weight or cost, validating design rules, etc. While we might start out by representing each of these operations as a virtual method on the root type, this quickly becomes unwieldy, and the visitor pattern enables us to decouple the code for any given traversal (say, searching for text in element labels) from the code that defines the data structure itself, which is often a superior way of organizing the code.</p>
+<p>But, the visitor pattern has costs. To use it, a hierarchy has to be designed for visitation. This involves giving every node an <code>accept(Visitor)</code> method, and defining a <code>Visitor</code> interface:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">interface</span> NodeVisitor&lt;T&gt; {</a>
+<a class="sourceLine" id="cb10-2" title="2">    T <span class="fu">visit</span>(IntNode node);</a>
+<a class="sourceLine" id="cb10-3" title="3">    T <span class="fu">visit</span>(NegNode node);</a>
+<a class="sourceLine" id="cb10-4" title="4">    T <span class="fu">visit</span>(MulNode node);</a>
+<a class="sourceLine" id="cb10-5" title="5">    T <span class="fu">visit</span>(AddNode node);</a>
+<a class="sourceLine" id="cb10-6" title="6">}</a></code></pre></div>
+<p>If we wanted to define our evaluation method as a visitor over <code>Node</code>, we would do so like this:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">class</span> EvalVisitor <span class="kw">implements</span> NodeVisitor&lt;<span class="bu">Integer</span>&gt; {</a>
+<a class="sourceLine" id="cb11-2" title="2">    <span class="bu">Integer</span> <span class="fu">visit</span>(IntNode node) {</a>
+<a class="sourceLine" id="cb11-3" title="3">        <span class="kw">return</span> node.<span class="fu">value</span>;</a>
+<a class="sourceLine" id="cb11-4" title="4">    }</a>
+<a class="sourceLine" id="cb11-5" title="5"></a>
+<a class="sourceLine" id="cb11-6" title="6">    <span class="bu">Integer</span> <span class="fu">visit</span>(NegNode node) {</a>
+<a class="sourceLine" id="cb11-7" title="7">        <span class="kw">return</span> -node.<span class="fu">accept</span>(<span class="kw">this</span>);</a>
+<a class="sourceLine" id="cb11-8" title="8">    }</a>
+<a class="sourceLine" id="cb11-9" title="9"></a>
+<a class="sourceLine" id="cb11-10" title="10">    <span class="bu">Integer</span> <span class="fu">visit</span>(MulNode node) {</a>
+<a class="sourceLine" id="cb11-11" title="11">        <span class="kw">return</span> node.<span class="fu">left</span>.<span class="fu">accept</span>(<span class="kw">this</span>) * node.<span class="fu">right</span>.<span class="fu">accept</span>(<span class="kw">this</span>);</a>
+<a class="sourceLine" id="cb11-12" title="12">    }</a>
+<a class="sourceLine" id="cb11-13" title="13"></a>
+<a class="sourceLine" id="cb11-14" title="14">    <span class="bu">Integer</span> <span class="fu">visit</span>(AddNode node) {</a>
+<a class="sourceLine" id="cb11-15" title="15">        <span class="kw">return</span> node.<span class="fu">left</span>.<span class="fu">accept</span>(<span class="kw">this</span>) + node.<span class="fu">right</span>.<span class="fu">accept</span>(<span class="kw">this</span>);</a>
+<a class="sourceLine" id="cb11-16" title="16">    }</a>
+<a class="sourceLine" id="cb11-17" title="17">}</a></code></pre></div>
+<p>For a simple hierarchy and a simple traversal, this isn’t too bad. We suffer some constant code overhead for being visitor-ready (every node class needs an <code>accept</code> method, and a single visitor interface), and thereafter we write one visitor per traversing operation. (As an added penality, we have to box primitives returned by visitors.) But, visitors rightly have a reputation for being verbose and rigid; as visitors get more complicated, it is common to have multiple levels of visitors involved in a single traversal.</p>
+<p>Visitor has the right idea – separating the operations over a hierarchy from the hierarchy definition itself – but the result is less than ideal. And, if the hierarchy was not designed for visitation – or worse, the elements you are traversing do not even have a common supertype – you are out of luck. In the next section, we’ll see how pattern matching gets us the type-driven traversal that Visitor offers, without its verbosity, intrusiveness, or restrictions.</p>
+<h2 id="deconstruction-patterns">Deconstruction patterns</h2>
+<p>Many classes – like our <code>Node</code> classes – are just typed carriers for structured data; typically, we construct an object from its state with constructors or factories, and then we access this state with accessor methods. If we can access all the state components we pass into the constructor, we can think of construction as being reversible, and the reverse of construction is <em>deconstruction</em>.</p>
+<p>A <em>deconstruction pattern</em> is like a constructor in reverse; it matches instances of the specified type, and then extracts the state components. If we construct a <code>Node</code> with</p>
+<pre><code>new IntNode(5)</code></pre>
+<p>then we can deconstruct a node (assuming <code>IntNode</code> supports deconstruction) with</p>
+<pre><code>case IntNode(int n) -&gt; ... n is in scope here ...</code></pre>
+<p>Here’s how we’d implement our <code>eval()</code> method using deconstruction patterns on the <code>Node</code> classes:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb14-1" title="1"><span class="dt">int</span> <span class="fu">eval</span>(<span class="bu">Node</span> n) {</a>
+<a class="sourceLine" id="cb14-2" title="2">    <span class="kw">return</span> <span class="kw">switch</span>(n) {</a>
+<a class="sourceLine" id="cb14-3" title="3">        <span class="kw">case</span> <span class="fu">IntNode</span>(<span class="dt">int</span> i) -&gt; i;</a>
+<a class="sourceLine" id="cb14-4" title="4">        <span class="kw">case</span> <span class="fu">NegNode</span>(<span class="bu">Node</span> n) -&gt; -<span class="fu">eval</span>(n);</a>
+<a class="sourceLine" id="cb14-5" title="5">        <span class="kw">case</span> <span class="fu">AddNode</span>(<span class="bu">Node</span> left, <span class="bu">Node</span> right) -&gt; <span class="fu">eval</span>(left) + <span class="fu">eval</span>(right);</a>
+<a class="sourceLine" id="cb14-6" title="6">        <span class="kw">case</span> <span class="fu">MulNode</span>(<span class="bu">Node</span> left, <span class="bu">Node</span> right) -&gt; <span class="fu">eval</span>(left) * <span class="fu">eval</span>(right);</a>
+<a class="sourceLine" id="cb14-7" title="7">    };</a>
+<a class="sourceLine" id="cb14-8" title="8">}</a></code></pre></div>
+<p>The deconstruction pattern <code>AddNode(Node left, Node right)</code> first tests <code>n</code> to see if it is an <code>AddNode</code>, and if so, casts it to <code>AddNode</code> and extracts the left and right subtrees into pattern variables for further evaluation.</p>
+<p>This is obviously more compact than the Visitor solution, but more importantly, it is also more direct. We didn’t even need the <code>Node</code> types to have visitor support – or even for there to be a common nontrivial supertype. All we needed was for the <code>Node</code> types to be sufficiently transparent that we could take them apart using deconstruction patterns.</p>
+<h4 id="sidebar-data-driven-polymorphism-with-patterns">Sidebar: Data-driven polymorphism with patterns</h4>
+<p>The promise of the Visitor pattern is that operations on stable hierarchies can be specified separately from the hierarchy. But, this comes at a cost – visitor-based code is bulky, easy to get wrong, annoying to write, and annoying to read. Pattern matching allows you to achieve the same result without the machinery of Visitors interposing themselves, resulting in cleaner, simpler, more transparent, and more flexible code. And, pattern matching doesn’t even have the “stable hierarchy” requirement – or indeed, any hierarchy requirement – that Visitor does.</p>
+<p>Supporting ad-hoc polymorphism with pattern matching doesn’t mean that inheritance hierarchies and virtual methods are wrong – it’s just that this is not the only useful way to attack a problem. As we saw with the <code>eval()</code> method, sometimes an operation is an ideal candidate for including in the hierarchy. But sometimes this isn’t the right choice, or even possible – such as when an endpoint listens for a variety of messages, and not all message types have a common supertype (or even come from the same library.) In these cases, pattern matching offers clean and simple data-driven polymorphism.</p>
+<p>It is sometimes said that many “design patterns” are workarounds for features missing from the language. While this claim may be too facile, it is reasonably accurate in the case of Visitor – if your language has sufficiently powerful pattern matching, the Visitor pattern is almost completely unnecessary.</p>
+<h2 id="composing-patterns">Composing patterns</h2>
+<p>Deconstruction patterns are deceptively powerful. When we matched against <code>AddNode(Node x, Node y)</code> in the previous example, it may have looked like <code>Node x</code> and <code>Node y</code> are simply declarations of pattern variables. But, in fact, they are patterns themselves!</p>
+<p>Assume that <code>AddNode</code> has a constructor that takes <code>Node</code> values for the left and right subtrees, and a deconstructor that yields the left and right subtrees as <code>Node</code>s. The pattern <code>AddNode(P, Q)</code>, where <code>P</code> and <code>Q</code> are patterns, matches a target if:</p>
+<ul>
+<li>the target is an <code>AddNode</code>;</li>
+<li>the <code>left</code> node of that <code>AddNode</code> matches <code>P</code>;</li>
+<li>the <code>right</code> node of that <code>AddNode</code> matches <code>Q</code>.</li>
+</ul>
+<p>Because <code>P</code> and <code>Q</code> are patterns, they may have their own pattern variables; if the whole pattern matches, any binding variables in the subpatterns are also bound. So in:</p>
+<pre><code>case AddNode(Node left, Node right)) -&gt; ...</code></pre>
+<p>the nested patterns <code>Node left</code> and <code>Node right</code> are just the type patterns we’ve already seen (which happen to be guaranteed to match in this case, based on static type information.) So the effect is that we check if the target is an <code>AddNode</code>, and if so, immediately bind <code>left</code> and <code>right</code> to the left and right sub-nodes. This may sound complicated, but the effect is simple: we can match against an <code>AddNode</code> and bind its components in one go.</p>
+<p>But we can go further: we can nest other patterns inside a deconstruction pattern as well, either to further constrain what is matched or further destructure the result, as we’ll see below.</p>
+<h4 id="exhaustiveness">Exhaustiveness</h4>
+<p>In the expression form of <code>switch</code>, we evaluate exactly one arm of the switch, which becomes the value of the <code>switch</code> expression itself. This means that there must be at least one arm that applies to any input – otherwise the value of the <code>switch</code> expression might be undefined. If the switch has a <code>default</code> arm, there’s no problem. For switches over <code>enum</code>, where all enum constants are handled, it is often irritating to have to write a <code>default</code> clause that we expect will never be taken; worse, if we write this default clause, we lose the ability to have the compiler verify that we have exhaustively enumerated the cases.</p>
+<p>Similarly, for many hierarchies where we might apply pattern matching, such as our <code>Node</code> classes, we would be annoyed to have to include a never-taken <code>default</code> arm when we know we’ve listed all the subtypes. If we could express that the <em>only</em> subtypes of <code>Node</code> are <code>IntNode</code>, <code>AddNode</code>, <code>MulNode</code>, and <code>NegNode</code>, the compiler could use this information to verify that a <code>switch</code> over these types is exhaustive.</p>
+<p>There’s an age-old technique we can apply here: hierarchy sealing. Suppose we declare our <code>Node</code> type to be <em>sealed</em>; this means that only the subtypes that are co-compiled with it (often from a single compilation unit) can extend it:</p>
+<pre><code>sealed interface Node { }</code></pre>
+<p>Sealing is a generalization of finality; where a final type has no subtypes, a sealed type can have no subtypes beyond a fixed set of co-declared subtypes. The details of sealing will be discussed separately.</p>
+<h4 id="patterns-and-type-inference">Patterns and type inference</h4>
+<p>Just as we sometimes want to let the compiler infer the type of a local variable for us using <code>var</code> rather than spell the type out explicitly, we may wish to do the same thing with type patterns. While it might be useful to explicitly use type patterns in our <code>AddNode</code> example (and the compiler can optimize them away based on static type information, as we’ve seen), we could also use a nested <code>var</code> pattern instead of the nested type patterns. A <code>var</code> pattern uses type inference to map to an equivalent type pattern (effectively matching anything), and binds its target to a pattern variable of the inferred type. A pattern that matches anything may sound silly – and it is silly in itself – but is very useful as a nested pattern. We can transform our <code>eval</code> method into:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb17-1" title="1"><span class="dt">int</span> <span class="fu">eval</span>(<span class="bu">Node</span> n) {</a>
+<a class="sourceLine" id="cb17-2" title="2">    <span class="kw">return</span> <span class="kw">switch</span>(n) {</a>
+<a class="sourceLine" id="cb17-3" title="3">        <span class="kw">case</span> <span class="fu">IntNode</span>(var i) -&gt; i;</a>
+<a class="sourceLine" id="cb17-4" title="4">        <span class="kw">case</span> <span class="fu">NegNode</span>(var n) -&gt; -<span class="fu">eval</span>(n);</a>
+<a class="sourceLine" id="cb17-5" title="5">        <span class="kw">case</span> <span class="fu">AddNode</span>(var left, var right) -&gt; <span class="fu">eval</span>(left) + <span class="fu">eval</span>(right);</a>
+<a class="sourceLine" id="cb17-6" title="6">        <span class="kw">case</span> <span class="fu">MulNode</span>(var left, var right) -&gt; <span class="fu">eval</span>(left) * <span class="fu">eval</span>(right);</a>
+<a class="sourceLine" id="cb17-7" title="7">    };</a>
+<a class="sourceLine" id="cb17-8" title="8">}</a></code></pre></div>
+<p>This version is equivalent to the manifestly typed version – as with the use of <code>var</code> in local variable declarations, the compiler merely infers the correct type for us. As with local variables, the choice of whether to use a nested type pattern or a nested <code>var</code> pattern is solely one of whether the manifest type adds to or distracts from readability and maintainability.</p>
+<h4 id="nesting-constant-patterns">Nesting constant patterns</h4>
+<p>Constant patterns are useful on their own (all existing <code>switch</code> statements today use the equivalent of constant patterns), but they are also useful as nested patterns. For example, suppose we want to optimize some special cases in our evaluator, such as “zero times anything is zero”. In this case, we don’t even need to evaluate the other subtree.</p>
+<p>If <code>IntNode(var i)</code> matches any <code>IntNode</code>, the nested pattern <code>IntNode(0)</code> matches an <code>IntNode</code> that holds a zero value. (The <code>0</code> here is a constant pattern.) In this case, we first test the target to see if it is an <code>IntNode</code>, and if so, we extract its numeric payload, and then further try to match that against the constant pattern <code>0</code>. We can go as deep as we like; we can match against a <code>MulNode</code> whose left component is an <code>IntNode</code> containing zero, and we could optimize away evaluation of both subtrees in this case:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb18-1" title="1"><span class="dt">int</span> <span class="fu">eval</span>(<span class="bu">Node</span> n) {</a>
+<a class="sourceLine" id="cb18-2" title="2">    <span class="kw">return</span> <span class="kw">switch</span>(n) {</a>
+<a class="sourceLine" id="cb18-3" title="3">        <span class="kw">case</span> <span class="fu">IntNode</span>(var i) -&gt; i;</a>
+<a class="sourceLine" id="cb18-4" title="4">        <span class="kw">case</span> <span class="fu">NegNode</span>(var n) -&gt; -<span class="fu">eval</span>(n);</a>
+<a class="sourceLine" id="cb18-5" title="5">        <span class="kw">case</span> <span class="fu">AddNode</span>(var left, var right) -&gt; <span class="fu">eval</span>(left) + <span class="fu">eval</span>(right);</a>
+<a class="sourceLine" id="cb18-6" title="6">        <span class="kw">case</span> <span class="fu">MulNode</span>(<span class="fu">IntNode</span>(<span class="dv">0</span>), var right),</a>
+<a class="sourceLine" id="cb18-7" title="7">             <span class="fu">MulNode</span>(var left, <span class="fu">IntNode</span>(<span class="dv">0</span>)) -&gt; <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb18-8" title="8">        <span class="kw">case</span> <span class="fu">MulNode</span>(var left, var right) -&gt; <span class="fu">eval</span>(left) * <span class="fu">eval</span>(right);</a>
+<a class="sourceLine" id="cb18-9" title="9">    };</a>
+<a class="sourceLine" id="cb18-10" title="10">}</a></code></pre></div>
+<p>The first <code>MulNode</code> pattern is nested three deep, and it only matches if all the levels match: first we test if the matchee is a <code>MulNode</code>, then we test if the <code>MulNode</code>’s left component is an <code>IntNode</code>; then we test whether that <code>IntNode</code>’s integer component is zero. If our target matches this complex pattern, we know we can simplify the <code>MulNode</code> to zero. Otherwise, we proceed to the next <code>case</code>, which matches <em>any</em> <code>MulNode</code>, which recursively evaluates the left and right subnodes as before.</p>
+<p>Expressing this with visitors would be circuitous and much harder to read; even though a visitor will handle the outermost layer easily, we would then have to handle the inner layers either with explicit conditional logic, or with more layers of visitors. The ability to compose patterns in this way allows us to specify complicated matching conditions clearly and concisely, making the code easier to read and less error-prone.</p>
+<h4 id="any-patterns">Any patterns</h4>
+<p>Just as the <code>var</code> pattern matches anything and binds its target to that, the <code>_</code> pattern matches anything – and binds nothing. Again, this is not terribly useful as a standalone pattern, but is useful as a way of saying “I don’t care about this component.” If a subcomponent is not relevant to the matching, we can make this explicit (and prevent ourselves from accidentally accessing it) by using a <code>_</code> pattern. For example, we can further rewrite the “multiply by zero” case from the above example using a <code>_</code> pattern:</p>
+<pre><code>case MulNode(IntNode(0), _), MulNode(_, IntNode(0)) -&gt; 0;</code></pre>
+<p>Which says that the other component is irrelevant to the matching logic, and doesn’t need to be given a name – or even be extracted.</p>
+<h2 id="patterns-are-the-dual-of-constructors-and-literals">Patterns are the dual of constructors (and literals)</h2>
+<p>Patterns may appear to be a clever syntactic trick, combining several common operations, but they are in fact something deeper – they are duals of the operations we used to construct, denote, or otherwise obtain values. The literal <code>0</code> stands for the number zero; when used as a pattern, it matches the number zero. The expression <code>new Point(1, 2)</code> constructs a <code>Point</code> from a specific <code>(x, y)</code> pair; the pattern <code>Point(int x, int y)</code> matches all points, and extracts the corresponding <code>(x, y)</code> values. For every way we have of constructing or obtaining a value (constructors, static factories, etc), there can be a corresponding pattern that takes apart that value into its component parts. The strong syntactic similarity between construction and deconstruction is no accident.</p>
+<h4 id="static-patterns">Static patterns</h4>
+<p>Deconstruction patterns are implemented by class members that are analogous to constructors, but which run in reverse, taking an instance and destructuring it into a sequence of components. Just as classes can have static factories as well as constructors, it is also reasonable to have static <em>patterns</em>. And just as static factories are an alternate way to create objects, static patterns can perform the equivalent of deconstruction patterns for types that do not expose their constructors.</p>
+<p>For example, <code>Optional</code> is constructed with factory methods <code>Optional.of(v)</code> and <code>Optional.empty()</code>. We can expose static patterns accordingly that operate on <code>Optional</code> values, and extract the relevant state:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">switch</span> (opt) {</a>
+<a class="sourceLine" id="cb20-2" title="2">    <span class="kw">case</span> Optional.<span class="fu">empty</span>(): ...</a>
+<a class="sourceLine" id="cb20-3" title="3">    <span class="kw">case</span> Optional.<span class="fu">of</span>(var v): ...</a>
+<a class="sourceLine" id="cb20-4" title="4">}</a></code></pre></div>
+<p>The syntactic similarly between how the object is constructed and how it is destructured is again not accidental. (An obvious question is whether instance patterns make sense as well; they do, and they provide API designers with some better choices than we currently have. Static and instance patterns will be covered in greater depth in a separate document.)</p>
+<h2 id="pattern-bind-statements">Pattern bind statements</h2>
+<p>We’ve already seen two constructs that can be extended to support patterns: <code>instanceof</code> and <code>switch</code>. Another pattern-aware control construct we might want is a <em>pattern binding statement</em>, which destructures a target using a pattern. For example, say we have:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb21-1" title="1">record <span class="bu">Point</span>(<span class="dt">int</span> x, <span class="dt">int</span> y);</a>
+<a class="sourceLine" id="cb21-2" title="2">record <span class="fu">Rect</span>(<span class="bu">Point</span> p0, <span class="bu">Point</span> p1);</a></code></pre></div>
+<p>And we have a <code>Rect</code> which we want to destructure into its bounding points. An unconditional destructuring might look like:</p>
+<pre class=".{java}"><code>Rect r = ...
+match Rect(var p0, var p1) = r;
+// use p0, p1</code></pre>
+<p>Here, we assert (and the compiler will check) that the pattern is <em>total</em> on the target type, so we destructure the target and bind its components to new variables. If the pattern is <em>partial</em> on the target operand, and thus we cannot guarantee it will match, we can provide an <code>else</code> clause:</p>
+<pre class=".{java}"><code>Object r = ...
+match Rect(var p0, var p1) = r
+else throw new IllegalArgumentException(&quot;not a Rect&quot;);
+// use p0, p1</code></pre>
+<p>We could even use a nested pattern to extract the corner coordinates in one go:</p>
+<pre class=".{java}"><code>Rect r = ...
+match Rect(Point(var x0, var y0), Point(var x1, var y1)) = r;
+// use x0, x1, y0, y1</code></pre>
+<p>A <code>match</code> statement can take multiple <code>P=target</code> clauses; in this case, all clauses must match. We could restate the nested match above as follows:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb25-1" title="1">match <span class="fu">Rect</span>(<span class="bu">Point</span> p1, <span class="bu">Point</span> p2) = r,</a>
+<a class="sourceLine" id="cb25-2" title="2">      <span class="bu">Point</span>(var x0, var y0) = p1,</a>
+<a class="sourceLine" id="cb25-3" title="3">      <span class="bu">Point</span>(var x1, var y1) = p2;</a></code></pre></div>
+<p>More precisely, for a <code>match</code> statement with pattern <code>P</code>, all the bindings of <code>P</code> must be definitely assigned when the <code>match</code> statement completes normally. In general, this means that the else clause must either match something else, or must terminate abruptly (such as by throwing), but we might wish to add a third possibility – an “anonymous matcher” whose bindings are the bindings from the pattern being matched:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb26-1" title="1">match <span class="fu">Foo</span>(<span class="dt">int</span> a, <span class="dt">int</span> b) = maybeAFoo</a>
+<a class="sourceLine" id="cb26-2" title="2"><span class="kw">else</span> {</a>
+<a class="sourceLine" id="cb26-3" title="3">    a = <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb26-4" title="4">    b = <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb26-5" title="5">}</a></code></pre></div>
+<p>While the operand of the else block looks like an ordinary block, it is type-checked as if it were a matcher whose declaration is <code>matcher anonymous(int a, int b)</code>.</p>
+<p>Like <code>switch</code>, <code>match</code> may throw <code>NullPointerException</code> at runtime if we attempt to destructure a <code>null</code> and do not provide an <code>else</code> clause.</p>
+<h4 id="summary-of-patterns-and-control-flow-constructs">Summary of patterns and control flow constructs</h4>
+<p>We’ve now seen several kinds of patterns:</p>
+<ul>
+<li>Constant patterns, which test their target for equality with a constant;</li>
+<li>Type patterns, which perform an <code>instanceof</code> test, cast the target, and bind it to a pattern variable;</li>
+<li>Deconstruction patterns, which perform an <code>instanceof</code> test, cast the target, destructure the target, and recursively match the components to subpatterns;</li>
+<li>Method patterns, which are more general than deconstruction patterns;</li>
+<li>Var patterns, which match anything and bind their target;</li>
+<li>The any pattern <code>_</code>, which matches anything and binds nothing.</li>
+</ul>
+<p>We’ve also seen several contexts in which patterns can be used:</p>
+<ul>
+<li>A <code>switch</code> statement or expresion;</li>
+<li>A <code>instanceof</code> predicate;</li>
+<li>A <code>match</code> statement.</li>
+</ul>
+<p>Other possible kinds of patterns, such as <em>collection patterns</em>, could be added later. Similarly, other linguistic constructs, such as <code>catch</code>, could potentially support pattern matching in the future.</p>
+<h2 id="pattern-matching-and-records">Pattern matching and records</h2>
+<p>Pattern matching connects quite nicely with another feature currently in development, <em>records</em> (data classes). A data class is one where the author commits to the class being a transparent carrier for its data; in return, data classes implicitly acquire deconstruction patterns (as well as other useful artifacts such as constructors, accessors, <code>equals()</code>, <code>hashCode()</code>, etc.) We can define our <code>Node</code> hierarchy as records quite compactly:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb27-1" title="1">sealed <span class="kw">interface</span> <span class="bu">Node</span> { }</a>
+<a class="sourceLine" id="cb27-2" title="2"></a>
+<a class="sourceLine" id="cb27-3" title="3">record <span class="fu">IntNode</span>(<span class="dt">int</span> value) <span class="kw">implements</span> <span class="bu">Node</span>;</a>
+<a class="sourceLine" id="cb27-4" title="4">record <span class="fu">NegNode</span>(<span class="bu">Node</span> node) <span class="kw">implements</span> <span class="bu">Node</span>;</a>
+<a class="sourceLine" id="cb27-5" title="5">record <span class="fu">SumNode</span>(<span class="bu">Node</span> left, <span class="bu">Node</span> right) <span class="kw">implements</span> <span class="bu">Node</span>;</a>
+<a class="sourceLine" id="cb27-6" title="6">record <span class="fu">MulNode</span>(<span class="bu">Node</span> left, <span class="bu">Node</span> right) <span class="kw">implements</span> <span class="bu">Node</span>;</a>
+<a class="sourceLine" id="cb27-7" title="7">record <span class="fu">ParenNode</span>(<span class="bu">Node</span> node) <span class="kw">implements</span> <span class="bu">Node</span>;</a></code></pre></div>
+<p>We now know that the only subtypes of <code>Node</code> are the ones here, so the <code>switch</code> expressions in the examples above will benefit from exhaustiveness analysis, and not require a <code>default</code> arm. (Astute readers will observe that we have arrived at a well-known construct, <em>algebraic data types</em>; records offer us a compact expression for product types, and sealing offers us the other half, <em>sum types</em>.)</p>
+<h2 id="scoping">Scoping</h2>
+<p>Pattern-aware constructs like <code>instanceof</code> have a new property: they may introduce variables from the middle of an expression. An obvious question is: what is the scope of those pattern variables? Let’s look at some motivating examples (the details are in a separate document.)</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">if</span> (x <span class="kw">instanceof</span> <span class="bu">String</span> s) {</a>
+<a class="sourceLine" id="cb28-2" title="2">    <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(s);</a>
+<a class="sourceLine" id="cb28-3" title="3">}</a></code></pre></div>
+<p>Here, the pattern variable <code>s</code> is used in the body of the <code>if</code> statement, which makes sense; by the time we’re executing the body, the pattern must have matched, so <code>s</code> is well-defined, and we should include <code>s</code> in the set of variables that are in scope in the body of the <code>if</code>. We can extend this further:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">if</span> (x <span class="kw">instanceof</span> <span class="bu">String</span> s &amp;&amp; s.<span class="fu">length</span>() &gt; <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb29-2" title="2">    <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(s);</a>
+<a class="sourceLine" id="cb29-3" title="3">}</a></code></pre></div>
+<p>This makes sense too; since <code>&amp;&amp;</code> is short-circuiting, so whenever we execute the second condition, the match has already succeeded, so <code>s</code> is again well-defined for this use, and we should include <code>s</code> in the set of variables that are in scope for the second subexpression of the conditional. On the other hand, if we replace the AND with an OR:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">if</span> (x <span class="kw">instanceof</span> <span class="bu">String</span> s || s.<span class="fu">length</span>() &gt; <span class="dv">0</span>) {  <span class="co">// error</span></a>
+<a class="sourceLine" id="cb30-2" title="2">    ...</a>
+<a class="sourceLine" id="cb30-3" title="3">}</a></code></pre></div>
+<p>we should expect an error; <code>s</code> is not well-defined in this context, since the match may not have succeeded in the second subexpression of the conditional. Similarly, <code>s</code> is not well-defined in the else-clause here:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">if</span> (x <span class="kw">instanceof</span> <span class="bu">String</span> s) {</a>
+<a class="sourceLine" id="cb31-2" title="2">    <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(s + <span class="st">&quot;is a string&quot;</span>);</a>
+<a class="sourceLine" id="cb31-3" title="3">    <span class="co">// OK to use s here</span></a>
+<a class="sourceLine" id="cb31-4" title="4">}</a>
+<a class="sourceLine" id="cb31-5" title="5"><span class="kw">else</span> {</a>
+<a class="sourceLine" id="cb31-6" title="6">    <span class="co">// error to use s here</span></a>
+<a class="sourceLine" id="cb31-7" title="7">}</a></code></pre></div>
+<p>But, suppose our condition inverts the match:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">if</span> (!(x <span class="kw">instanceof</span> <span class="bu">String</span> s)) {</a>
+<a class="sourceLine" id="cb32-2" title="2">    <span class="co">// error to use x here</span></a>
+<a class="sourceLine" id="cb32-3" title="3">}</a>
+<a class="sourceLine" id="cb32-4" title="4"><span class="kw">else</span> {</a>
+<a class="sourceLine" id="cb32-5" title="5">    <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(s + <span class="st">&quot;is a string&quot;</span>);</a>
+<a class="sourceLine" id="cb32-6" title="6">    <span class="co">// OK to use s here</span></a>
+<a class="sourceLine" id="cb32-7" title="7">}</a></code></pre></div>
+<p>Here, we want <code>s</code> to be in scope in the else-arm (if it were not, we would not be able to freely refactor <code>if-then-else</code> blocks by inverting their condition and swapping the arms.)</p>
+<p>Essentially, we want a scoping construct that mimics the <em>definite assignment</em> rules of the language; we want pattern variables to be in scope where they are definitely assigned, and not be in scope when they are not. This allows us to reuse pattern variable names, rather than making up a new one for each pattern, as we would have to here:</p>
+<pre><code>switch (shape) {
+    case Square(Point corner, int length): ...
+    case Rectangle(Point rectCorner, int rectLength, int rectHeight): ...
+    case Circle(Point center, int radius): ...
+}</code></pre>
+<p>If the scope of pattern variables were similar to that of locals, we would be in the unfortunate position of having to make up unique names for every case, as we have here, rather than reusing names like <code>length</code>, which is what we’d prefer to do. Matching scope to definite assignment gives us that – and comports with user expectations of when they should be able to use a pattern variable and when not.</p>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>

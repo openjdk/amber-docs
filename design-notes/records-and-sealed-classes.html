@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>records-and-sealed-classes</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+      <style type="text/css">
+        A IMG { border-width: 0px; }
+  
+        BODY {
+            background: white;
+            margin: 2em;
+          font-size: medium;
+          max-width: 60em;
+          margin-bottom: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+        }
+  
+        code, pre, tt {
+  	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  	font-size: medium
+        }
+  
+        code {
+            display: inline-block;
+            padding: .1em .2em;
+          font-size: 90%;
+          border-radius: 6px;
+  	background-color: #f6f8fa;
+          box-sizing: border-box;
+        }
+  
+        h1 {
+  	  font-size: 32px;
+        }
+  
+        h1,
+        h2 {
+  	  font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        h2 {
+  	  font-size: 24px
+        }
+        
+        h3 {
+  	  font-size: 20px
+        }
+        
+        h3,
+        h4 {
+  	  font-weight: 600
+        }
+        
+        h4 {
+  	  font-size: 20px
+        }
+  
+        P { margin: 1ex 0em; }
+        P.subsection { margin-top: 2ex; }
+        P.subsection:first-child { margin-top: 1ex; }
+        P SPAN.title { font-weight: bold; padding-right: 1em; }
+  
+        PRE {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #f6f8fa;
+        }
+  
+        .sidebar {
+          margin: 1.5ex 2em;
+          padding: 1px 1ex;
+          background: #e8e8e8;
+        }
+  
+        .control-character {
+            color: #bbb;
+            font-style: italic;
+        }
+  
+        /* added for ```{.jvm} support */
+        PRE.jvm { font-style: italic; }
+  
+        BLOCKQUOTE { margin: 1.5ex 2em; font-style: italic; border-left: 0.2em solid gray; padding-left: 1em; }
+        LI BLOCKQUOTE { margin-left: 0em; }
+        LI { margin: 0ex 0em; }
+  
+        TABLE, TH, TD { border: 1px solid #e8e8e8;
+                        padding: 6px 12px; }
+        TR:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        TH { font-weight: 600 }
+        TABLE { border-collapse: collapse; }
+        TD { vertical-align: top; }
+  
+        UL LI { list-style-type: square; }
+  
+        DIV.summary { margin: 2ex 2em; }
+  
+        DIV.head { margin-bottom: 2em; }
+        DIV.doctitle { font-size: x-large; font-weight: bold; }
+        DIV.twarn { color: #cc0000; font-size: smaller; font-weight: bold;
+                    margin-bottom: 1.5ex; }
+        DIV.authors { margin-top: 1ex; font-size: large; }
+        DIV.author A { font-style: italic; }
+        DIV.version { font-size: medium; margin-top: 1ex; }
+        DIV.copyright, DIV.comments { font-size: small; }
+        DIV.version SPAN.modified { color: green; font-weight: bold; }
+        DIV.head DIV.notes { margin-top: 1ex; }
+        DIV.qa { margin-top: 2ex; }
+        DIV.footer { padding-top: 4em; text-align: center; font-size: 7pt; }
+        
+        /* added because pandoc syntax highlighting always uses scroll bars */
+        DIV.sourceCode {
+            overflow: visible;
+        }
+  
+        HR { border: 0px; border-top: 1px solid black; margin: 2ex 0em; }
+     </style>
+</head>
+<body>
+<h1 id="data-classes-and-sealed-types-for-java">Data Classes and Sealed Types for Java</h1>
+<h4 id="brian-goetz-february-2019">Brian Goetz, February 2019</h4>
+<p>This document explores possible directions for <em>data classes</em> and <em>sealed types</em> in the Java Language, and is an update to <a href="data-classes-historical-2.html">Data Classes in Java</a>. This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language.</p>
+<h2 id="background">Background</h2>
+<p>It is a common (and often deserved) complaint that “Java is too verbose” or has too much “ceremony.” A significant contributor to this is that while classes can flexibly model a variety of programming paradigms, this invariably comes with modeling overheads – and in the case of classes that are nothing more than “plain data carriers”, these modeling overhead can be out of line with their value. To write a simple data carrier class responsibly, we have to write a lot of low-value, repetitive code: constructors, accessors, <code>equals()</code>, <code>hashCode()</code>, <code>toString()</code>, etc. And developers are sometimes tempted to cut corners such as omitting these important methods, leading to surprising behavior or poor debuggability, or pressing an alternate but not entirely appropriate class into service because it has the “right shape” and they don’t want to define yet another class.</p>
+<p>IDEs will help you <em>write</em> most of this code, but writing code is only a small part of the problem. IDEs don’t do anything to help the <em>reader</em> distill the design intent of “I’m a plain data carrier for <code>x</code>, <code>y</code>, and <code>z</code>” from the dozens of lines of boilerplate code. And repetitive code is a good place for bugs to hide; if we can, it is best to eliminate their hiding spots outright.</p>
+<p>There is no formal definition of “plain data carrier”, and opinions may vary on what exactly “plain” means. Nobody thinks that <code>SocketInputStream</code> is just a carrier for some data; it fully encapsulates some complex and unspecified state (including a native resource) and exposes an interface contract that likely looks nothing like its internal representation.</p>
+<p>At the other extreme, its pretty clear that:</p>
+<pre><code>    final class Point {
+        public final int x;
+        public final int y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        // state-based implementations of equals, hashCode, toString
+        // nothing else
+   }</code></pre>
+<p>is “just” the data <code>(x, y)</code>. Its representation is <code>(x, y)</code>, its construction protocol accepts an <code>(x, y)</code> pair and stores it directly into the representation, it provides unmediated access to that representation, and derives the core <code>Object</code> methods directly from that representation. And in the middle, there are grey areas where we’re going to have to draw a line.</p>
+<p>Other OO languages have explored compact syntactic forms for modeling data-oriented classes: <code>case</code> classes in <a href="https://docs.scala-lang.org/tour/case-classes.html">Scala</a>, <code>data</code> classes in <a href="https://kotlinlang.org/docs/reference/data-classes.html">Kotlin</a>, and <code>record</code> classes in <a href="https://github.com/dotnet/roslyn/blob/features/records/docs/features/records.md">C#</a>. These have in common that some or all of the state of a class can be described directly in the class header – though they vary in their semantics (such as constraints on the mutability or accessibility of fields, extensibility of the class, and other restrictions.) Committing in the class declaration to at least part of the relationship between state and interface enables suitable defaults to be derived for many common members. All of these mechanisms (let’s call them “data classes”) seek to bring us closer to the goal of being able to define <code>Point</code> as something like:</p>
+<pre><code>record Point(int x, int y) { }</code></pre>
+<p>The clarity and compactness here is surely attractive – a <code>Point</code> is just a carrier for two integer components <code>x</code> and <code>y</code>, and from that, the reader immediately knows that there are sensible <em>and correct</em> implementations for the core <code>Object</code> methods, and doesn’t have to wade through a page of boilerplate to be able to confidently reason about their semantics. Most developers are going to say “Well, of course I want <em>that</em>.” Further, it moves us closer to the place where the only code that is present is the code that actually does something non-obvious, which makes reading code easier in two ways: there’s less to read, and every line says something useful.</p>
+<h4 id="meet-the-elephant">Meet the elephant</h4>
+<p>Unfortunately, such universal consensus is only syntax-deep; almost immediately after we finish celebrating the concision, comes the debate over the natural semantics of such a construct, and what restrictions we are willing to accept. Are they extensible? Are the fields mutable? Can I control the behavior of the generated methods, or the accessibility of the fields? Can I have additional fields and constructors?</p>
+<p>Just like the story of the blind men and the elephant, developers are likely to bring very different assumptions about the “obvious” semantics of a data class. To bring these implicit assumptions into the open, let’s name the various positions.</p>
+<ul>
+<li><p><em>Algebraic Annie</em> will say “a data class is just an algebraic product type.” Like Scala’s case classes, they come paired with pattern matching, and are best served immutable. (And for dessert, Annie would order sealed interfaces.)</p></li>
+<li><p><em>Boilerplate Billy</em> will say “a data class is just an ordinary class with better syntax”, and will likely bristle at constraints on mutability, extension, or encapsulation. (Billy’s brother, JavaBean Jerry, will say “of course, these are the replacement for JavaBeans – so I need mutability and getters and setters.” And his sister, POJO Patty, remarks that she is drowning in enterprise POJOs, and hopes they are proxyable by frameworks like Hibernate.)</p></li>
+<li><p><em>Tuple Tommy</em> will say “a data class is just a nominal tuple” – and may not even be expecting them to have methods other than the core <code>Object</code> methods – they’re just the simplest of aggregates. (He might even expect the names to be erased, so that two data classes of the same “shape” can be freely converted.)</p></li>
+<li><p><em>Values Victor</em> will say “a data class is really just a more transparent value type.”</p></li>
+</ul>
+<p>All of these personae are united in favor of “data classes” – but have different ideas of what data classes are, and there may not be any one solution that makes them all happy.</p>
+<h4 id="encapsulation-and-boundaries">Encapsulation and boundaries</h4>
+<p>While we’re painfully aware of the state-related boilerplate we deal with every day, the boilerplate is just a symptom of a deeper problem, which is that Java asks all classes to pay equally for the cost of encapsulation – but not all classes benefit equally from it.</p>
+<p>To be sure, encapsulation is essential; mediating access to our state (so it can’t be manipulated without oversight) and encapsulating our representation (so it can be evolved without affecting the API contract) enables us to write code that can operate safely and robustly across a variety of <em>boundaries</em>:</p>
+<ul>
+<li>Maintenance boundaries – when our clients are in a different sourcebase (or organization);</li>
+<li>Security and trust boundaries – where we do not want to expose our state to clients because we do not fully trust them to not deliberately modify or use it in malicious ways;</li>
+<li>Integrity boundaries – where we do not want to expose our state to clients because, while we may trust their intent and are willing to share our data with them, do not wish to burden them with the task of maintaining our own representational invariants;</li>
+<li>Versioning boundaries – where we want to ensure that clients compiled against one version of a library continue to work when run against a subsequent version.</li>
+</ul>
+<p>But, not all classes value their boundaries equally. Defending these boundaries is essential for a class like <code>KeyStore</code> or <code>SocketInputStream</code>, but is of far less value for a class like <code>Point</code> or for typical domain classes. Many classes are not concerned at all with defending their boundaries, such as those that are private to a package or module and co-compiled with their clients, trust their clients, and have no complex invariants that need protecting. Since the cost of establishing and defending these boundaries (how constructor arguments map to state, how to derive the equality contract from state, etc) is constant across classes, but the benefit is not, the cost may sometimes be out of line with the benefit. This is what Java developers mean by “too much ceremony” – not that the ceremony has no value, but that <em>they’re forced to invoke it even when it does not offer sufficient value</em>.</p>
+<p>The encapsulation model that Java provides – where the representation is entirely decoupled from construction, state access, and equality – is just more than many classes need. Classes that have a simpler relationship with their boundaries can benefit from a simpler model where we can define a class as a thin wrapper around its state, and derive the relationship between state, construction, equality, and state access from that.</p>
+<p>Further, the costs of decoupling representation from API goes beyond the overhead of declaring boilerplate members; encapsulation is, by its nature, information-destroying. If you see a class with a constructor that takes an argument <code>x</code>, and an accessor called <code>x()</code>, we often have only convention to tell us that they probably refer to the same thing. Relying on this may be a pretty safe guess, but its just a guess. It would be nicer if tools and library code could mechnically rely on this correspondence – without a human having to read the specs (if there even is one!) to confirm this expectation.</p>
+<h4 id="digression-enums">Digression – enums</h4>
+<p>If the problem is that we’re modeling something simple with something overly general, simplification is going to come from constraint; by letting go of some degrees of freedom, we hope to be freed of the obligation to specify everything explicitly.</p>
+<p>The <code>enum</code> facility, added in Java 5, is an excellent example of such a tradeoff. The type-safe enum pattern was well understood, and easy to express (albeit verbosely), prior to Java 5 (see <a href="https://www.amazon.com/gp/product/0321356683?ie=UTF8&amp;tag=briangoetz-20&amp;camp=1789&amp;linkCode=xm2&amp;creativeASIN=0321356683">Effective Java, 1st Edition</a>, item 21.) The initial motivation to add enums to the language might have been irritation at the boilerplate required for this idiom, but the real benefit is semantic.</p>
+<p>The key simplification of enums was to constrain the lifecycle of their instances – enum constants are singletons, and instantiation is managed by the runtime. By baking singleton-awareness into the language model, the compiler can safely and correctly generate the boilerplate needed for the type-safe enum pattern. And because enums started with a semantic goal, rather than a syntactic one, it was possible for enums to interact positively with other features, such as the ability to <code>switch</code> on enums, or to get comparison and safe serialization for free.</p>
+<p>Perhaps surprisingly, enums delivered their syntactic and semantic benefits without requiring us to give up most other degrees of freedom that classes enjoy; Java’s enums are not mere enumerations of integers, as they are in many other languages, but instead are full-fledged classes (with some restrictions.)</p>
+<p>If we are looking to replicate the success of this approach with data classes, our first question should be: what constraints will give us the semantic and syntactic benefits we want, and, are we willing to accept these constraints?</p>
+<h4 id="priorities-and-goals">Priorities and goals</h4>
+<p>While it is superficially tempting to to treat data classes as primarily being about boilerplate reduction, we prefer to start with a semantic goal: <em>modeling data as data</em>. If we choose our goals correctly, the boilerplate will take care of itself, and we will gain additional benefits aside from concision.</p>
+<p>So, what do we mean by “modeling data as data”, and what are we going to have to give up? What degrees of freedom that classes enjoy do such “plain” data aggregates not need, that we can eliminate and thereby simplify the model? Java’s object model is built around the assumption that we want the representation of an object to be completely decoupled from its API; the APIs and behavior of constructors, accessor methods, and <code>Object</code> methods need not align directly with the object’s state, or even with each other. However, in practice, they are frequently much more tightly coupled; a <code>Point</code> object has fields <code>x</code> and <code>y</code>, a constructor that takes <code>x</code> and <code>y</code> and initializes those fields, accessors for <code>x</code> and <code>y</code>, and <code>Object</code> methods that characterize points solely by their <code>x</code> and <code>y</code> values. We claim that for a class to be “just a plain carrier for its data”, this coupling is something that can be counted upon – that we’re giving up the ability to decouple its (publicly declared) state from its API. The API for a data class models <em>the state, the whole state, and nothing but the state</em>. One consequence of this is that data classes are <em>transparent</em>; they give up their data freely to all requestors. (Otherwise, their API doesn’t model their whole state.)</p>
+<p>Being able to count on this coupling drives a number of advantages. We can derive sensible and correct implementations for standard class members. Clients can freely deconstruct and reconstruct aggregates, or restructure them into a more convenient form, without fear that they will discard hidden data or undermine hidden assumptions. Frameworks can safely and mechanically serialize or marshal them, without the need to provide complex mapping mechanisms. By giving up the flexibility to decouple a classes state from its API, we gain all of these benefits.</p>
+<h4 id="records-and-sealed-types">Records and sealed types</h4>
+<p>We propose to surface data classes in the form of <em>records</em>; like an <code>enum</code>, a <code>record</code> is a restricted form of class. It declares its representation, and commits to an API that matches that representation. We pair this with another abstraction, <em>sealed types</em>, which can assert control over which other types may be its subclasses. (A <code>final</code> class is the ultimate form of sealed class; it permits no subtypes at all.)</p>
+<p>If we wanted to model simple arithmetic expressions with records and sealed types, it would look something like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb3-1" title="1">sealed <span class="kw">interface</span> Expr { }</a>
+<a class="sourceLine" id="cb3-2" title="2"></a>
+<a class="sourceLine" id="cb3-3" title="3">record <span class="fu">ConstantExpr</span>(<span class="dt">int</span> i) <span class="kw">implements</span> Expr { }</a>
+<a class="sourceLine" id="cb3-4" title="4">record <span class="fu">PlusExpr</span>(Expr a, Expr b) <span class="kw">implements</span> Expr { }</a>
+<a class="sourceLine" id="cb3-5" title="5">record <span class="fu">TimesExpr</span>(Expr a, Expr b) <span class="kw">implements</span> Expr { }</a>
+<a class="sourceLine" id="cb3-6" title="6">record <span class="fu">NegExpr</span>(Expr e) <span class="kw">implements</span> Expr { }</a></code></pre></div>
+<p>This declares four concrete types, <code>ConstantExpr</code> (which holds a single integer), <code>PlusExpr</code> and <code>TimesExpr</code> (which hold two subexpressions), and <code>NegExpr</code> (which holds one subexpression.) It also declares a common supertype for expressions, and captures the constraint that these are the <em>only</em> subtypes of <code>Expr</code>.</p>
+<p>The concrete types acquire all the usual members – (final) fields, constructors, accessors, <code>equals()</code>, <code>hashCode()</code>, and <code>toString()</code>. (If the default implementations are unsuitable, they can be specified explicitly.)</p>
+<p>Records use the same tactic as enums for aligning the boilerplate-to-information ratio: offer a constrained version of a more general feature that enables standard members to be derived. Enums ask the user to cede instance control to the runtime; in exchange, the language can offer streamlined declaration of instances, as well as provide implementations for core behaviors such as <code>Object::equals</code>, <code>Enum::values</code>, and serialization. For records, we make a similar trade; we give up the flexibility to <em>decouple the classes API from its state description</em>, in return for getting a highly streamlined declaration (and more).</p>
+<h4 id="records-and-pattern-matching">Records and pattern matching</h4>
+<p>One of the big advantages of defining data classes in terms of coupling their API to a publicly specified state description, rather than simply as boilerplate-reduced class, is that we gain the ability to freely convert a data class instance back and forth between its aggregate form and its exploded state. This has a natural connection with <a href="https://openjdk.java.net/jeps/305"><em>pattern matching</em></a>; by coupling the API to the state description, we also can derive the obvious deconstruction pattern – whose signature is the dual of the constructor’s.</p>
+<p>Given our <code>Expr</code> hierarchy, the code for evaluating an expression looks like this:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb4-1" title="1"><span class="dt">int</span> <span class="fu">eval</span>(Expr e) {</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="kw">return</span> <span class="kw">switch</span> (e) {</a>
+<a class="sourceLine" id="cb4-3" title="3">        <span class="kw">case</span> <span class="fu">ConstantExpr</span>(var i) -&gt; i;</a>
+<a class="sourceLine" id="cb4-4" title="4">        <span class="kw">case</span> <span class="fu">PlusExpr</span>(var a, var b) -&gt; <span class="fu">eval</span>(a) + <span class="fu">eval</span>(b);</a>
+<a class="sourceLine" id="cb4-5" title="5">        <span class="kw">case</span> <span class="fu">TimesExpr</span>(var a, var b) -&gt; <span class="fu">eval</span>(a) * <span class="fu">eval</span>(b);</a>
+<a class="sourceLine" id="cb4-6" title="6">        <span class="kw">case</span> <span class="fu">NegExpr</span>(var e) -&gt; -<span class="fu">eval</span>(e);</a>
+<a class="sourceLine" id="cb4-7" title="7">        <span class="co">// no default needed, Expr is sealed</span></a>
+<a class="sourceLine" id="cb4-8" title="8">    }</a>
+<a class="sourceLine" id="cb4-9" title="9">}</a></code></pre></div>
+<p>using the mechanically generated pattern extractors that records automatically acquire. Both records and sealed types have a synergy with pattern matching; records admit easy decomposition into their components, and sealed types provide the compiler with exhaustiveness information so that a switch that covers all the subtypes need not provide a <code>default</code> clause.</p>
+<h4 id="records-and-externalization">Records and externalization</h4>
+<p>Data classes are also a natural fit for safe, mechanical externalization (serialization, marshaling to and from JSON or XML, mapping to database rows, etc). If a class is a transparent carrier for a state vector, and the components of that state vector can in turn be externalized in the desired encoding, then the carrier can be safely and mechanically marshaled and unmarshaled with guaranteed fidelity, without the security and integrity risks of bypassing the constructor (as built-in serialization does). In fact, a transparent carrier need not do anything special to support externalization; the externalization framework can deconstruct the object using its deconstruction pattern, and reconstruct it using its constructor, which are already public.</p>
+<h4 id="why-not-just-do-tuples">Why not “just” do tuples?</h4>
+<p>Some readers will surely be thinking at this point: if we “just” had tuples, we wouldn’t need data classes. And while tuples might offer a lighter-weight means to express some aggregates, the result is often inferior aggregates.</p>
+<p>Classes and class members have meaningful names; tuples and tuple components do not. A central aspect of Java’s philosophy is that <em>names matter</em>; a <code>Person</code> with properties <code>firstName</code> and <code>lastName</code> is clearer and safer than a tuple of <code>String</code> and <code>String</code>. Classes support state validation through their constructors; tuples do not. Some data aggregates (such as numeric ranges) have invariants that, if enforced by the constructor, can thereafter be relied upon; tuples do not offer this ability. Classes can have behavior that is derived from their state; co-locating state and derived behavior makes it more discoverable and easier to access.</p>
+<p>For all these reasons, we don’t want to abandon classes for modeling data; we just want to make modeling data with classes simpler. The major pain of using named classes for aggregates is the overhead of declaring them; if we can reduce this sufficiently, the temptation to reach for more weakly typed mechanisms is greatly reduced. (A good starting point for thinking about records is that they are <em>nominal tuples</em>.)</p>
+<h4 id="are-records-the-same-as-value-types">Are records the same as value types?</h4>
+<p>With <em>value types</em> coming down the road through <a href="http://openjdk.java.net/projects/valhalla/">Project Valhalla</a>, it is reasonable to ask about the overlap between (immutable) data classes and value types, and as whether the intersection of data-ness and value-ness is a useful space to inhabit.</p>
+<p>Records and value types have some obvious similarities; they are both immutable aggregates, with restrictions on extension. Are these really the same feature in disguise?</p>
+<p>When we look at their semantic goals, we can see that they differ. Value types are primarily about enabling <em>flat</em> and <em>dense</em> layout of objects in memory. In exchange for giving up <em>object identity</em> (which in turn entails giving up mutability and layout polymorphism), the runtime gains the ability to optimize the heap layout and calling conventions for values. With records, in exchange for giving up the ability to decouple a classes API from its representation, we gain a number of notational and semantic benefits. But while some of what we give up is the same (mutability, extension), some values may still benefit from state encapsulation, and some records may still benefit from identity, so they are not the exact same trade. However, there are classes that may be willing to tolerate both restrictions, in order to gain both sets of benefits – we might call these <code>value records</code>. So while we wouldn’t necessarily want to only have one mechanism or the other, we certainly want the mechanisms to work together.</p>
+<h4 id="digression-algebraic-data-types">Digression: algebraic data types</h4>
+<p>The combination of data classes and sealed types are a form of <a href="https://en.wikipedia.org/wiki/Algebraic_data_type"><em>algebraic data types</em></a>, which refers to the combination of <em>product types</em> and <em>sum types</em>.</p>
+<p>A product type gets its name from <em>cartesian product</em>, because its value set is the cartesian product of the value sets of a vector of types. Tuples are a kind of product type, as are our <code>records</code>, as are many ad-hoc domain classes (such as a <code>Person</code> type having String fields <code>firstName</code> and <code>lastName</code>.) A sum type is a discriminated union of a fixed set of types; enums are a kind of union (where the union members are constants).</p>
+<p>Some languages have direct support for declaring algebraic data types; for example, we would declare the equivalent of our <code>Expr</code> hierarchy in Haskell with the <code>data</code> construct:</p>
+<pre><code>data Expr = ConstantExpr Int
+          | PlusExpr Expr Expr
+          | TimesExpr Expr Expr
+          | NegExpr Expr
+deriving (Show, Eq);</code></pre>
+<p>(The <code>deriving</code> clause says that these types automagically acquire the obvious equivalents of <code>Object::equals</code> and <code>Object::toString</code>.)</p>
+<h2 id="use-cases">Use cases</h2>
+<p>Use cases abound for records and sealed hierarchies of records. Some typical examples include:</p>
+<p><strong>Tree nodes.</strong> The <code>Expr</code> example earlier shows how records can make short work of tree nodes, such as those representing documents, queries, or expressions, and sealing enables developers and compilers to reason about when all the cases have been covered. Pattern matching over tree nodes offers a more direct and flexible alternative to traversal than the Visitor pattern.</p>
+<p><strong>Multiple return values.</strong> It is often desirable for a method to return more than one thing, whether for reasons of efficiency (extracting multiple quantities in a single pass may be more efficient than making two passes) or consistency (if operating on a mutable data structure, a second pass may be operating on different state.)</p>
+<p>For example, say we want to extract both the minimal and maximal value of an array. Declaring a class to hold two integers may seem overkill, but if we can reduce the declaration overhead sufficiently, it becomes attractive to use a custom product type to represent these related quantities, enabling a more efficient (and readable) computation:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb6-1" title="1">record <span class="fu">MinMax</span>(<span class="dt">int</span> min, <span class="dt">int</span> max);</a>
+<a class="sourceLine" id="cb6-2" title="2"></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="kw">public</span> MinMax <span class="fu">minmax</span>(<span class="dt">int</span>[] elements) { <span class="kw">... </span>}</a></code></pre></div>
+<p>As noted earlier, some users would surely prefer we expose this ability via structural tuples, rather than via a nominal mechanism. But having reduced the cost of declaring the <code>MinMax</code> type to something reasonable, the benefit starts to come into line with the cost: nominal components such as <code>min</code> and <code>max</code> are both more readable and less error-prone than a simple structural tuple. A <code>Pair&lt;int,int&gt;</code> doesn’t tell the reader what it represents; <code>MinMax</code> does (and, the compiler will prevent you from accidentally assigning a <code>MinMax</code> to a <code>Range</code>, even though both could be modeled as pairs of ints.)</p>
+<p><strong>Data transfer objects.</strong> A <em>data transfer object</em> is an aggregate whose sole purpose is to package up related values so they can be communicated to another activity in a single operation. Data transfer objects typically have no behavior other than storage, retrieval, and marshaling of state.</p>
+<p><strong>Joins in stream operations.</strong> Suppose we have a derived quantity, and want to perform stream operations (filtering, mapping, sorting) that operate on the derived quantity. For example, suppose we want to select the <code>Person</code> objects whose name (normalized to uppercase) has the largest <code>hashCode()</code>. We can use a <code>record</code> to temporarily attach the derived quantity (or quantities), operate on them, and then project back to the desired result, as in:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb7-1" title="1"><span class="bu">List</span>&lt;Person&gt; <span class="fu">topThreePeople</span>(<span class="bu">List</span>&lt;Person&gt; list) {</a>
+<a class="sourceLine" id="cb7-2" title="2">    <span class="co">// local records are OK too!</span></a>
+<a class="sourceLine" id="cb7-3" title="3">    record <span class="fu">PersonX</span>(Person person, <span class="dt">int</span> hash) {</a>
+<a class="sourceLine" id="cb7-4" title="4">        <span class="fu">PersonX</span>(Person person) {</a>
+<a class="sourceLine" id="cb7-5" title="5">            <span class="kw">this</span>(person, person.<span class="fu">name</span>().<span class="fu">toUpperCase</span>().<span class="fu">hashCode</span>());</a>
+<a class="sourceLine" id="cb7-6" title="6">        }</a>
+<a class="sourceLine" id="cb7-7" title="7">    }</a>
+<a class="sourceLine" id="cb7-8" title="8"></a>
+<a class="sourceLine" id="cb7-9" title="9">    <span class="kw">return</span> list.<span class="fu">stream</span>()</a>
+<a class="sourceLine" id="cb7-10" title="10">               .<span class="fu">map</span>(PersonX::<span class="kw">new</span>)</a>
+<a class="sourceLine" id="cb7-11" title="11">               .<span class="fu">sorted</span>(<span class="bu">Comparator</span>.<span class="fu">comparingInt</span>(PersonX::hash))</a>
+<a class="sourceLine" id="cb7-12" title="12">               .<span class="fu">limit</span>(<span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb7-13" title="13">               .<span class="fu">map</span>(PersonX::person)</a>
+<a class="sourceLine" id="cb7-14" title="14">               .<span class="fu">collect</span>(<span class="fu">toList</span>());</a>
+<a class="sourceLine" id="cb7-15" title="15">}</a></code></pre></div>
+<p>Here, we start by adjoining the <code>Person</code> with the derived quantity, then we can do ordinary stream operations on the combination, and then when we’re done, we throw away the wrapper and extract the <code>Person</code>.</p>
+<p>We could have done this without materializing an extra object, but then we would potentially have to compute the hash (and the uppercase string) many more times for each element.</p>
+<p><strong>Compound map keys.</strong> Sometimes we want to have a <code>Map</code> that is keyed on the conjunction of two distinct domain values. For example, suppose we want to represent the last time a given person was seen in a given place: we can easily model this with a <code>HashMap</code> whose key combines <code>Person</code> and <code>Place</code>, and whose value is a <code>LocalDateTime</code>. But if your system has no <code>PersonAndPlace</code> type, you have to write one with boilerplate implementations of construction, equals, hashCode, etc. Because the record will automatically acquire the desired constructor, <code>equals()</code>, and <code>hashCode()</code> methods, it is ready to be used as a compound map key:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb8-1" title="1">record <span class="fu">PersonPlace</span>(Person person, Place place) { }</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="bu">Map</span>&lt;PersonPlace, LocalDateTime&gt; lastSeen = ...</a>
+<a class="sourceLine" id="cb8-3" title="3">...</a>
+<a class="sourceLine" id="cb8-4" title="4">LocalDateTime date = lastSeen.<span class="fu">get</span>(<span class="kw">new</span> <span class="fu">PersonPlace</span>(person, place));</a>
+<a class="sourceLine" id="cb8-5" title="5">...</a></code></pre></div>
+<p><strong>Messages.</strong> Records and sums of records are commonly useful for representing messages in actor-based systems and other message-oriented systems (e.g., Kafka.) The messages exchanged by actors are ideally described by products; if an actor responds to a set of messages, this is ideally described by a sum of products. And being able to define an entire set of messages under a sum type enables more effective type checking for messaging APIs.</p>
+<p><strong>Value wrappers.</strong> The <code>Optional</code> class is an algebraic data type in disguise; in languages with algebraic data types and pattern matching, <code>Optional&lt;T&gt;</code> is typically defined as a sum of a <code>Some(T value)</code> and a <code>None</code> type (a degenerate product, one with no components). Similarly, an <code>Either&lt;T,U&gt;</code> type can be described as a sum of a <code>Left&lt;T&gt;</code> and a <code>Right&lt;U&gt;</code> type. (At the time <code>Optional</code> was added to Java, we had neither algebraic data types nor pattern matching, so it made sense to expose it using more traditional API idioms.)</p>
+<p><strong>Discriminated entities.</strong> A more sophisticated example is an API that needs to return a discriminated entity. For example, in [JEP 348][jep348], the Java compiler is extended with a mechanism by which invocations of JDK APIs can be transformed at compile time to a more efficient representation. This involves a conversation between the compiler an an “intrinsic processor”; the compiler passes information about the call site to the processor, which returns a description of how to transform the call (or not). The options are: transform to an <code>invokedynamic</code>, transform to a constant, or do nothing. Using sealed types and records, the API would look like:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">interface</span> IntrinsicProcessor {</a>
+<a class="sourceLine" id="cb9-2" title="2"></a>
+<a class="sourceLine" id="cb9-3" title="3">    sealed <span class="kw">interface</span> <span class="bu">Result</span> {</a>
+<a class="sourceLine" id="cb9-4" title="4">        record <span class="fu">None</span>() <span class="kw">implements</span> <span class="bu">Result</span>;</a>
+<a class="sourceLine" id="cb9-5" title="5">        record <span class="fu">Ldc</span>(ConstantDesc constant) <span class="kw">implements</span> <span class="bu">Result</span>;</a>
+<a class="sourceLine" id="cb9-6" title="6">        record <span class="fu">Indy</span>(DynamicCallSiteDesc site, <span class="bu">Object</span>[] args)</a>
+<a class="sourceLine" id="cb9-7" title="7">            <span class="kw">implements</span> <span class="bu">Result</span>;</a>
+<a class="sourceLine" id="cb9-8" title="8">    }</a>
+<a class="sourceLine" id="cb9-9" title="9"></a>
+<a class="sourceLine" id="cb9-10" title="10">    <span class="kw">public</span> <span class="bu">Result</span> <span class="fu">tryIntrinsify</span>(...);</a>
+<a class="sourceLine" id="cb9-11" title="11">}</a></code></pre></div>
+<p>In this model, an intrinsic processor receives information about the call site, and returns either <code>None</code> (do no transformation), <code>Indy</code> (replace the call with the specified <code>invokedynamic</code>), or <code>Ldc</code> (replace the call with the specified constant.) This sum-of-products is compact to declare, easy to read, and easy to deconstruct with pattern matching; without such a mechanism, we might well be tempted to structure the API is a less readable or more error-prone manner.</p>
+<h2 id="records">Records</h2>
+<p>Records give up a key degree of freedom that classes usually enjoy – the ability to decouple a classes API from its representation. A record has a name, a state description, and a body:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb10-1" title="1">record <span class="bu">Point</span>(<span class="dt">int</span> x, <span class="dt">int</span> y) { }</a></code></pre></div>
+<p>Because a record is “the state, the whole state, and nothing but the state”, we are able to derive most of the members mechanically:</p>
+<ul>
+<li>a private <code>final</code> field, with the same name and type, for each component in the state description;</li>
+<li>a public read accessor method, with the same name and type, for each component in the state description;</li>
+<li>a public constructor, whose signature is the same as the state description, which initializes each field from the corresponding argument;</li>
+<li>a public deconstruction pattern, whose signature is the same as the state description, which extracts each field into the corresponding binding slot;</li>
+<li>implementations of <code>equals</code> and <code>hashCode</code> that say two records are equal if they of the same type and contain the same state;</li>
+<li>implementation of <code>toString</code> that includes all the components, with their names.</li>
+</ul>
+<p>The representation, and the protocols for construction, deconstruction (either a deconstructor pattern, or accessors, or both), equality, and display are all derived from the same state description.</p>
+<h4 id="customizing-records">Customizing records</h4>
+<p>Records, like enums, are classes. The record declaration can have most of the things class declarations can: accessibility modifiers, Javadoc, annotations, an <code>implements</code> clause, and type variables (though the record itself is implicitly final.) The component declarations can have annotations and accessibility modifiers (though the components themselves are implicitly <code>private</code> and <code>final</code>). The body may contain static fields, static methods, static initializers, constructors, instance methods, instance initializers, and nested types.</p>
+<p>For any of the members that are implicitly provided by the compiler, these can also be declared explicitly. (However, carelessly overriding accessors or <code>equals</code>/<code>hashCode</code> risks undermining the semantic invariants of records.)</p>
+<p>Further, some special consideration is provided for explicitly declaring the default constructor (the one whose signature matches that of the record’s state description.) The argument list is omitted (because it is identical to the state description); further, any record fields which are <em>definitely unassigned</em> on all normal completion paths are implicitly initialized from their corresponding arguments (<code>this.x = x</code>) on exit. This allows the constructor body to specify only argument validation and normalization, and omit the obvious field initialization. For example:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb11-1" title="1">record <span class="fu">Range</span>(<span class="dt">int</span> lo, <span class="dt">int</span> hi) {</a>
+<a class="sourceLine" id="cb11-2" title="2">    <span class="kw">public</span> Range {</a>
+<a class="sourceLine" id="cb11-3" title="3">        <span class="kw">if</span> (lo &gt; hi)</a>
+<a class="sourceLine" id="cb11-4" title="4">            <span class="kw">throw</span> <span class="kw">new</span> <span class="bu">IllegalArgumentException</span>(<span class="bu">String</span><span class="fu">.format</span>(<span class="st">&quot;(</span><span class="sc">%d</span><span class="st">,</span><span class="sc">%d</span><span class="st">)&quot;</span>, lo, hi));</a>
+<a class="sourceLine" id="cb11-5" title="5">    }</a>
+<a class="sourceLine" id="cb11-6" title="6">}</a></code></pre></div>
+<p>The implicit deconstruction pattern is derived from the accessors for the fields, so if these are overridden, this will be reflected in deconstruction semantics as well.</p>
+<p>A record that is declared in a nested context is implicitly static.</p>
+<h4 id="odds-and-ends">Odds and ends</h4>
+<p>The above is just a sketch; there’s lots of smaller details to work out.</p>
+<p><strong>Javadoc.</strong> Since the fields and accessor methods are declared as part of the class declaration, we will want to adjust the Javadoc conventions a bit to accommodate this. This can be done by permitting the <code>@param</code> tag on records, which can be propagated to the field and accessor documentation.</p>
+<p><strong>Annotations.</strong> Record components constitute a new place to put annotations; we’ll likely want to extend the <code>@Target</code> meta-annotation to reflect this.</p>
+<p><strong>Reflection.</strong> Since being a record is a semantic statement, record-ness – and the names and types of the state components – should be available reflectively. We may wish to consider a base type for records (as <code>enum</code> classes have) where additional methods and/or specifications can live.</p>
+<p><strong>Serialization.</strong> One of the advantages of records is that we can mechanically derive a safer protocol for marshaling and unmarshaling. A sensible way to take advantage of this is for records that implement <code>Serializable</code> to automatically acquire a <code>readResolve</code> method which extracts the state and runs it back through the constructor, to prevent malicious streams from injecting bad data.</p>
+<p><strong>Extension.</strong> It would be possible to permit records to extend <em>abstract records</em>, which would allow related records to share certain members. We should hold this possibility in reserve.</p>
+<p><strong>Compatibility.</strong> Since the arity, names, and types of the components are propagated directly into the signatures and names of members, changes to the state description may not be source- or binary-compatible.</p>
+<p><strong>Named invocation.</strong> Because the names of the components form part of the record’s API, this opens the door to <em>named invocation</em> of constructors – which allows us, in most cases, to forgo the companion <em>builder</em> that often goes along with domain classes. (While it would be nice to support this for all classes, records have some special properties that make this much less complicated; we might consider starting with records and then extending.)</p>
+<h4 id="restrictions">Restrictions</h4>
+<p>Careful readers will have noted several restrictions: record fields cannot be mutable; no fields other than those in the state description are permitted; and records cannot extend other types or be extended.</p>
+<p>It is easy to imagine situations where each of these restrictions will feel stifling, and tempting to try to make the construct more flexible in order to broaden its applicability. But, we should not do so at the expense of the conditions that make it work in the first place – that we can derive everything from a single state description.</p>
+<p><strong>Extension.</strong> If our mantra is that the record’s state description is “the state, the whole state, and nothing but the state”, then this rules out extending anything (except possibly abstract records), because we cannot be sure that there is no state hidden in the superclass. Similarly, if records can be extended, then their state description is, again, not a complete description of their state. (Note that in addition to excluding ordinary extension, this also excludes dynamic proxies.)</p>
+<p><strong>Mutability.</strong> The stricture against mutability is more complex, because in theory one can imagine examples which do not fall afoul of the goals. However, mutability puts pressure on the alignment between the state and the API. For example, it is generally incorrect to base the semantics of <code>equals()</code> and <code>hashCode()</code> on mutable state; doing so creates risks that such elements could silently disappear from a <code>HashSet</code> or <code>HashMap</code>. So adding mutability to records also likely means we may want a different equality protocol from our state description; we may also want a different construction protocol (many domain objects are created with no-arg constructors and have their state modified with setters, or with a constructor that takes only the “primary key” fields.) Now, we’ve lost sight of the key distinguishing feature: that we can derive the key API elements from a single state description. (And, once we introduce mutability, we need to think about thread-safety, which is going to be difficult to reconcile with the goals of records.)</p>
+<p>As much as it would be nice to automate away the boilerplate of mutable JavaBeans, one need only look at the many such attempts to do so (Lombok, Immutables, Joda Beans, etc), and look at how many “knobs” they have acquired over the years, to realize that an approach that is focused exclusively on boilerplate reduction <em>for arbitrary code</em> is guaranteed to merely create a new kind of boilerplate. These classes simply have too many degrees of freedom to be captured by a single simple description.</p>
+<p>Nominal tuples with clearly defined semantics is something that can make our programs both more concise <em>and</em> more reliable for a lot of use cases – but there are still use cases beyond the limits of what they can do for us. (That doesn’t mean that there aren’t things we can do for these classes too – it just means that this feature will not be the delivery vehicle for them.) So, to be clear: records are not intended to replace JavaBeans, or other mutable aggregates – and that’s OK.</p>
+<p><strong>Additional fields.</strong> A related tension is whether a record can declare fields other than those that are part of the state description. (And again, one can easily imagine examples where this is safe.) On the other hand, this capability again introduces the temptation to violate “the state, the whole state, and nothing but the state” – a temptation best avoided.</p>
+<h2 id="sealed-types">Sealed types</h2>
+<p>A <em>sealed type</em> is one for which subclassing is restricted according to guidance specified with the type’s declaration. (Finality can be considered a degenerate form of sealing.)</p>
+<p>Sealing serves two distinct purposes. The first is that it restricts who can be a subtype. This is largely a declaration-site concern, where an API owner wants to defend the integrity of their API. The other, less obvious benefit is that it potentially enables <em>exhaustiveness analysis</em> at the use-site, such as when switching over type patterns in a sealed type.</p>
+<p>We specify that a class is sealed by applying the <code>sealed</code> modifier to a class, abstract class, or interface, with an optional <code>permits</code> list:</p>
+<pre><code>sealed interface Node
+     permits A, B, C { ... }</code></pre>
+<p>In this explicit form, <code>Node</code> may be extended only by the types enumerated in the <code>permits</code> list (which must further be members of the same package or module.) In many situations, this may be overly explicit; if all the subtypes are declared in the same compilation unit, we can omit the <code>permits</code> clause, in which case the compiler infers it by enumerating the subtypes in the current compilation unit.</p>
+<p>Anonymous subclasses (and lambdas) of a sealed type are prohibited.</p>
+<p>Sealing, like finality, is both a language and JVM feature; the sealed-ness of a type, and its list of permitted subtypes, are reified in the classfile so that it can be enforced at runtime.</p>
+<p>The list of permitted subtypes should also be incorporated somehow into the Javadoc. Note that this is not exactly the same as the current “All implementing classes” list that Javadoc currently includes, so a list like “All permitted subtypes” might be added (possibly with some indication if the subtype is less accessible than the parent, or including an annotation that there exist others that are not listed.)</p>
+<h4 id="exhaustiveness">Exhaustiveness</h4>
+<p>One of the benefits of sealing is that the compiler can enumerate the permitted subtypes of a sealed type; this in turn lets us perform exhaustiveness analysis when switching over patterns involving sealed types.</p>
+<p><em>Note:</em> It is superficially tempting to say <code>permits package</code> or <code>permits module</code> as a shorthand, which would allow for a type to be extended by package-mates or module-mates without listing them all. However, this would undermine the compiler’s ability to reason about exhaustiveness, because packages and modules are not always co-compiled.</p>
+<p>On the other hand, subtypes need not be as accessible as the sealed parent. In this case, some clients may not get the chance to exhaustively switch over them; they’ll have to make these switches exhaustive with a <code>default</code> clause or other total pattern. When compiling a switch over such a sealed type, the compiler can provide a useful error message (“I know this is a sealed type, but I can’t provide full exhaustiveness checking here because you can’t see all the subtypes, so you still need a default.”)</p>
+<h4 id="inheritance">Inheritance</h4>
+<p>Unless otherwise specified, abstract subtypes of sealed types are implicitly sealed, and concrete subtypes are implicitly final. This can be reversed by explicitly modifying the subtype with <code>non-sealed</code>. (Not for records, though; they are always <code>final</code>.)</p>
+<p>Unsealing a subtype in a hierarchy doesn’t undermine all the benefits of sealing, because the (possibly inferred) set of explicitly permitted subtypes still constitutes a total covering. However, users who know about unsealed subtypes can use this information to their benefit (much like we do with exceptions today; you can catch <code>FileNotFoundException</code> separately from <code>IOException</code> if you want, but don’t have to.)</p>
+<p>An example of where explicit unsealing (and private subtypes) is useful can be found in the JEP-334 API:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb13-1" title="1">sealed <span class="kw">interface</span> ConstantDesc</a>
+<a class="sourceLine" id="cb13-2" title="2">    permits <span class="bu">String</span>, <span class="bu">Integer</span>, <span class="bu">Float</span>, <span class="bu">Long</span>, <span class="bu">Double</span>,</a>
+<a class="sourceLine" id="cb13-3" title="3">            <span class="bu">ClassDesc</span>, MethodTypeDesc, MethodHandleDesc,</a>
+<a class="sourceLine" id="cb13-4" title="4">            DynamicConstantDesc { }</a>
+<a class="sourceLine" id="cb13-5" title="5"></a>
+<a class="sourceLine" id="cb13-6" title="6">sealed <span class="kw">interface</span> <span class="bu">ClassDesc</span> <span class="kw">extends</span> ConstantDesc</a>
+<a class="sourceLine" id="cb13-7" title="7">    permits PrimitiveClassDescImpl, ReferenceClassDescImpl { }</a>
+<a class="sourceLine" id="cb13-8" title="8"></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="kw">private</span> <span class="kw">class</span> PrimitiveClassDescImpl <span class="kw">implements</span> <span class="bu">ClassDesc</span> { }</a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="kw">private</span> <span class="kw">class</span> ReferenceClassDescImpl <span class="kw">implements</span> <span class="bu">ClassDesc</span> { }</a>
+<a class="sourceLine" id="cb13-11" title="11">sealed <span class="kw">interface</span> MethodTypeDesc <span class="kw">extends</span> ConstantDesc</a>
+<a class="sourceLine" id="cb13-12" title="12">    permits MethodTypeDescImpl { }</a>
+<a class="sourceLine" id="cb13-13" title="13"></a>
+<a class="sourceLine" id="cb13-14" title="14">sealed <span class="kw">interface</span> MethodHandleDesc <span class="kw">extends</span> ConstantDesc</a>
+<a class="sourceLine" id="cb13-15" title="15">    permits DirectMethodHandleDesc, MethodHandleDescImpl { }</a>
+<a class="sourceLine" id="cb13-16" title="16">sealed <span class="kw">interface</span> DirectMethodHandleDesc <span class="kw">extends</span> MethodHandleDesc</a>
+<a class="sourceLine" id="cb13-17" title="17">    permits DirectMethodHandleDescImpl { }</a>
+<a class="sourceLine" id="cb13-18" title="18"></a>
+<a class="sourceLine" id="cb13-19" title="19"><span class="co">// designed for subclassing</span></a>
+<a class="sourceLine" id="cb13-20" title="20">non-sealed <span class="kw">class</span> DynamicConstantDesc <span class="kw">extends</span> ConstantDesc { <span class="kw">... </span>}</a></code></pre></div>
+<h2 id="summary">Summary</h2>
+<p>The combination of records and sealed types follows a powerful, and well-understood, pattern for describing related groups of structured data, and there are many situations where it can improve the readability and concision of common code. Records may not be suitable for all code that would like some relief from the boilerplate of declaration; we plan to continue to look into features that can improve the situation for these use cases as well.</p>
+<div class="footer" id="footer">
+<img src="http://openjdk.java.net/images/openjdk-small.png">
+<br>© 2021 Oracle Corporation and/or its affiliates
+<br><a href="http://openjdk.java.net/legal/tou/">Terms of Use</a>
+· License: <a href="http://openjdk.java.net/legal/gplv2+ce.html">GPLv2</a>
+· <a href="http://www.oracle.com/us/legal/privacy/">Privacy</a>
+· <a href="http://www.oracle.com/us/legal/third-party-trademarks/third-party-trademarks-078568.html">Trademarks</a>
+</div>
+</body>
+</html>
