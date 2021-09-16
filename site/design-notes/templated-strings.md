@@ -1,6 +1,6 @@
 ### String Tapas Redux: Beyond mere string interpolation
 
-#### Brian Goetz and Jim Laskey September 2021
+#### Jim Laskey and Brian Goetz September 2021
 
 Some time ago, we talked about all the things we might want to do with strings:
 multi-line strings, raw strings, interpolated strings.    At the time, we sated
