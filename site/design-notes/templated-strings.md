@@ -51,7 +51,7 @@ want safety and flexibility across a range of domains.
 |:---|:---|
 | C#            | `$"{x} plus {y} equals {x + y}"`      |
 | Groovy        | `"$x plus $y equals ${x + y}"`        |
-| Haskell       | <code>[i|#{x} plus #{y} equals #{x + y}|]</code> |
+| Haskell       | `[i&#124;#{x} plus #{y} equals #{x + y}&#124;]` |
 | JavaScript    | &#96;`${x} plus ${y} equals ${x + y}`&#96; |
 | Kotlin        | `"$x plus $y equals ${x + y}"`        |
 | Scala         | `f"$x%d plus $y%d equals ${x + y}%d"` |
