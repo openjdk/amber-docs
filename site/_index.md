@@ -62,6 +62,7 @@ Withdrawn:
       - [Pattern Matching for Java -- Runtime and Translation](design-notes/patterns/pattern-match-translation) (June 2017)
       - [Extending `switch` for Pattern Matching](design-notes/patterns/extending-switch-for-patterns) (April 2017)
       - [Type Patterns in `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
+    - [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
 
   - Historical notes
     - [Data Classes for Java](design-notes/data-classes-historical-1) (October 2017)

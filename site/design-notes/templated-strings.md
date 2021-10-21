@@ -1,6 +1,8 @@
-### String Tapas Redux: Beyond mere string interpolation
 
-#### Jim Laskey and Brian Goetz September 2021
+# String Tapas Redux
+## Beyond Mere String Interpolation {.subtitle}
+#### Jim Laskey and Brian Goetz {.author}
+#### September 2021 {.date}
 
 Some time ago, we talked about all the things we might want to do with strings:
 multi-line strings, raw strings, interpolated strings.    At the time, we sated
@@ -14,30 +16,34 @@ constant strings with non-constant values (concatenation, `String::format`,
 `MessageFormat`), developers would prefer something more direct, for several
 reasons:
 
- - **Ceremony**.  Writing string interpolation expressions, rather than calls to
+ - _Ceremony_ — Writing string interpolation expressions, rather than calls to
    template-formatting libraries, is less work.
- - **Readability**.  In many cases (though not all) a string interpolation
+
+ - _Readability_ — In many cases (though not all) a string interpolation
    expression like `"My name is ${name}, I am ${age} years old"` is more
    readable than its equivalent with `String::format`, because the labels ("My
    name is") and the corresponding parameters are right next to each other.
- - **Safety**.  A long format string or a long list of interpolants invites
+
+ - _Safety_ — A long format string or a long list of interpolants invites
    mistakes, such as the arity of parameters not matching that of format
    specifiers, or the types of the parameters not matching the corresponding
    format specifiers.
 
 However, there are reasons we've been hesitant to do such a feature, including:
 
-  - **Injection attacks**.  Constructing SQL queries or JSON expressions with string
+  - _Injection attacks_ — Constructing SQL queries or JSON expressions with string
     interpolation is convenient, but is at risk for [injection
     attacks](https://xkcd.com/327/).  Improving mechanisms for constructing
     composite strings without similarly improving or enabling safer mechanisms
     for constructing queries would surely widen the attack surface.  This is
     asking users to choose between convenience and security.
-  - **Localization**.  Java has a strong commitment to internationalization;
+
+  - _Localization_ — Java has a strong commitment to internationalization;
     introducing a more convenient but less localizable mechanism for
     constructing messages will result in fewer applications being localized.
     This is asking users to choose between convenience and flexibility.
-  - **Formatting**.  A naive interpretation of string interpolation deprives us of
+
+  - _Formatting_ — A naive interpretation of string interpolation deprives us of
     the ability to format with format specifiers such as field widths,
     locale-sensitive numeric formatting, etc.  This is asking users to choose
     between convenience and expressiveness.
@@ -63,7 +69,7 @@ want safety and flexibility across a range of domains.
 We’re not interested in merely doing “string interpolation” as it has been
 interpreted by other languages. We would like to do better.
 
-#### What's wrong with string interpolation?
+## What's wrong with string interpolation?
 
 The only case handled by most other languages that support string interpolation
 is the simplest one -- uninterpreted concatenation. Picking an example at
@@ -87,11 +93,11 @@ it requires a different delimiter from "regular" strings, as well as a different
 set of rules for separating verbatim content from embedded expressions.  In the
 first course (text blocks), an important goal was that string literals and text
 blocks be different stackings of the same basic feature, rather than wholly
-separate features (this is one reason "raw string literals" was withdrawn.)  We
+separate features (this is one reason "raw string literals" was withdrawn).  We
 would like to follow the same discipline here; embedded parameters should be
 part of the overall string expression feature, not a separate thing.
 
-#### Another level of indirection
+## Another level of indirection
 
 We can meet our diverse goals by separating _mechanism_ from _policy_.
 How we introduce parameters into string expressions is mechanism; how we combine
@@ -138,12 +144,14 @@ that is not even a `String`.  The compiler shreds a parameterized string
 expression into the constant and non-constant parts, and arranges for the
 combination method on the policy object to be invoked.
 
-#### Examples
+## Examples
 
 Delegating control to a policy object dramatically expands the expressiveness
 and safety of the feature.
 
-**String formatting.**  Formatting libraries like `String::format` offer more
+#### String formatting
+
+Formatting libraries like `String::format` offer more
 than just interpolation; they offer rich formatting options such as field-width
 management, leading-zero fills, hex conversion, locale-specific presentation,
 etc.  Making straight interpolation easier but no improvement for formatting
@@ -181,7 +189,9 @@ constrained by these choices made by libraries on their behalf -- there could be
 both locale-sensitive and locale-insensitive formatters for the same domain, and
 the user can choose the one they want.
 
-**Validation and normalization.**  SQL statements are often parameterized by
+#### Validation and normalization
+
+SQL statements are often parameterized by
 some dynamic data value.  Unfortunately, the data being interpolated is often
 tainted by user input.  The JDBC framework includes builders for _prepared
 statements_, which sanitize inputs and compose the query in a SQL-aware manner:
@@ -233,7 +243,9 @@ to format the query directly:
 var query = connection."SELECT * FROM \{table}";
 ```
 
-**Non-string results.**  One could easily imagine a JSON or XML library
+#### Non-string results
+
+One could easily imagine a JSON or XML library
 providing a similar level of quote discipline and injection protection in those
 domains (they are vulnerable to injection attacks too):
 
@@ -277,7 +289,9 @@ that is only invoked if the message is actually going to be logged, to avoid the
 overhead of formatting a string that is going to be thrown away.  A lazy
 policy object could produce `Supplier<String>` rather than `String` itself.
 
-**Localization.**  The examples so far have been about interpolation enhanced
+#### Localization
+
+The examples so far have been about interpolation enhanced
 with validation and transformation, but this can be taken further.  The JDK
 contains APIs such as `ResourceBundle` to support localization of messages. A
 resource bundle is a mapping from key names to localizable template strings.
