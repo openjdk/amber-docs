@@ -1,6 +1,7 @@
 # Pattern Matching for Java
 
-#### Gavin Bierman and Brian Goetz, September 2018
+#### Gavin Bierman and Brian Goetz {.author}
+#### September 2018 {.date}
 
 This document explores a possible direction for supporting _pattern
 matching_ in the Java Language.  _This is an exploratory document only
@@ -10,21 +11,25 @@ reference other features under exploration; this is purely for
 illustrative purposes, and does not constitute any sort of plan or
 committment to deliver any of these features.
 
-#### Pattern matching documents
+### Pattern matching documents
 
- - [Pattern Matching For Java](pattern-matching-for-java.html) (this document).
-   Overview of pattern matching concepts, and how they might be surfaced in Java.
- - [Pattern Matching For Java -- Semantics](pattern-match-semantics.html).  More
+ - [Pattern Matching For Java](pattern-matching-for-java) (this document)
+   --- Overview of pattern matching concepts, and how they might be surfaced in Java.
+
+ - [Pattern Matching For Java -- Semantics](pattern-match-semantics) --- More
    detailed notes on type checking, matching, and scoping of patterns and
    binding variables.  
- - [Extending Switch for Patterns](extending-switch-for-patterns.html).  An early
+
+ - [Extending Switch for Patterns](extending-switch-for-patterns) --- An early
    exploration of the issues surrounding extending pattern matching to the
    `switch` statement.
- - [Type Patterns in Switch](type-patterns-in-switch.html).  A more up-to-date
+
+ - [Type Patterns in Switch](type-patterns-in-switch) --- A more up-to-date
    treatment of extending pattern matching to `switch` statements, including
    treatment of nullity and totality.  
- - [Pattern Matching in the Java Object model](pattern-match-object-model.html).
-   Explores how patterns fit into the Java object model, how they fill a hole we
+
+ - [Pattern Matching in the Java Object model](pattern-match-object-model)
+   --- Explores how patterns fit into the Java object model, how they fill a hole we
    may not have realized existed, and how they might affect API design going
    forward.
 
@@ -108,7 +113,7 @@ case labels of a switch statement can specify types as well as
 constants).  But these are mostly band-aids; there's a better
 alternative that subsumes these (and other cases.)
 
-#### Patterns
+### Patterns
 
 Rather than reach for ad-hoc solutions to the test-and-extract
 problem, we believe it is time for Java to embrace _pattern matching_.
@@ -194,7 +199,7 @@ else if (obj instanceof String s) {
 This is already a big improvement -- the business logic pops out much
 more clearly -- but we can do better.
 
-#### Patterns in multi-way conditionals
+### Patterns in multi-way conditionals
 
 The chain of `if...else` still has some redundancy we'd like to
 squeeze out, both because it gives bugs a place to hide, and makes
@@ -236,7 +241,7 @@ verify that the supplied cases are exhaustive.  As a bonus, it is more
 optimizable too; in this case we are more likely to be able to do the
 dispatch in _O(1)_ time.
 
-#### Constant patterns
+### Constant patterns
 
 We're already familiar with a kind of pattern, namely, the constant
 case labels in today's `switch` statement.  Currently, case labels can
@@ -324,7 +329,7 @@ operations are too ad-hoc (such as "does this expression contain any
 intermediate nodes that evaluate to 42"); it would be silly to put
 this into the hierarchy, as it would just pollute the API.
 
-#### The Visitor pattern
+### The Visitor pattern
 
 The standard trick for separately specifying a hierarchy from its
 operations is the _visitor pattern_, which separate traversal of a
@@ -439,7 +444,7 @@ nontrivial supertype.  All we needed was for the `Node` types to be
 sufficiently transparent that we could take them apart using
 deconstruction patterns.
 
-#### Sidebar: Data-driven polymorphism with patterns
+### Sidebar: Data-driven polymorphism with patterns
 
 The promise of the Visitor pattern is that operations on stable
 hierarchies can be specified separately from the hierarchy.  But, this
@@ -501,7 +506,7 @@ But we can go further: we can nest other patterns inside a
 deconstruction pattern as well, either to further constrain what is
 matched or further destructure the result, as we'll see below.
 
-#### Exhaustiveness
+### Exhaustiveness
 
 In the expression form of `switch`, we evaluate exactly one arm of the
 switch, which becomes the value of the `switch` expression itself.
@@ -533,7 +538,7 @@ subtypes, a sealed type can have no subtypes beyond a fixed set of
 co-declared subtypes.  The details of sealing will be discussed
 separately.
 
-#### Patterns and type inference
+### Patterns and type inference
 
 Just as we sometimes want to let the compiler infer the type of a
 local variable for us using `var` rather than spell the type out
@@ -566,7 +571,7 @@ of whether to use a nested type pattern or a nested `var` pattern is
 solely one of whether the manifest type adds to or distracts from
 readability and maintainability.
 
-#### Nesting constant patterns
+### Nesting constant patterns
 
 Constant patterns are useful on their own (all existing `switch`
 statements today use the equivalent of constant patterns), but they
@@ -614,7 +619,7 @@ compose patterns in this way allows us to specify complicated matching
 conditions clearly and concisely, making the code easier to read and
 less error-prone.
 
-#### Any patterns
+### Any patterns
 
 Just as the `var` pattern matches anything and binds its target to
 that, the `_` pattern matches anything -- and binds nothing.  Again,
@@ -646,7 +651,7 @@ be a corresponding pattern that takes apart that value into its
 component parts.  The strong syntactic similarity between construction
 and deconstruction is no accident.
 
-#### Static patterns
+### Static patterns
 
 Deconstruction patterns are implemented by class members that are
 analogous to constructors, but which run in reverse, taking an
@@ -751,7 +756,7 @@ anonymous(int a, int b)`.
 Like `switch`, `match` may throw `NullPointerException` at runtime if we
 attempt to destructure a `null` and do not provide an `else` clause.
 
-#### Summary of patterns and control flow constructs
+### Summary of patterns and control flow constructs
 
 We've now seen several kinds of patterns:
 

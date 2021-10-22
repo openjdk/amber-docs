@@ -1,5 +1,6 @@
 # Symbolic References for Constants
-#### Brian Goetz, March 2018
+#### Brian Goetz {.author}
+#### March 2018 {.date}
 
 [JEP 303][jep303] exposes compiler intrinsics so that Java source code
 can deterministically generate `ldc` and `invokedynamic` bytecodes.
@@ -50,7 +51,7 @@ VM.  Compiler plugins (such as annotation processors) similarly need
 to describe program elements in symbolic terms.  They would all
 benefit from having a single, official way to describe such constants.
 
-#### Symbolic references
+### Symbolic references
 
 Our solution is to define a family of value-based _symbolic reference_
 ([JVMS][jvmspec] 5.1) types, capable of describing each kind of
@@ -92,7 +93,7 @@ arise naturally in the intrinsification API, the API for describing
 `invokedynamic` bootstrap specifiers, bytecode APIs, compiler plugin
 APIs, etc.
 
-#### ClassRef
+### ClassRef
 
 A `ClassRef` describes a `Class` (including the `Class` mirrors
 associated with non-reference types, like `int.class`, and array
@@ -127,7 +128,7 @@ Because some class mirrors are represented in the constant pool using
 dynamic constants, there are multiple concrete implementations of
 `ClassRef`.
 
-#### MethodTypeRef
+### MethodTypeRef
 
 A `MethodTypeRef` describes a `MethodType`; `MethodTypeRef` uses
 `ClassRef` to describe the parameter and return types.
@@ -158,7 +159,7 @@ public interface MethodTypeRef extends ConstantRef<MethodType> {
 }
 ```
 
-#### MethodHandleRef
+### MethodHandleRef
 
 A `MethodHandleRef` describes a method handle.  It can describe both
 direct method handles (`ConstantMethodHandleRef`) and derived method
@@ -201,7 +202,7 @@ public class ConstantMethodHandleRef implements MethodHandleRef {
 }
 ```
 
-#### DynamicConstantRef
+### DynamicConstantRef
 
 A `DynamicConstantRef` describes a dynamic constant in terms of a
 bootstrap method, bootstrap arguments, and invocation name and type.
@@ -233,7 +234,7 @@ important runtime types such as enums (`EnumRef`) and `VarHandle`s
 references such as `CR_int` (a `ClassRef` describing the primitive
 type `int`) or `NULL` (describing the null value).
 
-#### Bytecode writing and reading
+### Bytecode writing and reading
 
 If a compiler or bytecode API uses symbolic references to describe
 constants, it will have to be able to write constants described by
@@ -256,7 +257,7 @@ bootstrap `ConstantBootstraps.enumConstant()` will be lifted to an
 constants using the `ofCanonical()` factory to deliver strongly typed
 symbolic references to their clients.
 
-#### Extensibility
+### Extensibility
 
 The `ConstantRef` hierarchy will eventually be sealed (prohibiting new
 direct subtypes beyond the ones defined), but the `DynamicConstantRef`
@@ -266,7 +267,7 @@ type for an arbitrary type `T` can be done by creating a subtype of
 in nominal form, and implementing the `resolveConstantRef()` method.
 This is how `EnumRef` and `VarHandleRef` are implemented.
 
-#### Representing invokedynamic sites
+### Representing invokedynamic sites
 
 Call sites for `invokedynamic` are defined similarly to dynamic
 constants, with `DynamicCallSiteRef`.
@@ -342,7 +343,7 @@ determine the compile-time type of the result (unlike
 signature-polymorphic invocation, which cast context to condition the
 return type.)
 
-#### Examples
+### Examples
 
 If we want to load the method handle for `String::isEmpty`, we could
 do as follows, which would translate as an `ldc` of a `MethodHandle`
@@ -424,7 +425,7 @@ constant-ness called a _trackable constant_ (TC).  To start with:
  - Static final fields _within the same compilation unit_ whose
    initializers are TC are TC.
 
-#### Tracking
+### Tracking
 
 Rather than go right to constant folding or propagation, we use a
 technique called _constant tracking_ that is more flexible.  For each
@@ -462,7 +463,7 @@ Obviously, better support for identification, propagation, and folding
 of constants is useful for far beyond mere intrinsification of
 constants.
 
-#### Constant propagation
+### Constant propagation
 
 Tracking also enables us to perform _constant propagation_.  In the
 following code:
@@ -492,7 +493,7 @@ By propagating constants to their points of use, we reduce the
 complexity of the data flow and expose opportunities for other
 optimizations, such as dead code elimination.
 
-#### Foldable
+### Foldable
 
 To complete the story of why intrinsification works, we have to add
 some more ways to generate TC constants.  We mark certain methods,
@@ -517,7 +518,7 @@ classpath during compilation; currently `@Foldable` is restricted to
 `java.base`.)  If the reflective invocation completes successfully,
 the result is tracked with the invocation node.
 
-#### Intrinsification
+### Intrinsification
 
 The arguments to the intrinsics methods `ldc()` and `invokedynamic()`,
 with the exception of the dynamic arguments to `invokedynamic` (the
@@ -534,7 +535,7 @@ arguments, test them against these types, and cast them to the
 appropriate type and call the appropriate accessor methods to extract
 class names, descriptor strings, etc, and write them to the classfile.
 
-#### Constable
+### Constable
 
 So far, we've made relatively little use of the tracked constants,
 other than to intrinsify `ldc()` and `invokedynamic()`, and to
@@ -562,7 +563,7 @@ to implement `Constable`.  As with `@Foldable`, the bar for
 side-effects, as executing the path by which the `Constable` was
 created.
 
-#### Constant folding
+### Constant folding
 
 With the addition of `Constable`, we are finally ready to perform more
 comprehensive compile-time constant folding.  If a node has a tracked
@@ -593,7 +594,7 @@ this point, we can fold away the tree for `cr2.descriptorString()`,
 and replace it with an `ldc` of the descriptor string pulled out of
 `cr2` at compile time, `[Ljava/lang/String;`.
 
-#### Dead code elimination
+### Dead code elimination
 
 Having done constant propagation and folding, the local variables
 `cr1` and `cr2` are now effectively unused, and their initializers
@@ -613,7 +614,7 @@ replace the initializer with an `ldc` of the constant described by the
 result of `Constable.toConstantRef()` -- which will still likely be
 more efficient and compact than emitting the corresponding bytecode.
 
-#### Path optimization
+### Path optimization
 
 If the result of `cr2` were used elsewhere, compile-time folding would
 still pays dividends, because we can optimize the path by which `cr2`
@@ -632,7 +633,7 @@ was computed.  (The burden is on such `@Foldable` and `Constable` APIs
 to ensure that this difference is not observable, except as a
 performance improvement.)
 
-#### String folding
+### String folding
 
 Exposing a `constexpr`-like mechanism for `java.base` can be used as
 part of our language evolution strategy.  In [JEP 326][jep326], which
@@ -661,7 +662,7 @@ pool (and do constant propagation on it.)  Supporting compile-time
 foldable libraries can reduce the pressure to have the language do
 things that really should be the province of libraries.
 
-#### De-capturing of lambdas
+### De-capturing of lambdas
 
 Lambdas that capture effectively final local variables from the
 enclosing lexical context are compiled differently, and are more

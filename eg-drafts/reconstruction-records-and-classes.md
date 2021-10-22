@@ -1,7 +1,8 @@
-# Functional transformation of immutable objects
-#### Brian Goetz, Aug 2020
+# Functional Transformation of Immutable Objects
+#### Brian Goetz {.author}
+#### August 2020 {.date}
 
-This document is an _early stage draft_ outlining a possible direction for supporting _functional transformation_ in the Java Language. This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language. This document also may reference other features under exploration; this is purely for illustrative purposes, and does not constitute any sort of plan or commitment to deliver any of these features.
+> This document is an _early stage draft_ outlining a possible direction for supporting _functional transformation_ in the Java Language. This is an exploratory document only and does not constitute a plan for any specific feature in any specific version of the Java Language. This document also may reference other features under exploration; this is purely for illustrative purposes, and does not constitute any sort of plan or commitment to deliver any of these features.
 
 Everyone likes records.  But, adding features like records and deconstruction,
 which solves some old problems, raises news ones.  And, everything we can do
@@ -59,7 +60,7 @@ classes (such as `LocalDateTime`) have had to expose wither methods as well.
 But, if the language is going to encourage us to write immutable classes, it
 should also help us with this problem.
 
-#### Digression: learning from C#
+### Digression: learning from C\#
 
 Our friends in the C# world have taken two swings at this problem already.
 Their first solution builds on the fact that they already allow parameters to
@@ -98,7 +99,7 @@ named constructor arguments), so the above causes a new `Point` to be
 instantiated, where the property assignments written in the block override those
 of the left operand.)
 
-#### With expressions in Java
+### With expressions in Java
 
 The C# approach was sensible for them because they could build on features they
 already had (default parameters, properties), but just copying that approach
@@ -240,7 +241,7 @@ how do we even find the initial set `{ x }`?  This is where our restriction
 targets in the block that are not assignments to locals declared in the block,
 and they must be assignments to "properties" of the object being reconstructed.
 
-#### Making names significant
+### Making names significant
 
 Making the parameter and binding names of constructors and deconstructors
 significant was needed for this feature (and, as it turns out, for a number of
@@ -273,7 +274,7 @@ we can interpret this the same way as for records:
 In this way, any class with a `__byname` constructor and deconstructor can
 participate in the reconstruction protocol.
 
-#### Refining overloading
+### Refining overloading
 
 The "only one constructor and deconstructor" rule is overly restrictive,  so
 let's extend this to be more useful.  The existing rules about overloading and
@@ -317,7 +318,7 @@ implementation can take advantage of functional transformation in terms that
 make sense to them.  And to the extent there is overlap between the public and
 private pair, names in the private pair can always be alpha-renamed.
 
-#### Teasers
+### Teasers
 
 The `__byname` modifier is part of the underpinnings for many other useful
 features, such as keyword-based invocation (`new Foo(x: 3)`), with or without
@@ -326,7 +327,7 @@ read accessors for ordinary classes (you can think of a deconstructor as a
 multi-getter, and derive getters from that.)  We'll talk about these some other
 time.
 
-#### Factories
+### Factories
 
 Functional transformation depends on having a `__byname` constructor, but many
 developers prefer to expose factories rather than constructors.  Can we nominate
@@ -357,7 +358,9 @@ factory methods in the "Constructors" section of Javadoc.  Then we can allow
 transformation, we can extend the rule to allow selecting either a `__byname`
 constructor or factory.
 
-**Bonus round: interfaces?**   We already allow static factories in interfaces,
+#### Bonus round: interfaces?
+
+We already allow static factories in interfaces,
 and there's no reason why interfaces cannot have deconstructors (if the
 interface provides an API that lets the state components be extracted, which
 some do).  If we also allowed deconstructors in interfaces we could even do

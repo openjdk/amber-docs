@@ -1,10 +1,11 @@
-# Deconstruction patterns for records and classes
-#### Brian Goetz, Aug 2020
+# Deconstruction Patterns for Records and Classes
+#### Brian Goetz {.author}
+#### August 2020 {.date}
 
-This document describes a possible approach for a future phase of _pattern
+> This document describes a possible approach for a future phase of _pattern
 matching_ -- adding deconstruction patterns for records and classes.  This
 builds on the work of [JEP 375](https://openjdk.java.net/jeps/375), and would follow [type patterns in
-switch](type-patterns-in-switch.html).  _This is an exploratory document only
+switch](../site/design-notes/patterns/type-patterns-in-switch).  _This is an exploratory document only
 and does not constitute a plan for any specific feature in any specific version
 of the Java Language._
 
@@ -49,7 +50,7 @@ each component and binding the results to fresh variables.  Just as we are able
 to infer the behavior for constructors, accessors, and `Object` methods for
 records, we can do the same for deconstruction patterns.
 
-#### Deconstruction patterns
+### Deconstruction patterns
 
 [JEP 375][patterns0] gave us one kind of pattern: type patterns.  A type pattern
 is denoted by a type name and a variable identifier: `String s` or `List<String>
@@ -75,7 +76,7 @@ variables correspond to the components of the record in the canonical order,
 and whose implementation binds these to the return value of the corresponding
 accessor.
 
-#### Nested patterns
+### Nested patterns
 
 The above description -- where we describe what is between the parentheses in a
 deconstruction pattern -- is a simplification.  In reality, what is between the
@@ -112,7 +113,7 @@ A nested deconstruction pattern `D(P, Q)` is _total_ on a target type `T` if the
 type pattern `D d` is total on `T`, and the patterns `P` and `Q` are total on
 the types of `D`'s binding components.
 
-#### Match statements
+### Match statements
 
 Some patterns (such as `var x`) are total on their target type (will always
 match); others are partial (may fail).  Further, for some patterns, the
@@ -205,7 +206,7 @@ paths.  The body is a deconstructor is effectively the body of a `void` method,
 so may use `return` if needed (like constructors).  The syntax is chosen to
 highlight the duality between constructors and deconstructors.
 
-#### Overloading
+### Overloading
 
 Like constructors, deconstructors can be overloaded.  However, overload
 resolution is slightly different than for methods and constructors.  (For
@@ -218,7 +219,7 @@ overloads are applicable is different as well.
 (Details TBD, but given the expected prevalance of `var` patterns at the use
 site, we'd expect that in practice, we'll mostly only see overloads on arity.)
 
-#### Varargs
+### Varargs
 
 Varargs patterns seem quite useful.  As a motivating example, suppose we have a
 pattern for a regular expression, whose binding is a varargs containing the
@@ -231,7 +232,7 @@ This is a substantial separate investigation; for now, details TBD, and we will
 likely hold off supporting the declaration of varargs patterns until we have a
 suitable semantics for matching varargs patterns.
 
-#### Composition
+### Composition
 
 Constructors compose with other constructors; constructors may delegate to
 superclass constructors, and may further invoke constructors to initialize the
@@ -311,7 +312,7 @@ The other form of composition in constructors is delegating to `this`; this is
 analogous to delegating to `super` (and we may want similarly to default to `=
 this`).
 
-#### Translation
+### Translation
 
 A deconstructor cannot be translated in the obvious way, because of its multiple
 bindings.  But, we can lean on records (and eventually, inline records) to
@@ -354,7 +355,7 @@ Nested patterns `P(Q)` at the client can be unrolled into `P(var
 alpha) && alpha matches Q` at the use site; in switches, the secondary
 component can be lowered to a guard.
 
-#### Relationship to accessors
+### Relationship to accessors
 
 There is a notable relationship between deconstruction patterns and accessors;
 we can think of deconstructors as "multi-accessors" and implement accessors in
@@ -365,7 +366,7 @@ for record components, we would like to be able to, eventually, derive read
 accessors from a suitable deconstruction pattern for arbitrary classes.  This
 feature is outside the scope of this document.  
 
-#### Records
+### Records
 
 Going forward, we can compile records to have a canonical deconstruction pattern
 whose implementation merely delegates to the component accessors.  In fact,
@@ -374,7 +375,7 @@ how to extract a given component, this will likely be the _only_ way to
 influence the deconstruction of records -- override the accessor.  You can
 declare additional (overloaded) deconstructors.
 
-#### Switch miscellany
+### Switch miscellany
 
 With the advent of deconstruction and nested patterns, some additional
 limitations of `switch` will be exposed.  We would like it to be a

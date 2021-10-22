@@ -1,9 +1,10 @@
-# Local Variable Type Inference: Frequently Asked Questions
 
-#### Brian Goetz and Stuart Marks\
-August 2019
+# Local Variable Type Inference
+## Frequently Asked Questions {.subtitle}
+#### Brian Goetz and Stuart Marks {.author}
+#### August 2019 {.date}
 
-## Why have `var` in Java?
+## Q1. Why have `var` in Java? {#Q1}
 
 Local variables are the workhorse of Java. They allow methods to
 compute significant results by cheaply storing intermediate
@@ -22,7 +23,7 @@ initializer. Using `var` can make code more concise without
 sacrificing readability, and in some cases it can improve readability
 by removing redundancy.
 
-## Does this make Java dynamically typed? Is this like `var` in JavaScript?
+## Q2. Does this make Java dynamically typed? Is this like `var` in JavaScript? {#Q2}
 
 No and no. Java is still a statically typed language, and the addition
 of `var` doesn't change this. `var` can be used in a local
@@ -48,7 +49,7 @@ no longer has a `getAge` method, or if the list is changed to be a
 list of type other than `Person`, type inference will fail with a
 compile-time error.
 
-## Is a `var` variable final?
+## Q3. Is a `var` variable final? {#Q3}
 
 No. Local variables declared with `var` are non-final by
 default. However, the `final` modifier can be added to `var`
@@ -85,7 +86,7 @@ Using `var`/`val` keywords to control immutability is a feature that
 seems like it ought to carry over cleanly from Scala to Java. In Java,
 however, it would be much less useful than it is in Scala.
 
-## Won't bad developers misuse this feature to write terrible code?
+## Q4. Won't bad developers misuse this feature to write terrible code? {#Q4}
 
 Yes, bad developers will write terrible code no matter what we
 do. Withholding a feature won't prevent them from doing so. But, when
@@ -115,7 +116,7 @@ delivered. We hope that this will accelerate the community's
 convergence on what constitutes reasonable usage, and that it will
 help avoid most cases of abuse.
 
-## Where can `var` be used?
+## Q5. Where can `var` be used? {#Q5}
 
 `var` can be used for declaring local variables, including index
 variables of for-loops and resource variables of the
@@ -155,7 +156,7 @@ for simplicity. Trying to push the boundary to include some fields and
 some method returns makes the feature considerably more complex and
 harder to reason about, but only marginally more useful.
 
-## Why is an initializer required on the right-hand side of `var`?
+## Q6. Why is an initializer required on the right-hand side of `var`? {#Q6}
 
 The type of the variable is inferred from the type of the initializer.
 This means, of course, that `var` can only be used when there is an
@@ -198,7 +199,7 @@ explicitly.) Also note that this results in a boxing conversion when
 To avoid these problems, it seems preferable to require that the type
 be inferred using an explicit initializer.
 
-## Why can't you use `var` with `null`?
+## Q7. Why can't you use `var` with `null`? {#Q7}
 
 Consider this declaration (which is illegal):
 
@@ -221,7 +222,7 @@ Instead of creating some special rules to handle this case, we've
 disallowed it. If you want a variable of type `Object`, declare it
 explicitly.
 
-## Can you use `var` with a diamond on the right-hand side?
+## Q8. Can you use `var` with a diamond on the right-hand side? {#Q8}
 
 Yes, it works, but it's probably not what you want. Consider:
 
@@ -230,9 +231,9 @@ Yes, it works, but it's probably not what you want. Consider:
 This will infer the type of list to be `ArrayList<Object>`. In general,
 it's preferable use an explicit type on the left with diamond on the
 right, or use `var` on the left with an explicit type on the
-right. See the [LVTI Style Guidelines][1], guideline G6, for further
-information.
+right. See the [LVTI Style Guidelines][1], [guideline G6][1G6], for
+further information.
 
-[1]: lvti-style-guide.html
-
+[1]: lvti-style-guide
+[1G6]: lvti-style-guide#G6
 [2]: https://docs.oracle.com/javase/specs/jls/se11/html/jls-4.html#jls-4.1
