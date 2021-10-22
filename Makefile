@@ -1,1 +1,1 @@
-ojweb-generate/Makefile
+include ojweb-generate/Makefile
