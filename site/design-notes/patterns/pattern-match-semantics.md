@@ -12,19 +12,23 @@ commitment to deliver any of these features.
 
 ### Pattern matching documents
 
- - [Pattern Matching For Java](pattern-matching-for-java).  Overview of
+ - [Pattern Matching For Java](pattern-matching-for-java) --- Overview of
    pattern matching concepts, and how they might be surfaced in Java.
+
  - [Pattern Matching For Java -- Semantics](pattern-match-semantics)  (this
-   document).  More detailed notes on type checking, matching, and scoping of
+   document) --- More detailed notes on type checking, matching, and scoping of
    patterns and binding variables.
- - [Extending Switch for Patterns](extending-switch-for-patterns).  An early
+
+ - [Extending Switch for Patterns](extending-switch-for-patterns) --- An early
    exploration of the issues surrounding extending pattern matching to the
    `switch` statement.
- - [Type Patterns in Switch](type-patterns-in-switch).  A more up-to-date
+
+ - [Type Patterns in Switch](type-patterns-in-switch) --- A more up-to-date
    treatment of extending pattern matching to `switch` statements, including
    treatment of nullity and totality.
- - [Pattern Matching in the Java Object model](pattern-match-object-model).
-   Explores how patterns fit into the Java object model, how they fill a hole we
+
+ - [Pattern Matching in the Java Object model](pattern-match-object-model)
+   --- Explores how patterns fit into the Java object model, how they fill a hole we
    may not have realized existed, and how they might affect API design going
    forward.
 
@@ -37,13 +41,18 @@ of these pattern types are eventually supported, may be different than presented
 here.
 
  - _Type patterns_, denoted by `T t`;
+
  - The _var_ pattern, denoted by `var x`;
+
  - The _ignore_ pattern, denoted by `_`;
+
  - _Constant patterns_ (including the _null constant pattern_) denoted by
    lexical literals or by names of constant variables (JLS 4.12.4) or enum
    constants;
+
  - _Deconstruction patterns_ for a type `T`, denoted by `T(P*)`, where `P*` is a
    sequence of nested patterns;
+
  - _Declared patterns_, denoted by `id(P*)` or `C.id(P*)`.  
 
 In any pattern match, there is always a pattern and a _match target_.  For
@@ -72,19 +81,27 @@ the rules that follow, "castable" means "cast-convertible without an unchecked
 warning.")
 
  - The ignore pattern and the `var` pattern are applicable to all types.
+
  - The `null` constant pattern is applicable to all reference types.
+
  - A numeric literal constant pattern for `n` without a type suffix is
    applicable to any primitive type `P` to which `n` is assignable (within the
    numeric range of `P`), and to `P`'s box type, and its supertypes.
+
  - Other constant patterns of primitive type `P` are applicable to `P` and to
    types `U` which are castable to `P`'s box type, and its supertypes.
+
  - Constant patterns of reference type `T` are applicable to types `U` which are
    castable to `T`.
+
  - The type pattern `P p` for a primitive type `P` is applicable to `P`.
+
  - The type pattern `T t` for a reference type `T` is applicable to types `U`
    which are castable to `T`.
+
  - A deconstruction pattern `D(P*) [d]`, is applicable to types `U` which are
    castable to `D`.
+
  - A declared pattern `p(P*)` is applicable to types `U` which are castable to
    the target type of `p`.  (An example of a declared pattern is
    `Optional.of(var x)`, which would be declared in `Optional` and has a target
@@ -144,15 +161,20 @@ type of the corresponding binding variable of `D`.
 We define a _matches_ relation between patterns and expressions as follows.
 
  - The "ignore" and `var` patterns match anything, including null.
+
  - A type pattern `T t` matches `e` if `e instanceof T`, and additionally
    matches `null` if the type pattern is total on the target type.
+
  - The `null` constant pattern matches `e` if `e == null`.
+
  - A primitive constant pattern `c` of type `P` matches `e : P` if `c` is equal
    to `e`, and matches `e : T` if `e` is an instance of `P`'s box type, and `c`
    equals `unbox(e)`.  Equality is determined by the appropriate primitive `==`
    operator, except for `float` and `double`, where equality is determined by
    the semantics of `Float::equals` and `Double::equals`.
+
  - A reference constant pattern `c` of type `T` matches `e` if `c.equals(e)`.
+
  - A deconstruction pattern `D(Pi...)` matches `e` if `e instanceof T`, and for
    all _i_, `Pi` matches the _i_'th component extracted by `D`.
 
@@ -173,8 +195,10 @@ the target if the match succeeds.  These variables have types defined as
 follows:
 
  - For a type pattern `T t`, the binding variable `t` has type `T`.
+
  - For a deconstruction pattern `D(P*) d`, the binding variable `d` has type
    `D`.
+
  - For a pattern `var x` on a target of type `U`, the binding variable `x` has
    type `U`.  (Patterns in nested context get their target types from the type
    of the corresponding binding variable in the declaration of the enclosing
@@ -615,8 +639,10 @@ that seem like they should be the same thing -- so we want them to be the same
 thing:
 
  - That `var x` is just type inference for some type pattern `T t`;
+
  - A chain of `if (x instanceof P)` ... `else if (x instanceof Q)` can be
    refactored to or from a switch with cases P and Q;
+
  - A sequence of switch cases `P(Q)`, `P(R)` can be refactored to a single case
    `P p` with a nested switch on `p` with cases `Q` and `R`.
 
@@ -638,16 +664,23 @@ Examples of dominance include:
 
  - A constant pattern for a constant of type `T` is dominated by a type pattern
    for `T`.
+
  - If `T <: U`, then a type pattern for `T` is dominated by a type pattern for
    `U`.
+
  - A deconstruction pattern `T(P*)` is dominated by a type pattern for `T`.  If
    `T(P*)` is total on `T`, then the type pattern `T t` is also dominated by
    `T(P*)`.
+
  - If `T <: U`, then a total deconstruction pattern `T(P*)` is dominated by a
    total deconstruction pattern `U(Q*)`.
+
  - If `P` is dominated by `Q`, then `T(P)` is dominated by `T(Q)`.
+
  - `null` is dominated by any nullable type pattern.
+
  - A guarded pattern `P when g` is dominated by `P`.  
+
  - All patterns are dominated by the "ignore" pattern `_` and `var` patterns.
 
 It is a compile-time error to have a `case` label in a `switch` that cannot

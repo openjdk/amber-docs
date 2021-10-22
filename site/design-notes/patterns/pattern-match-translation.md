@@ -191,13 +191,17 @@ _R_ representing _P && Q_ as follows:
 
  - The target types of `P` and `Q` must be the same, and the target
    type of `R` is the same as `P` and `Q`;
+
  - The carrier type of `R` is nominally the tuple `(C1,C2)`, though in
    practice this can be optimized away if either `P` or `Q` (or
    ideally, both) is carrier-free;
+
  - The `preprocess` of `R` applies the `preprocess` of both `P` and
    `Q`, and constructs a carrier that holds both results;
+
  - The `predicate` of `R` the logical `AND` of the predicates of `P`
    and `Q`;
+
  - The components of `R` is the concatenation of the components of `P`
    and `Q`.
 

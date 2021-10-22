@@ -10,19 +10,23 @@ Language._
 
 ### Pattern matching documents
 
-- [Pattern Matching For Java](pattern-matching-for-java).  Overview of
+- [Pattern Matching For Java](pattern-matching-for-java) --- Overview of
   pattern matching concepts, and how they might be surfaced in Java.
-- [Pattern Matching For Java -- Semantics](pattern-match-semantics).  More
+
+- [Pattern Matching For Java -- Semantics](pattern-match-semantics) --- More
   detailed notes on type checking, matching, and scoping of patterns and binding
   variables.
-- [Extending Switch for Patterns](extending-switch-for-patterns).  An early
+
+- [Extending Switch for Patterns](extending-switch-for-patterns) --- An early
   exploration of the issues surrounding extending pattern matching to the
   `switch` statement.
-- [Type Patterns in Switch](type-patterns-in-switch)  (this document).  A
+
+- [Type Patterns in Switch](type-patterns-in-switch)  (this document) --- A
   more up-to-date treatment of extending pattern matching to `switch`
   statements, including treatment of nullity and totality.
-- [Pattern Matching in the Java Object model](pattern-match-object-model).
-  Explores how patterns fit into the Java object model, how they fill a hole we
+
+- [Pattern Matching in the Java Object model](pattern-match-object-model)
+  --- Explores how patterns fit into the Java object model, how they fill a hole we
   may not have realized existed, and how they might affect API design going
   forward.
 
@@ -119,20 +123,28 @@ The current iteration proposes:
  - Allow switches on all types (with the possible temporary exception of the
    three primitive types not currently permitted), not just the current limited
    set of types.
+
  - Allow `case` labels to specify patterns in addition to constant case labels.
    The specified pattern must be applicable to the static type of the switch
    target.
+
  - Restrict fallthrough out of cases with bindings and into non-total patterns
    with bindings.
+
  - Refine the null-handling behavior of `switch`:
+
    - Support a `case null` constant case label, which matches only `null` (when
      the switch target is a reference type.)
+
    - For switches on enums, strings, and primitive boxes that do not include an
      explicit `case null`, the compiler inserts an implicit `case null` at the
      beginning which throws `NullPointerException`.
+
    - In all other switches, `null` is just a value (though, see the treatment of
      totality with remainder.)
+
  - Support declarative _guards_ on case labels with patterns.
+
  - For total switches (which includes expression switches and possibly others)
    whose set of `case` patterns is total on the target type with nonempty
    remainder, provide an implicit `default` case that throws on the remainder.
@@ -443,7 +455,9 @@ construct like switch can (a) consider `P*` sufficient to establish totality and
 start with the obvious base cases:
 
  - `{ T t }` is total on any `U <: T` with empty remainder.
+
  - `{ var t }` is total on all types `T` with empty remainder.
+
  - The `default` case corresponds to a pattern that is total on all types `T`
    with empty remainder.
 

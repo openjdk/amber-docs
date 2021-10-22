@@ -553,13 +553,17 @@ are:
  - The serial form is under the control of the author, and explicit in
    the code, and can be mechanically transcribed into Javadoc or
    accessed via reflection;
+
  - The serial form can be decoupled from the in-memory representation;
+
  - Extraction and reconstruction can be factored from the stream
    representation -- one can take a serializable object and serialize
    to byte streams, JSON, XML, etc., using the same basic extraction
    and reconstruction mechanism;
+
  - We can statically validate that serialization and deserialization
    class members are compatible; and
+
  - Deserialization ultimately proceeds through constructors, and
    therefore the serialized form can be validated before the object is
    created, rather than merely accepting whatever (potentially
@@ -932,12 +936,15 @@ Java serialization, and made them part of the object model:
 
  - Using factories, constructors, and matchers for explicit
    serialization and deserialization;
+
  - Publishing a trivial set of annotations intended to capture
    serialization-related design intent;
+
  - Classes can additionally permit dynamic frameworks to access
    specific members with the explicit "dynamically public" `open`
    modifier, relieving serialization frameworks of the need for
    special accessibility relaxation;
+
  - Serialization frameworks (including Java serialization) can use
    these annotated members to safely extract and reconstitute state,
    using ordinary access control.

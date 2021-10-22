@@ -16,34 +16,34 @@ constant strings with non-constant values (concatenation, `String::format`,
 `MessageFormat`), developers would prefer something more direct, for several
 reasons:
 
- - _Ceremony_ — Writing string interpolation expressions, rather than calls to
+ - _Ceremony_ --- Writing string interpolation expressions, rather than calls to
    template-formatting libraries, is less work.
 
- - _Readability_ — In many cases (though not all) a string interpolation
+ - _Readability_ --- In many cases (though not all) a string interpolation
    expression like `"My name is ${name}, I am ${age} years old"` is more
    readable than its equivalent with `String::format`, because the labels ("My
    name is") and the corresponding parameters are right next to each other.
 
- - _Safety_ — A long format string or a long list of interpolants invites
+ - _Safety_ --- A long format string or a long list of interpolants invites
    mistakes, such as the arity of parameters not matching that of format
    specifiers, or the types of the parameters not matching the corresponding
    format specifiers.
 
 However, there are reasons we've been hesitant to do such a feature, including:
 
-  - _Injection attacks_ — Constructing SQL queries or JSON expressions with string
+  - _Injection attacks_ --- Constructing SQL queries or JSON expressions with string
     interpolation is convenient, but is at risk for [injection
     attacks](https://xkcd.com/327/).  Improving mechanisms for constructing
     composite strings without similarly improving or enabling safer mechanisms
     for constructing queries would surely widen the attack surface.  This is
     asking users to choose between convenience and security.
 
-  - _Localization_ — Java has a strong commitment to internationalization;
+  - _Localization_ --- Java has a strong commitment to internationalization;
     introducing a more convenient but less localizable mechanism for
     constructing messages will result in fewer applications being localized.
     This is asking users to choose between convenience and flexibility.
 
-  - _Formatting_ — A naive interpretation of string interpolation deprives us of
+  - _Formatting_ --- A naive interpretation of string interpolation deprives us of
     the ability to format with format specifiers such as field widths,
     locale-sensitive numeric formatting, etc.  This is asking users to choose
     between convenience and expressiveness.

@@ -143,16 +143,19 @@ representation (so it can be evolved without affecting the API
 contract) enables us to write code that can operate safely and
 robustly across a variety of _boundaries_:
 
- - Maintenance boundaries -- when our clients are in a different
+ - Maintenance boundaries --- when our clients are in a different
    sourcebase (or organization);
- - Security and trust boundaries -- where we do not want to expose our
+
+ - Security and trust boundaries --- where we do not want to expose our
    state to clients because we do not fully trust them to not
    deliberately modify or use it in malicious ways;
- - Integrity boundaries -- where we do not want to expose our state to
+
+ - Integrity boundaries --- where we do not want to expose our state to
    clients because, while we may trust their intent and are willing to
    share our data with them, do not wish to burden them with the task
    of maintaining our own representational invariants;
- - Versioning boundaries -- where we want to ensure that clients
+
+ - Versioning boundaries --- where we want to ensure that clients
    compiled against one version of a library continue to work when run
    against a subsequent version.
 
@@ -602,16 +605,21 @@ state", we are able to derive most of the members mechanically:
 
   - a private `final` field, with the same name and type, for each
     component in the state description;
+
   - a public read accessor method, with the same name and type, for
     each component in the state description;
+
   - a public constructor, whose signature is the same as the state
     description, which initializes each field from the corresponding
     argument;
+
   - a public deconstruction pattern, whose signature is the same as
     the state description, which extracts each field into the
     corresponding binding slot;
+
   - implementations of `equals` and `hashCode` that say two records
     are equal if they of the same type and contain the same state;
+
   - implementation of `toString` that includes all the components,
     with their names.
 
