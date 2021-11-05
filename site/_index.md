@@ -18,12 +18,13 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
 
-  - [409: Sealed Classes](http://openjdk.java.net/jeps/409)
-  - [406: Pattern Matching for <code>switch</code> (Preview)](http://openjdk.java.net/jeps/406)
+  - [420: Pattern Matching for <code>switch</code> (Second Preview)](http://openjdk.java.net/jeps/420)
   - [405: Record Patterns and Array Patterns (Preview)](http://openjdk.java.net/jeps/405)
 
 <p>Delivered:</p>
 
+  - [409: Sealed Classes](http://openjdk.java.net/jeps/409)
+  - [406: Pattern Matching for <code>switch</code> (Preview)](http://openjdk.java.net/jeps/406)
   - [395: Records](http://openjdk.java.net/jeps/395)
   - [394: Pattern Matching for <code>instanceof</code>](http://openjdk.java.net/jeps/394)
   - [378: Text Blocks](http://openjdk.java.net/jeps/378)
