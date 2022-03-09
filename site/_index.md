@@ -77,3 +77,6 @@ Withdrawn:
     - [amber-spec-experts](https://mail.openjdk.java.net/mailman/listinfo/amber-spec-experts) --- For Expert Group members only
     - [amber-spec-observers](https://mail.openjdk.java.net/mailman/listinfo/amber-spec-observers) --- A read-only clone of amber-spec-experts
     - [amber-spec-comments](https://mail.openjdk.java.net/mailman/listinfo/amber-spec-comments) --- For submitting comments on the official specs
+  - Other Resources
+    - [Inside.java](https://inside.java/tag/amber)
+    - [Dev.java](https://dev.java/learn/)
