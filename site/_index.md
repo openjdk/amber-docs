@@ -18,11 +18,11 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
 
-  - [420: Pattern Matching for <code>switch</code> (Second Preview)](https://openjdk.java.net/jeps/420)
   - [405: Record Patterns and Array Patterns (Preview)](https://openjdk.java.net/jeps/405)
 
 <p>Delivered:</p>
 
+  - [420: Pattern Matching for <code>switch</code> (Second Preview)](https://openjdk.java.net/jeps/420)
   - [409: Sealed Classes](https://openjdk.java.net/jeps/409)
   - [406: Pattern Matching for <code>switch</code> (Preview)](https://openjdk.java.net/jeps/406)
   - [395: Records](https://openjdk.java.net/jeps/395)
