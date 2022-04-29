@@ -18,6 +18,7 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
 
+  - [427: Pattern Matching for <code>switch</code> (Third Preview)](https://openjdk.java.net/jeps/427)
   - [405: Record Patterns and Array Patterns (Preview)](https://openjdk.java.net/jeps/405)
 
 <p>Delivered:</p>
