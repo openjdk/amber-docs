@@ -383,3 +383,33 @@ Pointy flipped = p with { x = -x; y = -y; };
 ```
 
 (Or not.)
+
+### Other solutions.
+
+There is another powerful solution in JavaScript/TypeScript: https://github.com/immerjs/immer, which is winner of the "Breakthrough of the year" React open source award and "Most impactful contribution" JavaScript open source award in 2019.
+
+It can create very deep immutable object trees by mutable proxy tree. mutable proxies and created lazily, and use copye-on-write strategy.
+
+I have ported in to koltin and java.
+
+kotlin version: https://github.com/babyfish-ct/kimmer/
+
+java version: https://github.com/babyfish-ct/jimmer/
+
+Both of them contain two modules: corea sql. 
+
+1. core means kimmer-core and jimmer-core, it's immutable object tool
+2. sql means kimmer-sql and jimmer-sql(not finished), it's ORM for immutable objects.
+
+Here, core(kimmer-core and jimmer-core) is related to the topic we are discussing is the core module. 
+
+Please view the article: https://github.com/babyfish-ct/jimmer/blob/main/doc/jimmer-core/README.md to know more.
+
+You also can run https://github.com/babyfish-ct/jimmer/tree/main/example/jimmer-core or https://github.com/babyfish-ct/kimmer/tree/main/example/kimmer-core to experience it.
+
+Different of kimmer-core and jimmer-core
+
+1. kimmer-core uses ASM to generate bytecode at runtime, so generate source code is clean but developer does not know why it works.
+2. jimmer-core generates everything as source code, there are too much generated source code but develop knowns why it works.
+
+
