@@ -1,5 +1,7 @@
 # Paving the on-ramp
 
+#### Brian Goetz, September 2022
+
 Java is one of the most widely taught programming languages in the world.  Tens
 of thousands of educators find that the imperative core of the language combined
 with a straightforward standard library is a foundation that students can
