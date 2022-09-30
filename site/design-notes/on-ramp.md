@@ -1,5 +1,6 @@
 # Paving the on-ramp
-#### Brian Goetz, September 2022
+#### Brian Goetz {.author}
+#### September 2022 {.date}
 
 
 Java is one of the most widely taught programming languages in the world.  Tens
