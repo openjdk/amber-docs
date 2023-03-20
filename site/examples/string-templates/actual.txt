@@ -1,0 +1,93 @@
+class java.lang.runtime.StringTemplateImpl
+class java.lang.runtime.StringTemplateImpl
+class java.lang.String
+class java.lang.String
+class java.lang.runtime.StringTemplateImpl
+The answer is 10 + 20 = 30
+(900.0+0.0i)
+The answer is [10] + [20] = [30]
+The answer is 10 + 20 = 30
+The answer is 10 + 20 = 30
+The answer is    10 +    20 =    30
+The answer is    10 +    20 =    30
+The answer is 123827.23 + 9873651.0 = 9997478.000
+The answer is ๑๒๓,๘๒๗.๒๒๗ + ๙,๘๗๓,๖๕๑.๐๐๐ = ๙,๙๙๗,๔๗๘.๐๐๐
+no suitable VAR found for amount(double)
+对于amount(double), 找不到合适的VAR
+amountに適切なVARが見つかりません(double)
+{
+    "address": "1 Maple Dr., Anytown, SomeCountry",
+    "phone": "555-123-4567",
+    "name": "Joan J. Smith"
+}
+13:20:18: CNN Tech - Microsoft is bringing ChatGPT technology to Word, Excel and Outlook
+13:20:19: CNN Tech - Microsoft is bringing ChatGPT technology to Word, Excel and Outlook
+13:20:20: CNN Tech - Microsoft is bringing ChatGPT technology to Word, Excel and Outlook
+Department of Agriculture
+
+Mar 16, 2023
+
+John H. Jones
+123 Maple St.
+AnyTown, XY, SomeWhere
+XYZ-123
+
+Dear John,
+
+I wish to inform you that your application for
+a sunflower seed permit has been approved. You
+should receive said permit within three weeks.
+Do not hesitate to enquire on any issue.
+
+Sincerely,
+
+Joan Smith
+Director
+
+Department of Agriculture
+
+Mar 16, 2023
+
+Mary S. Elephant
+78 Oak St.
+AnyTown, XY, SomeWhere
+XYZ-123
+
+Dear Mary,
+
+I wish to inform you that your application for
+a sunflower seed permit has been approved. You
+should receive said permit within three weeks.
+Do not hesitate to enquire on any issue.
+
+Sincerely,
+
+Joan Smith
+Director
+
+{
+    "name":    "Joan Smith",
+    "phone":   "555-123-4567",
+    "address": "1 Maple Drive, Anytown"
+}
+
+{
+    "name":    "Joan Smith",
+    "phone":   "555-123-4567",
+    "address": "1 Maple Drive, Anytown"
+}
+
+[null]
+{oranges=$0.85, pears=$0.45, apples=$1.25, grapes=$1.04}
+Name:    "Joan J. Smith"
+Phone:   "555-123-4567"
+Address: "1 Maple Dr., Anytown, SomeCountry"
+
+Name:    "Smitty S. Jones"
+Phone:   "555-987-6543"
+Address: "2 Oak Dr., Anytown, SomeCountry"
+
+HelloWorld
+I'd like to take a moment…
+This is in another java file
+The answer is 10 + 20 = 30
