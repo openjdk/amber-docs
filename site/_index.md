@@ -17,14 +17,18 @@ have links to earlier JEPs for the feature, as appropriate.
 ## Status of JEPs
 
 Currently in progress:
-
-  - [433: Pattern Matching for <code>switch</code> (Fourth Preview)](https://openjdk.org/jeps/433)
-  - [432: Record Patterns (Second Preview)](https://openjdk.org/jeps/432)
+  
+  - [445: Flexible Main Methods and Anonymous Main Classes (Preview)](https://openjdk.org/jeps/445)
+  - [443: Unnamed Patterns and Variables (Preview)](https://openjdk.org/jeps/443)
+  - [441: Pattern Matching for <code>switch</code>](https://openjdk.org/jeps/441)
+  - [440: Record Patterns](https://openjdk.org/jeps/440)
   - [430: String Templates (Preview)](https://openjdk.org/jeps/430)
   
 
 <p>Delivered:</p>
 
+  - [433: Pattern Matching for <code>switch</code> (Fourth Preview)](https://openjdk.org/jeps/433)
+  - [432: Record Patterns (Second Preview)](https://openjdk.org/jeps/432)
   - [427: Pattern Matching for <code>switch</code> (Third Preview)](https://openjdk.org/jeps/427)
   - [405: Record Patterns (Preview)](https://openjdk.org/jeps/405)
   - [420: Pattern Matching for <code>switch</code> (Second Preview)](https://openjdk.org/jeps/420)
