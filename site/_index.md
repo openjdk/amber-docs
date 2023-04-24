@@ -18,6 +18,7 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
   
+  - [447: Statements before super()](https://openjdk.org/jeps/447)
   - [445: Flexible Main Methods and Anonymous Main Classes (Preview)](https://openjdk.org/jeps/445)
   - [443: Unnamed Patterns and Variables (Preview)](https://openjdk.org/jeps/443)
   - [441: Pattern Matching for <code>switch</code>](https://openjdk.org/jeps/441)
