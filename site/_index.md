@@ -18,7 +18,7 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
   
-  - [447: Statements before <code>super()</code>](https://openjdk.org/jeps/447)
+  - [447: Statements before <code>super()</code> (Preview)](https://openjdk.org/jeps/447)
   - [445: Unnamed Classes and Instance <code>main</code> methods (Preview)](https://openjdk.org/jeps/445)
   - [443: Unnamed Patterns and Variables (Preview)](https://openjdk.org/jeps/443)
   - [441: Pattern Matching for <code>switch</code>](https://openjdk.org/jeps/441)
@@ -72,7 +72,11 @@ Withdrawn:
       - [Pattern Matching for Java -- Semantics](design-notes/patterns/pattern-match-semantics) (August 2020)
       - [Pattern Matching for Java -- Runtime and Translation](design-notes/patterns/pattern-match-translation) (June 2017)
       - [Extending `switch` for Pattern Matching](design-notes/patterns/extending-switch-for-patterns) (April 2017)
-      - [Type Patterns in `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
+      - [Type Patterns in
+        `switch`](design-notes/patterns/type-patterns-in-switch) (September
+        2020)
+      - [Patterns: Exhaustiveness, Unconditionality, and
+        Remainder](design-notes/patterns/exhaustiveness.md) (May 2023)
     - [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
 
   - Historical notes
