@@ -73,8 +73,7 @@ Withdrawn:
       - [Pattern Matching for Java -- Runtime and Translation](design-notes/patterns/pattern-match-translation) (June 2017)
       - [Extending `switch` for Pattern Matching](design-notes/patterns/extending-switch-for-patterns) (April 2017)
       - [Type Patterns in
-        `switch`](design-notes/patterns/type-patterns-in-switch) (September
-        2020)
+        `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
       - [Patterns: Exhaustiveness, Unconditionality, and
         Remainder](design-notes/patterns/exhaustiveness) (May 2023)
     - [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
