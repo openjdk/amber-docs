@@ -492,7 +492,7 @@ Because `P` and `Q` are patterns, they may have their own pattern
 variables; if the whole pattern matches, any binding variables in the
 subpatterns are also bound.  So in:
 
-    case AddNode(Node left, Node right)) -> ...
+    case AddNode(Node left, Node right) -> ...
 
 the nested patterns `Node left` and `Node right` are just the type
 patterns we've already seen (which happen to be guaranteed to match in
