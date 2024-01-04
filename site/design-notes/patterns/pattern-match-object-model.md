@@ -565,7 +565,7 @@ see that the following switch is exhaustive:
 We've already seen one way to combine patterns -- nesting.  A nested pattern:
 
 ```
-if (x instanceof Optional.of(Point var x, var y)) { ... }
+if (x instanceof Optional.of(Point(var x, var y)) { ... }
 ```
 
 is equivalent to:

@@ -76,8 +76,7 @@ Withdrawn:
       - [Pattern Matching for Java -- Runtime and Translation](design-notes/patterns/pattern-match-translation) (June 2017)
       - [Extending `switch` for Pattern Matching](design-notes/patterns/extending-switch-for-patterns) (April 2017)
       - [Type Patterns in
-        `switch`](design-notes/patterns/type-patterns-in-switch) (September
-        2020)
+        `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
       - [Patterns: Exhaustiveness, Unconditionality, and
         Remainder](design-notes/patterns/exhaustiveness) (May 2023)
     - [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
@@ -94,3 +93,6 @@ Withdrawn:
     - [amber-spec-experts](https://mail.openjdk.org/mailman/listinfo/amber-spec-experts) --- For Expert Group members only
     - [amber-spec-observers](https://mail.openjdk.org/mailman/listinfo/amber-spec-observers) --- A read-only clone of amber-spec-experts
     - [amber-spec-comments](https://mail.openjdk.org/mailman/listinfo/amber-spec-comments) --- For submitting comments on the official specs
+  - Other Resources
+    - [Inside.java](https://inside.java/tag/amber)
+    - [Dev.java](https://dev.java/learn/)
