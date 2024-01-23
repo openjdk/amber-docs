@@ -79,6 +79,7 @@ Withdrawn:
         `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
       - [Patterns: Exhaustiveness, Unconditionality, and
         Remainder](design-notes/patterns/exhaustiveness) (May 2023)
+      - [Towards Member Patterns](design-notes/patterns/towards-member-patterns) (January 2024)
     - [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
 
   - Historical notes
