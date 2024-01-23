@@ -240,7 +240,7 @@ class Optional<T> {
 }
 ```
 
-`Point` has a constructor an an inverse constructor (deconstruction pattern) for
+`Point` has a constructor and an inverse constructor (deconstruction pattern) for
 the external representation `(int x, int y)`; in an inverse constructor, the
 binding list appears where the parameter list does in the constructor.
 `Optional<T>` has static factories and corresponding patterns for `empty` and
@@ -478,7 +478,7 @@ abstract pattern in the SAP interface::
 
 ```
 Match<Object, String> m = o -> { if (o instanceof String s) __yield(s); };
-... stream.match(s) ...
+... stream.match(m) ...
 ```
 
 And we can do the same with _pattern references_ to existing patterns that are
