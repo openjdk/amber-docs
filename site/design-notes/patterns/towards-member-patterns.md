@@ -337,7 +337,7 @@ public inverse String match(String... groups) {
     Matcher m = matcher(that);    // *that* is the match candidate
     if (m.matches())              // receiver for matcher() is the Pattern
         __yield IntStream.range(1, m.groupCount())
-                            .map(Matcher::group)
+                            .map(m::group)
                             .toArray(String[]::new);
 }
 ```
