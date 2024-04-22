@@ -709,8 +709,8 @@ And, just as with other patterns, these compose via nesting:
 if (doc instanceof
     {
         "firstName": var first,
-        "lastName", var last,
-        "age", Integer.valueOf(var age),
+        "lastName": var last,
+        "age": Integer.valueOf(var age),
         "address" : {
              "city": var city,
              "state": var state
