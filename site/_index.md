@@ -19,7 +19,7 @@ have links to earlier JEPs for the feature, as appropriate.
 Currently in progress:
 
   - [477: Implicitly Declared Classes and Instance <code>main</code> Methods (Third Preview)](https://openjdk.org/jeps/477)
-  - [476: Module Import Declarations (Preview)](https://openjdk.org/jeps/477)
+  - [476: Module Import Declarations (Preview)](https://openjdk.org/jeps/476)
   - [468	Derived Record Creation (Preview)](https://openjdk.org/jeps/468)
   - [465: String Templates (Third Preview)](https://openjdk.org/jeps/465)
   - [455: Primitive types in Patterns, <code>instanceof</code>, and <code>switch</code> (Preview)](https://openjdk.org/jeps/455)
