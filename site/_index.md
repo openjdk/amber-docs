@@ -10,15 +10,21 @@ the [Compiler Group](https://openjdk.org/groups/compiler).
 Most Project Amber features go through at least two rounds
 of [_preview_](https://openjdk.org/jeps/12) before becoming an
 official part of the Java Platform.  For a given feature, there are separate
-JEPs for each round of preview and for final standardization.  This
-page links only to the most recent JEP for a feature. Such JEPs may
+JEPs for each round of preview and for final standardization.
+<!--
+This page links only to the most recent JEP for a feature. Such JEPs may
 have links to earlier JEPs for the feature, as appropriate.
+-->
 
 ## Status of JEPs
 
 Currently in progress:
 
-  - [468	Derived Record Creation (Preview)](https://openjdk.org/jeps/468)
+-   [495: Simple Source Files and Instance Main Methods (Fourth Preview)](https://openjdk.org/jeps/495)
+-   [494: Module Import Declarations (Second Preview)](https://openjdk.org/jeps/494)
+-   [492: Flexible Constructor Bodies (Third Preview)](https://openjdk.org/jeps/492)
+-   [488: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code> (Second Preview)](https://openjdk.org/jeps/488)
+-   [468: Derived Record Creation (Preview)](https://openjdk.org/jeps/468)
 
 <p>Delivered:</p>
 
