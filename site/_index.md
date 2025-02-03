@@ -20,34 +20,21 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
 
+-   [468: Derived Record Creation (Preview)](https://openjdk.org/jeps/468)
+
+Currently in preview:
+
 -   [495: Simple Source Files and Instance Main Methods (Fourth Preview)](https://openjdk.org/jeps/495)
 -   [494: Module Import Declarations (Second Preview)](https://openjdk.org/jeps/494)
 -   [492: Flexible Constructor Bodies (Third Preview)](https://openjdk.org/jeps/492)
 -   [488: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code> (Second Preview)](https://openjdk.org/jeps/488)
--   [468: Derived Record Creation (Preview)](https://openjdk.org/jeps/468)
 
-<p>Delivered:</p>
+Delivered:
 
--   [482: Flexible Constructor Bodies (Second Preview)](https://openjdk.org/jeps/482)
--   [477: Implicitly Declared Classes and Instance <code>main</code> Methods (Third Preview)](https://openjdk.org/jeps/477)
--   [476: Module Import Declarations (Preview)](https://openjdk.org/jeps/476)
--   [463: Implicitly Declared Classes and Instance <code>main</code> Methods (Second Preview)](https://openjdk.org/jeps/463)
--   [459: String Templates (Second Preview)](https://openjdk.org/jeps/459)
 -   [456: Unnamed Variables and Patterns](https://openjdk.org/jeps/456)
--   [455: Primitive types in Patterns, <code>instanceof</code>, and <code>switch</code> (Preview)](https://openjdk.org/jeps/455)
--   [447: Statements before <code>super(...)</code> (Preview)](https://openjdk.org/jeps/447)
--   [445: Unnamed Classes and Instance <code>main</code> methods (Preview)](https://openjdk.org/jeps/445)
--   [443: Unnamed Patterns and Variables (Preview)](https://openjdk.org/jeps/443)
 -   [441: Pattern Matching for <code>switch</code>](https://openjdk.org/jeps/441)
 -   [440: Record Patterns](https://openjdk.org/jeps/440)
--   [433: Pattern Matching for <code>switch</code> (Fourth Preview)](https://openjdk.org/jeps/433)
--   [432: Record Patterns (Second Preview)](https://openjdk.org/jeps/432)
--   [430: String Templates (Preview)](https://openjdk.org/jeps/430)
--   [427: Pattern Matching for <code>switch</code> (Third Preview)](https://openjdk.org/jeps/427)
--   [420: Pattern Matching for <code>switch</code> (Second Preview)](https://openjdk.org/jeps/420)
 -   [409: Sealed Classes](https://openjdk.org/jeps/409)
--   [406: Pattern Matching for <code>switch</code> (Preview)](https://openjdk.org/jeps/406)
--   [405: Record Patterns (Preview)](https://openjdk.org/jeps/405)
 -   [395: Records](https://openjdk.org/jeps/395)
 -   [394: Pattern Matching for <code>instanceof</code>](https://openjdk.org/jeps/394)
 -   [378: Text Blocks](https://openjdk.org/jeps/378)
