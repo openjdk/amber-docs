@@ -24,23 +24,23 @@ Currently in progress:
 
 Currently in preview:
 
--   [495: Simple Source Files and Instance Main Methods (Fourth Preview)](https://openjdk.org/jeps/495)
--   [494: Module Import Declarations (Second Preview)](https://openjdk.org/jeps/494)
--   [492: Flexible Constructor Bodies (Third Preview)](https://openjdk.org/jeps/492)
--   [488: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code> (Second Preview)](https://openjdk.org/jeps/488)
+-   [495: Simple Source Files and Instance Main Methods (Fourth Preview)](https://openjdk.org/jeps/495) (previous: [445](https://openjdk.org/jeps/445), [463](https://openjdk.org/jeps/463), [477](https://openjdk.org/jeps/477))
+-   [494: Module Import Declarations (Second Preview)](https://openjdk.org/jeps/494) (previous: [476](https://openjdk.org/jeps/476))
+-   [492: Flexible Constructor Bodies (Third Preview)](https://openjdk.org/jeps/492) (previous: [447](https://openjdk.org/jeps/447), [482](https://openjdk.org/jeps/482))
+-   [488: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code> (Second Preview)](https://openjdk.org/jeps/488) (previous: [455](https://openjdk.org/jeps/455))
 
 Delivered:
 
 -   [458: Launch Multi-File Source-Code Programs](https://openjdk.org/jeps/458)
--   [456: Unnamed Variables and Patterns](https://openjdk.org/jeps/456)
--   [441: Pattern Matching for <code>switch</code>](https://openjdk.org/jeps/441)
--   [440: Record Patterns](https://openjdk.org/jeps/440)
--   [409: Sealed Classes](https://openjdk.org/jeps/409)
--   [395: Records](https://openjdk.org/jeps/395)
--   [394: Pattern Matching for <code>instanceof</code>](https://openjdk.org/jeps/394)
--   [378: Text Blocks](https://openjdk.org/jeps/378)
+-   [456: Unnamed Variables and Patterns](https://openjdk.org/jeps/456) (preview: [433](https://openjdk.org/jeps/433))
+-   [441: Pattern Matching for <code>switch</code>](https://openjdk.org/jeps/441) (previews: [406](https://openjdk.org/jeps/406), [420](https://openjdk.org/jeps/420), [427](https://openjdk.org/jeps/427), [433](https://openjdk.org/jeps/433))
+-   [440: Record Patterns](https://openjdk.org/jeps/440) (previews: [405](https://openjdk.org/jeps/405), [432](https://openjdk.org/jeps/432))
+-   [409: Sealed Classes](https://openjdk.org/jeps/409) (previews: [360](https://openjdk.org/jeps/360), [397](https://openjdk.org/jeps/397))
+-   [395: Records](https://openjdk.org/jeps/395) (previews: [359](https://openjdk.org/jeps/359), [384](https://openjdk.org/jeps/384))
+-   [394: Pattern Matching for <code>instanceof</code>](https://openjdk.org/jeps/394) (previews: [305](https://openjdk.org/jeps/305), [375](https://openjdk.org/jeps/375))
+-   [378: Text Blocks](https://openjdk.org/jeps/378) (previews: [355](https://openjdk.org/jeps/355), [368](https://openjdk.org/jeps/368))
     -   [Programmer's Guide](guides/text-blocks-guide)
--   [361: Switch Expressions](https://openjdk.org/jeps/361)
+-   [361: Switch Expressions](https://openjdk.org/jeps/361) (previews: [325](https://openjdk.org/jeps/325), [354](https://openjdk.org/jeps/354))
 -   [323: Local-Variable Syntax for Lambda Parameters](https://openjdk.org/jeps/323)
 -   [286: Local-Variable Type Inference (<code>var</code>)](https://openjdk.org/jeps/286)
     -   [Style Guidelines](guides/lvti-style-guide)
