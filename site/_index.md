@@ -60,28 +60,29 @@ Withdrawn:
 ## Documents
 
 -   Guides
-    -   [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
-    -   [Local Variable Type Inference FAQ](guides/lvti-faq) (Oct 2018)
     -   [Programmer's Guide to Text Blocks](guides/text-blocks-guide) (Aug 2019)
+    -   [Local Variable Type Inference FAQ](guides/lvti-faq) (Oct 2018)  
+    -   [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
 
 -   Design notes
-    -   [Symbolic References for Constants](design-notes/constables) (March 2018)
+    -   [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
+    -   [Towards Better Serialization](design-notes/towards-better-serialization) (June 2019) 
     -   [Data Classes and Sealed Types for Java](design-notes/records-and-sealed-classes) (February 2019)
-    -   [Towards Better Serialization](design-notes/towards-better-serialization) (June 2019)
+    -   [Symbolic References for Constants](design-notes/constables) (March 2018)
     -   Pattern matching
-        -   [Pattern Matching for Java](design-notes/patterns/pattern-matching-for-java) (September 2018)
+        -   [Towards Member Patterns](design-notes/patterns/towards-member-patterns) (January 2024)
+        -   [Patterns: Exhaustiveness, Unconditionality, and Remainder](design-notes/patterns/exhaustiveness) (May 2023)
         -   [Pattern Matching in the Java Object Model](design-notes/patterns/pattern-match-object-model) (December 2020)
+        -   [Type Patterns in `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
         -   [Pattern Matching for Java -- Semantics](design-notes/patterns/pattern-match-semantics) (August 2020)
+        -   [Pattern Matching for Java](design-notes/patterns/pattern-matching-for-java) (September 2018)
         -   [Pattern Matching for Java -- Runtime and Translation](design-notes/patterns/pattern-match-translation) (June 2017)
         -   [Extending `switch` for Pattern Matching](design-notes/patterns/extending-switch-for-patterns) (April 2017)
-        -   [Type Patterns in `switch`](design-notes/patterns/type-patterns-in-switch) (September 2020)
-        -   [Patterns: Exhaustiveness, Unconditionality, and Remainder](design-notes/patterns/exhaustiveness) (May 2023)
-        -   [Towards Member Patterns](design-notes/patterns/towards-member-patterns) (January 2024)
-    -   [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
 
 -   Historical notes
-    -   [Data Classes for Java](design-notes/data-classes-historical-1) (October 2017)
     -   [Data Classes for Java](design-notes/data-classes-historical-2) (February 2018)
+    -   [Data Classes for Java](design-notes/data-classes-historical-1) (October 2017)
+    
 
 ## Community
 
