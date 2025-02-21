@@ -62,7 +62,7 @@ Withdrawn:
 -   Guides
     -   [Programmer's Guide to Text Blocks](guides/text-blocks-guide) (Aug 2019)
     -   [Local Variable Type Inference FAQ](guides/lvti-faq) (Oct 2018)  
-    - [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
+    -   [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
 
 -   Design notes
     -   [String Tapas Redux: Beyond Mere String Interpolation](design-notes/templated-strings) (September 2021)
