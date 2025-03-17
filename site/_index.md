@@ -25,6 +25,7 @@ Currently in progress:
 Currently in preview:
 
 -   [495: Simple Source Files and Instance Main Methods (Fourth Preview)](https://openjdk.org/jeps/495) (previous: [445](https://openjdk.org/jeps/445), [463](https://openjdk.org/jeps/463), [477](https://openjdk.org/jeps/477))
+    - [FAQ](faq/simple_source_files_and_instance_main_methods)
 -   [494: Module Import Declarations (Second Preview)](https://openjdk.org/jeps/494) (previous: [476](https://openjdk.org/jeps/476))
 -   [492: Flexible Constructor Bodies (Third Preview)](https://openjdk.org/jeps/492) (previous: [447](https://openjdk.org/jeps/447), [482](https://openjdk.org/jeps/482))
 -   [488: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code> (Second Preview)](https://openjdk.org/jeps/488) (previous: [455](https://openjdk.org/jeps/455))
