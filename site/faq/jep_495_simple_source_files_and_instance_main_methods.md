@@ -1,5 +1,5 @@
 
-# Simple Source Files and Instance Main Methods
+# JEP 495: Simple Source Files and Instance Main Methods
 ## Frequently Asked Questions {.subtitle}
 
 #### Why don't you just get rid of `void main()` too? {#get_rid_of_void_main}
