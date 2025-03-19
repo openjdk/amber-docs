@@ -1,5 +1,5 @@
 
-## JEP 494: Module Import Declarations
+## Module Import Declarations
 ### Frequently Asked Questions {.subtitle}
 
 #### What about class name clashes? Like `java.util.List` and `java.sql.List`? {#class_name_clash}
