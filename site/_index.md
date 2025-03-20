@@ -46,7 +46,7 @@ Delivered:
 -   [323: Local-Variable Syntax for Lambda Parameters](https://openjdk.org/jeps/323)
 -   [286: Local-Variable Type Inference (<code>var</code>)](https://openjdk.org/jeps/286)
     -   [Style Guidelines](guides/lvti-style-guide)
-    -   [FAQ](guides/lvti-faq)
+    -   [FAQ](faq/local_variable_type_inference)
 
 On hold:
 
