@@ -21,6 +21,7 @@ have links to earlier JEPs for the feature, as appropriate.
 Currently in progress:
 
 -   [468: Derived Record Creation (Preview)](https://openjdk.org/jeps/468)
+    - [FAQ](faq/derived_record_creation)
 
 Currently in preview:
 
