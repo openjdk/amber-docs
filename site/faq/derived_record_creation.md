@@ -14,3 +14,7 @@
 
 #### Why don't you just force unique names? The shadowing rules are confusing in this context. {#confusing_shadowing_rules}
 - ["We didn’t decide to relax the shadowing rules here out of whim; these names _must_ be accessible because they are fixed by the record declaration."](https://mail.openjdk.org/pipermail/amber-dev/2024-April/008738.html)
+
+#### How will changing the record components affect binary compatibility? {#binary_compatibility}
+- ["_Adding, deleting, changing, or reordering record components in a record class may break compatibility with pre-existing binaries that are not recompiled; such a change is not recommended for widely distributed record classes._"](https://mail.openjdk.org/pipermail/amber-dev/2024-April/008757.html)
+- [\(_See more here._\)](https://mail.openjdk.org/pipermail/amber-dev/2024-April/008760.html)
