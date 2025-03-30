@@ -11,4 +11,4 @@
 
 #### How is this related to the `this-escape` warning? {#this-escape}
 - ["\[Both attempt\] to prevent a superclass constructor from invoking an overridden method that would then see uninitialized subclass fields \[while granting different forms of freedom\]."](https://mail.openjdk.org/pipermail/amber-dev/2025-March/009266.html)
-    - [_(See here to learn more about `this-escape`)_](https://bugs.openjdk.org/browse/JDK-8299995)
+    - [_(See here to learn more about `this-escape` -- future enhancements may not be contained in this link)_](https://bugs.openjdk.org/browse/JDK-8299995)
