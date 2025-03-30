@@ -30,6 +30,7 @@ Currently in preview:
 -   [494: Module Import Declarations (Second Preview)](https://openjdk.org/jeps/494) (previous: [476](https://openjdk.org/jeps/476))
     - [FAQ](faq/module_imports)
 -   [492: Flexible Constructor Bodies (Third Preview)](https://openjdk.org/jeps/492) (previous: [447](https://openjdk.org/jeps/447), [482](https://openjdk.org/jeps/482))
+    - [FAQ](faq/flexible_constructor_bodies)
 -   [488: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code> (Second Preview)](https://openjdk.org/jeps/488) (previous: [455](https://openjdk.org/jeps/455))
 
 Delivered:
