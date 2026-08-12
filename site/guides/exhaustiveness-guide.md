@@ -157,7 +157,9 @@ Switches over sealed types should heed the following guidelines:
     its own `case`.
 3.  If it is impractical to handle each permitted subtype with its own `case`, we
     should use the narrowest possible type pattern (e.g., `Fruit f`) to render
-    the switch exhaustive.
+    the switch exhaustive. We call this a match-all case. 
+    
+    In the examples above that switch over a fruit, the match-all case would be `case Fruit f`. It is not recommended to use a match-all case with a broader type pattern than the selector type, such as `case Object o`.
 
 There are several reasons why it may not be practical to handle each permitted
 subtype with its own `case`:
@@ -172,13 +174,13 @@ subtype with its own `case`:
    The javadoc for `Attribute` omits inaccessible subtypes, triggering the "(not exhaustive)" note.)_
 
  - The sealed class has many permitted subtypes, and the client wants to handle
-   only a small subset of these.  In this case, listing all the permitted
-   subtypes would likely be low-value ceremony.  (Switches that pick off a small
-   number of cases and ignore the rest are analogous to unbalanced `if`
-   statements, just handling more than one condition.)
+   only a small subset of these.  In this situation, listing all the permitted
+   subtypes would likely be low-value ceremony, while picking off a small number
+   of subtypes and ignoring the rest is analogous to an unbalanced `if`
+   statement. This is best seen when a sealed type has many subtypes: `sealed interface A permits A1, A2, A3, A4, ... A100 { }` -- a match-all `case A` is reasonable.
 
 Further, even if all subtypes are handled by their own `case`, it may sometimes be
-needed to use a match-all `case` anyway, to provide custom error handling in the
+necessary to use a match-all `case` anyway, to provide custom error handling in the
 event of unexpected change.  However, we should be aware that this is giving up
 much of the compile-time type safety that sealed types afford.
 
@@ -213,7 +215,7 @@ record Cake() implements Dessert {}
 record Pie()  implements Dessert {}
 ```
 
-While it is possible to "totalize" a `Food` selector type with `case Food`, it is preferable to
+While it is possible to "totalize" a `Food` selector type with a match-all, `case Food`, it is preferable to
 be more restrained and totalize each branch explicitly:
 
 ```{.java}
@@ -238,5 +240,5 @@ sealed interface B extends AB permits B1, B2, B3 { ... }
 ```
 
 For a `switch` with selector type `AB`, it may be practical to cover the three `B` options but not the 100 `A` options. It is best to render the `switch` exhaustive by totalizing with a `case A _`, rather than a `case AB _`;
-this preserves the ability for exhaustiveness checking for the B options,
+this preserves the ability for exhaustiveness checking for the `B` options,
 whereas using the broader type would give up all exhaustiveness checking.
