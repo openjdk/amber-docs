@@ -60,6 +60,7 @@ Withdrawn:
 ## Documents
 
 -   Guides
+    -   [Preparing for Change: Safe Switching over Sealed APIs](guides/exhaustiveness-guide) (Aug 2026)
     -   [Programmer's Guide to Text Blocks](guides/text-blocks-guide) (Aug 2019)
     -   [Local Variable Type Inference FAQ](guides/lvti-faq) (Oct 2018)  
     -   [Local Variable Type Inference Style Guide](guides/lvti-style-guide) (March 2018)
@@ -83,7 +84,7 @@ Withdrawn:
 -   Historical notes
     -   [Data Classes for Java](design-notes/data-classes-historical-2) (February 2018)
     -   [Data Classes for Java](design-notes/data-classes-historical-1) (October 2017)
-    
+
 
 ## Community
 
