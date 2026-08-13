@@ -100,7 +100,7 @@ which may allow a program to continue but cause it to produce an erroneous resul
 
 Finally, a `default` is not a true catch-all: it does not handle a `null` selector.
 To avoid a `NullPointerException` from a `null` selector, you must either write
-an explicit `case null` label or, preferably, use `Objects.requireNonNull` 
+an explicit `case null` or, preferably, use `Objects.requireNonNull` 
 to reject `null` before the `switch`.
 
 In almost all switches, it is better to write `case` labels that cover a `sealed`
@@ -110,17 +110,16 @@ where this is appropriate later in this document.
 ## Sealed types can evolve, and often will
 
 A `sealed` type is an API that describes a hierarchy of permitted subtypes _at a
-single point in time_.  As with any API in Java, it can change over time.  In
-particular, it is important that adding new permitted subtypes later be a
-permissible and compatible evolution.
+single point in time_. As with any API in Java, it can change over time. It is 
+important that adding new permitted subtypes later be a permissible and compatible evolution.
 
-Adding a new type to an API is generally harmless, but
-adding a new permitted subtype to a `sealed` class could cause pre-existing
+Adding a new type to an API is usually harmless, but
+adding a new permitted subtype to a `sealed` type could cause pre-existing
 `switch` expressions to become non-exhaustive.  While at first this seems
 disturbing -- such switches may throw `MatchException` at run time and will
 encounter compilation errors when recompiled -- this is how we balance safety
-with resilience.  It is unreasonable to expect that when a new `Fruit` is
-discovered, that all fruit-related code can change instantly.  But also, we
+with resilience. It is unreasonable to expect that when a new `Fruit` is
+discovered, that all fruit-related code can change instantly. But also, we
 don't want to give up the considerable compile-time and run-time safety benefits
 that sealing offers in capturing design intent and enhanced compile-time and
 run-time type safety.
@@ -128,24 +127,25 @@ run-time type safety.
 There are two primary reasons why one might declare a type `sealed`:
 
 - To signal to clients that this type models a closed-end domain, such as when
-   `Fruit` is defined to be an `Apple` or an `Orange` but nothing else.
-- To control all of the _implementations_ of the type, but not model a specific
-   closed-end domain.
+  `Fruit` is defined to be an `Apple` or an `Orange` but nothing else.
+  
+- To control all the _implementations_ of the type, but not model a specific
+  closed-end domain.
 
-It is helpful when authors of `sealed` classes explicitly document the goal of
-sealing, and how they expect the class to evolve in the future.  A `sealed` class
-that models a `Boolean` domain is unlikely to acquire subclasses that correspond
+It is helpful when authors of `sealed` types explicitly document the reason for
+sealing, and how they expect the type to evolve in the future.  A `sealed` type
+that models a `Boolean` domain is unlikely to acquire subtypes that correspond
 to anything other than `True` and `False`, because the domain is extremely
-stable; on the other hand, a `sealed` class that models the different kinds of AST
+stable; on the other hand, a `sealed` type that models the different kinds of AST
 nodes describing a program is highly likely to change over time, either because
 the language being modeled has acquired new features, or because of changes in
 how programs are modeled.
 
-When a `sealed` class is encapsulated within a single maintenance domain, it is
-reasonable to expect that changes to the `sealed` class will immediately be
-reflected at all the uses of the class; when a `sealed` class is published across
+When a `sealed` type is encapsulated within a single maintenance domain, it is
+reasonable to expect that changes to the `sealed` type will immediately be
+reflected at all the uses; when a `sealed` type is published across
 maintenance domains, we should expect there will be some time lag between the
-update of the `sealed` class and properly updating its clients.  We should program
+update of the `sealed` type and properly updating its clients.  We should program
 with idioms that do not unnecessarily "sweep changes under the rug" to avoid
 silently ignoring feedback that might portend actionable changes.
 
@@ -163,7 +163,7 @@ Switches over `sealed` types should heed the following guidelines:
     should use the narrowest possible type pattern to render the switch exhaustive.
     We call this a match-all `case`. 
     
-    In the examples above that switch over a `Fruit` selector, the match-all `case`
+    In the `switch` above with a `Fruit` selector type, the match-all `case`
     would be `case Fruit other`. It is not recommended to use a match-all `case` with
     a broader type pattern than the selector type, e.g., `case Object other`.
 
