@@ -29,7 +29,7 @@ String fruitName = switch (code) {
 ```
 
 In contrast, when the selector is a `sealed` type, the `switch` can be
-made exhaustive by enumerating the permitted subtypes of the `sealed`
+made exhaustive by listing the permitted subtypes of the `sealed`
 type, `case` by `case`. No `default` is needed. For example:
 
 ```{.java}
@@ -47,7 +47,7 @@ String description = switch (f) {
 However, an exhaustive `switch` is not guaranteed to remain so, because it is
 possible to evolve `sealed` types over time to acquire new permitted subtypes.
 This means that switches over a `sealed` type that were exhaustive when they were written, may no
-longer be exhaustive, because they no longer cover all possible cases. The
+longer be exhaustive, because they no longer cover all possible values. The
 language provides a variety of static and dynamic tools for confidently
 navigating these transitions.
 
@@ -58,18 +58,17 @@ sealed interface Fruit permits Apple, Orange, Pear {}
 record Pear(String variety) implements Fruit {}
 ```
 
-If the `switch` above is also recompiled, the compiler realizes that `Pear` is
-not covered by a `case`. Because the `switch` is no longer exhaustive, it no
+If the `switch` above is also recompiled, the compiler realizes that `Pear` values
+are not covered by a `case`. Because the `switch` is no longer exhaustive, it no
 longer compiles.  While this might at first seem "bad", this is actually
 very good!  When the `switch` was written, the developer intent was "I have
 covered all the fruits."  The compiler was able to validate the developer
 intent, ensuring that all fruits are indeed covered.  And when the world of
 fruits changes in a way that invalidates the original developer intent, the
-developer is notified of this change so that the code can be adjusted to meet
+developer is notified of this change so that the `switch` can be adjusted to meet
 the new reality.
 
-In this case, adding a `case Pear p` brings the code back into consistency with
-its intent -- covering all the fruits.
+Adding `case Pear p` brings the code back into consistency with its intent: covering all the fruits.
 
 In the meantime, it is possible (if the `switch` is not recompiled) that a
 `Pear` value matches no `case` at run time, causing the `switch` to throw
@@ -120,9 +119,8 @@ disturbing -- such switches may throw `MatchException` at run time and will
 encounter compilation errors when recompiled -- this is how we balance safety
 with resilience. It is unreasonable to expect that when a new `Fruit` is
 discovered, that all fruit-related code can change instantly. But also, we
-don't want to give up the considerable compile-time and run-time safety benefits
-that sealing offers in capturing design intent and enhanced compile-time and
-run-time type safety.
+don't want to give up the considerable benefits that sealing offers in capturing 
+design intent and enhancing compile-time and run-time type safety.
 
 There are two primary reasons why one might declare a type `sealed`:
 
@@ -186,7 +184,7 @@ subtype with its own `case`:
    of subtypes and ignoring the rest is analogous to an unbalanced `if`
    statement.
 
-   _(For example, given `sealed interface A permits A1, A2, A3, A4, ... A100 { }`,
+   _(For example, given `sealed interface A permits A1, A2, A3, A4, ... A100 {}`,
    a match-all `case A other` is reasonable after handling `case A1 a1` and `case A2 a2`.)_
 
 Further, even if all subtypes are handled by their own `case`, it may sometimes be
@@ -245,7 +243,7 @@ When a `sealed` type has many permitted subtypes, it is again preferable to tota
 
 ```{.java}
 sealed interface AB permits A, B { ... }
-sealed interface A extends AB permits A1, A2, A3, A4, ... A100 { }
+sealed interface A extends AB permits A1, A2, A3, A4, ... A100 { ... }
 sealed interface B extends AB permits B1, B2, B3 { ... }
 ```
 
