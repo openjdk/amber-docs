@@ -21,8 +21,6 @@ have links to earlier JEPs for the feature, as appropriate.
 
 Currently in progress:
 
--   [530: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code>](https://openjdk.org/jeps/530) (previous: [507](https://openjdk.org/jeps/507), [455](https://openjdk.org/jeps/455), [488](https://openjdk.org/jeps/488))
-
 -   [468: Derived Record Creation (Preview)](https://openjdk.org/jeps/468)
 
 Delivered:
@@ -56,6 +54,7 @@ Withdrawn:
 
 -   [465: String Templates (Third Preview)](https://openjdk.org/jeps/465) (see [here](https://mail.openjdk.org/pipermail/amber-spec-experts/2024-April/004106.html) for explanation)
 -   [326: Raw String Literals](https://openjdk.org/jeps/326), dropped in favor of Text Blocks (see [here](https://mail.openjdk.org/pipermail/jdk-dev/2018-December/002402.html) for explanation)
+-   [Draft JEP: Primitive Types in Patterns, <code>instanceof</code>, and <code>switch</code> (Sixth Preview)](https://openjdk.org/jeps/8393282) (see [here](https://mail.openjdk.org/archives/list/amber-spec-experts@openjdk.org/thread/UYEK3PGOHN6R56AHJTSLPGAY363K666S/) for explanation)
 
 ## Documents
 
